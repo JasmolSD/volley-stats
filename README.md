@@ -35,7 +35,7 @@ Here’s to fewer hours in front of the keyboard, and more on the court!
 
 ```
 volley-stats/
-├── LICENSE                   # MIT License
+├── LICENSE                   # GPL-3.0 License
 ├── Data Collection.xlsx      # Excel template for data entry
 ├── sample_data.csv           # Example dataset
 ├── Volley_Analysis.ipynb     # Jupyter notebook for analysis
