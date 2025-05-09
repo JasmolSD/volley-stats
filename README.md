@@ -4,11 +4,11 @@ Welcome to **Volley Stats**, a project designed to track, analyze, and visualize
 
 This all started when I was captaining a volleyball team in an adult league. Watching VODs, I wanted to go beyond just cheering and cringing at our plays. I wanted to draw actual insights to help me and my teammates grow. I started tracking stats to identify player strengths, weaknesses, and room for growth. 
 
-As much fun as it was tinkering with numbers and Python code, I didn't want to keep this for myself, as it could potentially help many others. No one else needs to spend hours writing code just to understand their game like I did. So, I built **Volley Stats** to make that journey easier for anyone who loves the sport.
+As much fun as it was tinkering with numbers and Python code, I didn't want to keep this for myself, as it could help many others. No one else needs to spend countless hours writing code to understand their gameplay like I did. So, I built **Volley Stats** to make that journey easier for anyone who loves the sport.
 
-With just a CSV file (formatted like the sample I’ve included), you can fire up all sorts of plots and visualizations to explore individual and team performance. I typically use the excel file to get stats for a given set then copy and paste the values into the csv, but you can do as you please.
+With just a CSV file (formatted like the sample I’ve included), you can fire up all sorts of plots and visualizations to explore individual and team performance. I typically use the Excel file to get stats for a given set and then copy and paste the values into the CSV, but you can do as you please.
 
-Here’s to fewer hours in front of the keyboard, and more on the court!
+Here’s to fewer hours in front of the keyboard and more on the court!
 
 ---
 
@@ -61,7 +61,7 @@ cd volley-stats
 pip install -r requirements.txt
 ```
 
-*(If `requirements.txt` is missing, install pandas, numpy, matplotlib, seaborn, and jupyter manually.)*
+*(If `requirements.txt` is missing, install pandas, numpy, matplotlib, seaborn, fuzzywuzzy, python-Levenshtein, and jupyter manually.)*
 
 3️⃣ **Open the notebook**
 
