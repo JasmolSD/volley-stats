@@ -1,6 +1,13 @@
 # 🏐 Volley Stats
 
-Welcome to **Volley Stats**, a project designed to track, analyze, and visualize volleyball player and team performance over time. This repository equips players, coaches, and analysts with tools to uncover meaningful insights from volleyball match data.
+Welcome to **Volley Stats**, a project designed to track, analyze, and visualize volleyball player and team performance over time! 🏐✨
+This all started when I was captaining a volleyball team in an adult league. Watching VODs, I wanted to go beyond just cheering and cringing at our plays. I wanted to draw actual insights to help me and my teammates grow. I started tracking stats to identify player strengths, weaknesses, and room for growth. 
+
+As much fun as it was tinkering with numbers and Python code, I didn't want to keep this for myself, as it could potentially help many others. No one else needs to spend hours writing code just to understand their game like I did. So, I built **Volley Stats** to make that journey easier for anyone who loves the sport.
+
+With just a CSV file (formatted like the sample I’ve included), you can fire up all sorts of plots and visualizations to explore individual and team performance.
+
+Here’s to fewer hours in front of the keyboard, and more on the court!
 
 ---
 
@@ -71,6 +78,8 @@ jupyter notebook Volley_Analysis.ipynb
 - matplotlib  
 - seaborn  
 - jupyter
+- fuzzywuzzy
+- python-Levenshtein
 
 ---
 
