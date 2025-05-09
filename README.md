@@ -5,7 +5,7 @@ This all started when I was captaining a volleyball team in an adult league. Wat
 
 As much fun as it was tinkering with numbers and Python code, I didn't want to keep this for myself, as it could potentially help many others. No one else needs to spend hours writing code just to understand their game like I did. So, I built **Volley Stats** to make that journey easier for anyone who loves the sport.
 
-With just a CSV file (formatted like the sample I’ve included), you can fire up all sorts of plots and visualizations to explore individual and team performance.
+With just a CSV file (formatted like the sample I’ve included), you can fire up all sorts of plots and visualizations to explore individual and team performance. I typically use the excel file to get stats for a given set then copy and paste the values into the csv, but you can do as you please.
 
 Here’s to fewer hours in front of the keyboard, and more on the court!
 
