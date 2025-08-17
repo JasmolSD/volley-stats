@@ -1,0 +1,45 @@
+# Virtual environments
+.venv/
+venv/
+ENV/
+env/
+
+# Python cache / compiled
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyo
+*.pyd
+*.so
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+
+# Environment variables (nested too)
+.env
+.env.*
+**/.env
+**/.env.*
+
+# Logs
+*.log
+
+# OS-specific
+.DS_Store
+Thumbs.db
+
+# IDE/editor files
+.vscode/
+.idea/
+*.swp
+
+# Build / dist
+build/
+dist/
+*.egg-info/
+
+# Static/tmp artifacts
+server/static/*
+!server/static/.gitkeep
+server/tmp/*
+!server/tmp/.gitkeep

@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Volley Stats</title>
+    <link rel="icon" type="image/svg+xml" href="/volleyball.svg" />
+
+    <!-- Google Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet" />
+
+    <style>
+        :root {
+            --primary: #0ea5e9;
+            /* sky-500 */
+            --primary-dark: #0284c7;
+            /* sky-600 */
+            --text: #0f172a;
+            /* slate-900 */
+            --text-muted: #475569;
+            /* slate-600 */
+            --border: #cfe8fb;
+            /* light blue border */
+            --panel: #ffffff;
+            --radius: 12px;
+            --shadow: 0 8px 24px rgba(2, 6, 23, 0.08);
+        }
+
+        /* Light blue site background + playful pattern */
+        body {
+            margin: 0;
+            font-family: "Inter", system-ui, sans-serif;
+            color: var(--text);
+            background-color: #eaf6ff;
+            /* base light blue */
+            /* Subtle pattern tile (served from public/) */
+            /* background-image: url("/patterns/ducks-volley-tile.svg"); */
+            background-repeat: repeat;
+            background-size: 320px 320px;
+            /* matches tile size below */
+            background-attachment: fixed;
+            /* pleasant parallax; remove if jitter on mobile */
+            -webkit-font-smoothing: antialiased;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        /* Header: clean white slab with soft blue border */
+        header {
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            background: rgba(255, 255, 255, .95);
+            border-bottom: 1px solid var(--border);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: var(--shadow);
+            backdrop-filter: saturate(1.1) blur(6px);
+            -webkit-backdrop-filter: saturate(1.1) blur(6px);
+        }
+
+        header h1 {
+            margin: 0;
+            font-weight: 900;
+            letter-spacing: .2px;
+            font-size: 1.25rem;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: .5rem;
+            text-shadow: 0 1px 0 rgba(255, 255, 255, .65);
+        }
+
+        header nav {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        header nav a {
+            font-weight: 700;
+            text-decoration: none;
+            color: var(--text);
+            position: relative;
+            padding-bottom: 4px;
+            transition: color .15s ease;
+        }
+
+        header nav a:hover {
+            color: var(--primary-dark);
+        }
+
+        header nav a::after {
+            content: "";
+            position: absolute;
+            left: 0;
+            bottom: 0;
+            height: 2px;
+            width: 0%;
+            background: var(--primary);
+            transition: width .2s ease;
+            border-radius: 2px;
+        }
+
+        header nav a:hover::after {
+            width: 100%;
+        }
+
+        /* React mount */
+        #root {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            padding: 2rem;
+            max-width: 1200px;
+            width: 100%;
+            margin: 0 auto;
+            animation: fadeIn .4s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(6px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Footer: airy & light */
+        footer {
+            text-align: center;
+            padding: 1rem;
+            font-size: .9rem;
+            color: var(--text-muted);
+            border-top: 1px solid var(--border);
+            background: rgba(255, 255, 255, .95);
+            backdrop-filter: saturate(1.1) blur(6px);
+            -webkit-backdrop-filter: saturate(1.1) blur(6px);
+        }
+
+        /* Optional: cards and form bits inside the React app (nice defaults) */
+        .card {
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+        }
+
+        .card__in {
+            padding: 16px;
+        }
+
+        label {
+            font-weight: 700;
+            color: var(--text-muted);
+        }
+
+        input,
+        select,
+        textarea {
+            font: inherit;
+            color: inherit;
+            background: #f7fbff;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 10px 12px;
+            outline: none;
+            transition: box-shadow .15s ease, border-color .15s ease, background .15s ease;
+        }
+
+        input:focus-visible,
+        select:focus-visible,
+        textarea:focus-visible {
+            border-color: #93c5fd;
+            box-shadow: 0 0 0 3px rgba(147, 197, 253, .45);
+            background: #fff;
+        }
+
+        .btn {
+            appearance: none;
+            border: 1px solid var(--border);
+            background: linear-gradient(180deg, #ffffff, #f1f8ff);
+            color: var(--text);
+            font-weight: 800;
+            border-radius: 12px;
+            padding: 10px 14px;
+            cursor: pointer;
+            box-shadow: var(--shadow);
+            transition: transform .1s ease, box-shadow .15s ease, border-color .15s ease;
+        }
+
+        .btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 10px 26px rgba(2, 6, 23, .1);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+            box-shadow: 0 6px 14px rgba(2, 6, 23, .08);
+        }
+
+        .btn--primary {
+            color: #0b3b5a;
+            border-color: #93c5fd;
+        }
+
+        /* Make pattern calmer under content on smaller viewports */
+        @media (max-width: 640px) {
+            body {
+                background-size: 260px 260px;
+            }
+
+            #root {
+                padding: 1.25rem;
+            }
+
+            header {
+                padding: 0.75rem 1rem;
+            }
+        }
+    </style>
+
+</head>
+
+<body>
+    <header>
+        <h1>🏐 Volley Stats</h1>
+        <nav>
+            <a href="/">Home</a>
+            <a href="/results">Results</a>
+        </nav>
+    </header>
+
+    <div id="root"></div>
+
+    <footer>
+        <p>Built with ❤️ and data · Volley Stats © 2025</p>
+    </footer>
+
+    <script type="module" src="/src/main.jsx"></script>
+</body>
+
+</html>

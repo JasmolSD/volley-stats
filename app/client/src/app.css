@@ -1,0 +1,723 @@
+/* =============================================================================
+   VOLLEY STATS — Sitewide UI Overhaul
+   Save as: src/styles/app.css
+   ========================================================================== */
+
+/* -------------------- Design tokens -------------------- */
+:root {
+    /* Brand */
+    --brand-50: #eef2ff;
+    --brand-100: #e0e7ff;
+    --brand-200: #c7d2fe;
+    --brand-300: #a5b4fc;
+    --brand-400: #818cf8;
+    --brand-500: #6366f1;
+    --brand-600: #4f46e5;
+    --brand-700: #4338ca;
+
+    --ink-0: #0b1020;
+    --ink-1: #111827;
+    --ink-2: #1f2937;
+    --ink-3: #334155;
+    --ink-4: #475569;
+    --ink-6: #94a3b8;
+
+    --surface-0: #0b0f1a;
+    --surface-1: #0f172a;
+    --surface-2: #0b1220;
+    --surface-3: #111827;
+    --surface-4: #182235;
+
+    --bg: #f7f8fc;
+    --panel: #ffffff;
+    --panel-2: #fafbff;
+
+    /* Radii, shadows */
+    --radius-xs: 8px;
+    --radius: 14px;
+    --radius-lg: 18px;
+    --shadow-sm: 0 2px 10px rgba(2, 6, 23, .06);
+    --shadow-md: 0 8px 28px rgba(15, 23, 42, .12);
+    --shadow-lg: 0 16px 48px rgba(2, 6, 23, .18);
+
+    /* Focus ring */
+    --ring: 0 0 0 3px rgba(99, 102, 241, .35);
+
+    /* Typography scale */
+    --font-sans: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Inter, "Helvetica Neue", Arial;
+    --fs-1: clamp(2.2rem, 1.9rem + 1vw, 3rem);
+    --fs-2: clamp(1.4rem, 1.2rem + .5vw, 1.8rem);
+    --fs-3: 1.125rem;
+    --fs-4: .95rem;
+}
+
+/* Dark mode (auto) */
+@media (prefers-color-scheme: dark) {
+    :root {
+        --bg: linear-gradient(180deg, #0d1022, #0a0d18);
+        --panel: rgba(255, 255, 255, .06);
+        --panel-2: rgba(255, 255, 255, .04);
+    }
+}
+
+/* -------------------- Reset / base -------------------- */
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+    height: 100%;
+}
+
+body {
+    margin: 0;
+    font-family: var(--font-sans);
+    color: var(--ink-1);
+    background: radial-gradient(1200px 600px at 10% -10%, #f3f5ff 0%, transparent 60%), var(--bg);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+@media (prefers-color-scheme: dark) {
+    body {
+        color: #eef1ff;
+    }
+}
+
+a {
+    color: var(--brand-600);
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+/* -------------------- App shell -------------------- */
+.app-shell {
+    min-height: 100%;
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+}
+
+.brandbar {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background: rgba(255, 255, 255, .75);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(15, 23, 42, .08);
+    box-shadow: var(--shadow-sm);
+}
+
+@media (prefers-color-scheme: dark) {
+    .brandbar {
+        background: rgba(15, 20, 40, .65);
+        border-bottom-color: rgba(255, 255, 255, .08);
+    }
+}
+
+.brandbar__in {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 10px 16px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.brand {
+    font-weight: 900;
+    letter-spacing: .2px;
+    color: var(--ink-1);
+}
+
+.brand__badge {
+    display: inline-block;
+    padding: 4px 10px;
+    border: 1px solid var(--brand-200);
+    background: linear-gradient(180deg, #ffffff, #f6f7fb);
+    border-radius: 999px;
+    color: var(--brand-700);
+    font-weight: 800;
+    font-size: .8rem;
+}
+
+@media (prefers-color-scheme: dark) {
+    .brand {
+        color: #fff;
+    }
+
+    .brand__badge {
+        background: linear-gradient(180deg, #12172a, #0a1020);
+        border-color: rgba(255, 255, 255, .12);
+        color: #dbeafe;
+    }
+}
+
+.container {
+    width: min(1200px, 92vw);
+    margin: 28px auto;
+}
+
+.page {
+    display: grid;
+    gap: 18px;
+}
+
+.page h1 {
+    font-size: var(--fs-2);
+    margin: 0 0 6px;
+    letter-spacing: .2px;
+}
+
+.page-subtle {
+    color: var(--ink-4);
+    font-size: var(--fs-4);
+}
+
+/* -------------------- Cards / panels -------------------- */
+.card {
+    background: var(--panel);
+    border: 1px solid rgba(15, 23, 42, .08);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-sm);
+}
+
+.card--glass {
+    background: rgba(255, 255, 255, .7);
+    backdrop-filter: blur(10px);
+}
+
+@media (prefers-color-scheme: dark) {
+    .card {
+        border-color: rgba(255, 255, 255, .08);
+        background: rgba(255, 255, 255, .06);
+    }
+
+    .card--glass {
+        background: rgba(12, 16, 32, .6);
+    }
+}
+
+.card__in {
+    padding: 16px;
+}
+
+/* -------------------- Buttons -------------------- */
+.btn {
+    appearance: none;
+    border: 1px solid rgba(15, 23, 42, .14);
+    background: linear-gradient(180deg, #ffffff, #f6f7fb);
+    color: var(--ink-1);
+    font-weight: 800;
+    border-radius: 12px;
+    padding: 10px 14px;
+    cursor: pointer;
+    box-shadow: var(--shadow-sm);
+    transition: transform .1s ease, box-shadow .15s ease, border-color .15s ease;
+}
+
+.btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 8px 20px rgba(2, 6, 23, .1);
+}
+
+.btn:active {
+    transform: translateY(0);
+    box-shadow: 0 4px 12px rgba(2, 6, 23, .08);
+}
+
+.btn:focus-visible {
+    outline: none;
+    box-shadow: var(--ring), var(--shadow-sm);
+}
+
+.btn--primary {
+    background: linear-gradient(180deg, #eef2ff, #e5e9ff);
+    border-color: rgba(99, 102, 241, .35);
+    color: var(--brand-700);
+}
+
+.btn--ghost {
+    background: transparent;
+    border-color: rgba(15, 23, 42, .14);
+}
+
+@media (prefers-color-scheme: dark) {
+    .btn {
+        background: linear-gradient(180deg, #141a2d, #0d1424);
+        color: #eef2ff;
+        border-color: rgba(255, 255, 255, .14);
+    }
+
+    .btn--primary {
+        background: linear-gradient(180deg, #1a2350, #121a38);
+        color: #dbeafe;
+        border-color: rgba(99, 102, 241, .45);
+    }
+}
+
+/* Icon button */
+.icon-btn {
+    width: 38px;
+    height: 38px;
+    display: grid;
+    place-items: center;
+    border-radius: 12px;
+}
+
+/* -------------------- Inputs / selects -------------------- */
+label {
+    font-weight: 700;
+    color: var(--ink-3);
+}
+
+@media (prefers-color-scheme: dark) {
+    label {
+        color: #cbd5e1;
+    }
+}
+
+input,
+select,
+textarea {
+    font: inherit;
+    color: inherit;
+    background: var(--panel-2);
+    border: 1px solid rgba(15, 23, 42, .12);
+    border-radius: 12px;
+    padding: 10px 12px;
+    outline: none;
+    box-shadow: inset 0 0 0 0 rgba(0, 0, 0, 0);
+    transition: box-shadow .15s ease, border-color .15s ease, background .15s ease;
+}
+
+select {
+    padding-right: 34px;
+    background-image:
+        linear-gradient(45deg, transparent 50%, var(--ink-4) 50%),
+        linear-gradient(135deg, var(--ink-4) 50%, transparent 50%),
+        linear-gradient(to right, transparent, transparent);
+    background-position: calc(100% - 18px) 50%, calc(100% - 12px) 50%, 100% 0;
+    background-size: 6px 6px, 6px 6px, 2.5em 2.5em;
+    background-repeat: no-repeat;
+}
+
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+    border-color: rgba(99, 102, 241, .45);
+    box-shadow: var(--ring);
+}
+
+@media (prefers-color-scheme: dark) {
+
+    input,
+    select,
+    textarea {
+        background: rgba(255, 255, 255, .06);
+        border-color: rgba(255, 255, 255, .12);
+    }
+
+    select {
+        background-image:
+            linear-gradient(45deg, transparent 50%, #9ca3af 50%),
+            linear-gradient(135deg, #9ca3af 50%, transparent 50%),
+            linear-gradient(to right, transparent, transparent);
+    }
+}
+
+/* Input groups */
+.field {
+    display: grid;
+    gap: 6px;
+}
+
+.inline {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+/* -------------------- Mode Toggle (Cumulative/Temporal) -------------------- */
+.mode-toggle {
+    display: inline-grid;
+    grid-template-columns: 1fr 1fr;
+    background: #fff;
+    border: 1px solid rgba(15, 23, 42, .14);
+    border-radius: 999px;
+    overflow: hidden;
+    box-shadow: var(--shadow-sm);
+}
+
+.mode-toggle__btn {
+    padding: 8px 18px;
+    font-weight: 900;
+    letter-spacing: .2px;
+    cursor: pointer;
+    background: transparent;
+    color: #111;
+    border: 0;
+}
+
+.mode-toggle__btn[aria-pressed="true"] {
+    background: var(--ink-1);
+    color: #fff;
+}
+
+.mode-toggle__btn:focus-visible {
+    outline: none;
+    box-shadow: var(--ring) inset;
+    border-radius: 999px;
+}
+
+/* -------------------- Page header helper -------------------- */
+.page-header {
+    display: flex;
+    align-items: end;
+    justify-content: space-between;
+    gap: 12px;
+    margin: 6px 0 10px;
+}
+
+.page-header__hint {
+    color: var(--ink-4);
+}
+
+/* -------------------- Gallery / cards -------------------- */
+.gallery {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    gap: 18px;
+}
+
+.figure-card {
+    margin: 0;
+    border: 1px solid rgba(15, 23, 42, .08);
+    background: #fff;
+    border-radius: var(--radius);
+    overflow: hidden;
+    box-shadow: var(--shadow-sm);
+    transition: transform .1s ease, box-shadow .15s ease, border-color .15s ease;
+}
+
+.figure-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+    border-color: rgba(99, 102, 241, .25);
+}
+
+.figure-card__head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 12px;
+    background: linear-gradient(180deg, #fafafa, #f3f3f6);
+    border-bottom: 1px solid #eceff5;
+}
+
+.figure-card__badge {
+    font-size: 11px;
+    font-weight: 800;
+    padding: 2px 8px;
+    border-radius: 999px;
+    background: #eef2ff;
+    border: 1px solid #dbeafe;
+    color: #334155;
+}
+
+.figure-card__title {
+    font-weight: 900;
+    color: var(--ink-1);
+}
+
+.figure-card__imgbtn {
+    padding: 0;
+    border: 0;
+    background: #f7f9fc;
+    width: 100%;
+    cursor: zoom-in;
+}
+
+.figure-card__img {
+    width: 100%;
+    display: block;
+}
+
+/* -------------------- Summary grid -------------------- */
+.summary-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 14px;
+}
+
+.summary-card {
+    padding: 14px;
+    border-radius: var(--radius);
+    border: 1px solid rgba(15, 23, 42, .08);
+    background: linear-gradient(180deg, #ffffff, #f8f9ff);
+    box-shadow: var(--shadow-sm);
+}
+
+.summary-card__title {
+    font-weight: 800;
+    color: var(--ink-3);
+}
+
+.summary-card__value {
+    font-size: var(--fs-2);
+    font-weight: 900;
+}
+
+/* -------------------- Commentary block -------------------- */
+.commentary {
+    border-radius: var(--radius);
+    background: var(--panel);
+    border: 1px solid rgba(15, 23, 42, .08);
+    box-shadow: var(--shadow-sm);
+    padding: 16px;
+}
+
+.commentary h3 {
+    margin: 0 0 6px;
+}
+
+.commentary p {
+    color: var(--ink-3);
+}
+
+/* -------------------- Small spinner -------------------- */
+.spinner,
+.small-spinner {
+    --size: 22px;
+    width: var(--size);
+    height: var(--size);
+    border-radius: 999px;
+    border: 3px solid rgba(99, 102, 241, .25);
+    border-top-color: var(--brand-600);
+    animation: spin .9s linear infinite;
+}
+
+.spinner {
+    --size: 32px;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.loading-block {
+    display: grid;
+    place-items: center;
+    min-height: 240px;
+}
+
+/* -------------------- Tables (if any) -------------------- */
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    background: var(--panel);
+    border: 1px solid rgba(15, 23, 42, .08);
+    border-radius: var(--radius);
+    overflow: hidden;
+}
+
+.table th,
+.table td {
+    padding: 12px;
+    border-bottom: 1px solid rgba(15, 23, 42, .06);
+}
+
+.table th {
+    text-align: left;
+    background: #f7f8fe;
+    font-weight: 800;
+    color: var(--ink-3);
+}
+
+/* -------------------- Footer -------------------- */
+.site-footer {
+    padding: 18px 16px 28px;
+    color: var(--ink-4);
+    text-align: center;
+}
+
+/* -------------------- Utilities -------------------- */
+.stack-xs>*+* {
+    margin-top: 6px;
+}
+
+.stack-sm>*+* {
+    margin-top: 10px;
+}
+
+.stack>*+* {
+    margin-top: 14px;
+}
+
+.cluster {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.pull-right {
+    margin-left: auto;
+}
+
+.badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 999px;
+    font-weight: 800;
+    font-size: .78rem;
+    border: 1px solid #dbeafe;
+    background: #eef2ff;
+    color: #334155;
+}
+
+/* -------------------- Light/Dark fine-tuning -------------------- */
+@media (prefers-color-scheme: dark) {
+
+    .figure-card,
+    .summary-card,
+    .commentary,
+    .table,
+    .card {
+        background: rgba(255, 255, 255, .06);
+        border-color: rgba(255, 255, 255, .1);
+    }
+
+    .figure-card__head {
+        background: linear-gradient(180deg, #0f1426, #0d1224);
+        border-bottom-color: rgba(255, 255, 255, .06);
+    }
+
+    .figure-card__imgbtn {
+        background: #0c1020;
+    }
+
+    .summary-card {
+        background: linear-gradient(180deg, #0f152b, #0b1220);
+    }
+
+    .table th {
+        background: #0f152b;
+        color: #d1d7ff;
+    }
+
+    .badge,
+    .figure-card__badge {
+        background: rgba(59, 130, 246, .08);
+        border-color: rgba(59, 130, 246, .25);
+        color: #c7d2fe;
+    }
+}
+
+/* =============================================================================
+   End of site stylesheet
+   ========================================================================== */
+
+/* ===== Results page polish ===== */
+.section {
+    margin: 14px 0 22px;
+}
+
+.section__head {
+    display: flex;
+    align-items: end;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 8px;
+}
+
+.section__title {
+    margin: 0;
+    font-size: 1.15rem;
+    font-weight: 900;
+    letter-spacing: .2px;
+}
+
+.section__hint {
+    color: var(--text-light);
+    font-size: .9rem;
+}
+
+.card--flush .card__in {
+    padding: 0;
+}
+
+/* if you reuse .card__in in gallery */
+
+/* Filters bar */
+.filters {
+    display: flex;
+    align-items: end;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+    background: rgba(255, 255, 255, .85);
+    border: 1px solid rgba(0, 0, 0, .06);
+    border-radius: 16px;
+    padding: 14px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, .06);
+}
+
+@media (prefers-color-scheme: dark) {
+    .filters {
+        background: rgba(15, 20, 40, .65);
+        border-color: rgba(255, 255, 255, .08);
+    }
+}
+
+.filters__left {
+    gap: 16px;
+}
+
+.filters__label {
+    font-size: .85rem;
+    color: var(--text-light);
+}
+
+.filters__right {
+    margin-left: auto;
+}
+
+.filters__select {
+    min-width: 220px;
+}
+
+/* Chips */
+.chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 10px;
+    border-radius: 999px;
+    background: #eef2ff;
+    color: #334155;
+    border: 1px solid #dbeafe;
+    font-weight: 800;
+    font-size: .82rem;
+}
+
+.chip--soft {
+    background: #f8fafc;
+    color: #475569;
+    border-color: #e2e8f0;
+}
+
+/* Gallery card spacing (if your ImageGallery renders figures) */
+.figure-card {
+    margin-bottom: 0;
+}
