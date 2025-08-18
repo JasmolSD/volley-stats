@@ -9,8 +9,9 @@ Requirements
 - Make a coding backend for all the python functions
 
 To Fix:
+- Allow for data exports and download everything as a report
+- Add a little table at the end that you can interact with
+- Add an about me page
 - Analyst Commentary is adding the prompt stuff (erase)
 - Add a way to filter through data (season, format)
-- Static Team Averages, change player cards to show how much 
-    better/worse the player is than the team
-    Red and green arrows and a %change
+- Deploy it as a website

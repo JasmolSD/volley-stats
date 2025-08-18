@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import { BrowserRouter, Routes, Route, useLocation, useNavigate } from "react-router-dom";
 import Home from "./pages/Home.jsx";
 import Results from "./pages/Results.jsx";
+import About from "./pages/About.jsx";
 import ScrollToTop from "./components/ScrollToTop.jsx"; // Import ScrollToTop component
 
 // Header Component
@@ -25,6 +26,8 @@ function Header() {
             navigate('/');
         } else if (path === '#analysis' || path === '#insights') {
             navigate('/results');
+        } else if (path === '#about') {
+            navigate('/about')
         }
     };
 
@@ -47,7 +50,8 @@ function Header() {
                     <a href="#insights" onClick={(e) => handleNavClick(e, '#insights')}>
                         Insights
                     </a>
-                    <a href="#about" onClick={(e) => handleNavClick(e, '#about')}>
+                    <a href="#about" onClick={(e) => handleNavClick(e, '#about')}
+                        className={location.pathname === '/about' ? 'active' : ''}>
                         About
                     </a>
                 </nav>
@@ -152,6 +156,16 @@ export default function App() {
                             path="/results"
                             element={
                                 <Results
+                                    token={token}
+                                    summary={summary}
+                                    setLoading={setLoading}
+                                />
+                            }
+                        />
+                        <Route
+                            path="/about"
+                            element={
+                                <About
                                     token={token}
                                     summary={summary}
                                     setLoading={setLoading}
