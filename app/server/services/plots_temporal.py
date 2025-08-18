@@ -9,6 +9,8 @@ import numpy as np
 from matplotlib.figure import Figure
 from matplotlib.dates import DateFormatter
 import matplotlib.ticker as mtick
+from matplotlib.container import BarContainer
+from matplotlib.patches import Rectangle
 import seaborn as sns
 
 
@@ -70,10 +72,13 @@ def plot_avg_errors(team_overall: pd.DataFrame, player_name: str) -> Figure:
 
     ax.set_xlabel("Date", fontsize=12)
     ax.set_ylabel("Errors Count", fontsize=12)
-    ax.set_title(f"{player_name} Average Errors Per Set by Week", fontsize=16)
-    ax.legend(loc="upper left", fontsize=12, frameon=True)
+    ax.set_title(f"{player_name} Error Breakdown Per Set", fontsize=16)
+    
+    # Legend - NO SECONDARY AXIS, so standard positioning
+    fig.subplots_adjust(right=0.75)
+    ax.legend(loc="upper left", bbox_to_anchor=(1.02, 1), fontsize=9, frameon=True)
 
-    fig.tight_layout()
+    fig.tight_layout(rect=(0, 0, 0.90, 0.95))
     return fig
 
 def plot_service_temporal(team_overall: pd.DataFrame, player_name: str) -> Figure:
@@ -127,12 +132,17 @@ def plot_service_temporal(team_overall: pd.DataFrame, player_name: str) -> Figur
                  ha="center", va="bottom",
                  bbox=dict(facecolor="white", edgecolor="black", boxstyle="round,pad=0.3"))
 
+    # Legend - PROPERLY SPACED TO AVOID SECONDARY AXIS
     h1, l1 = ax1.get_legend_handles_labels()
     h2, l2 = ax2.get_legend_handles_labels()
-    ax1.legend(h1 + h2, l1 + l2, loc="upper center", bbox_to_anchor=(0.5, 1.1),
-               ncol=4, fontsize=12, frameon=True)
+    fig.subplots_adjust(right=0.65)  # More space for legend
+    ax1.legend(
+        h1 + h2, l1 + l2, 
+        loc="upper left", bbox_to_anchor=(1.05, 1),  # Further right to avoid secondary axis
+        fontsize=9, frameon=True
+    )
 
-    fig.tight_layout(rect=(0, 0, 1, 0.92))
+    fig.tight_layout(rect=(0, 0, 0.92, 0.95))  # Adjusted for legend space
     return fig
 
 def plot_receive_temporal(team_overall: pd.DataFrame, player_name: str) -> Figure:
@@ -193,12 +203,17 @@ def plot_receive_temporal(team_overall: pd.DataFrame, player_name: str) -> Figur
                  ha="center", va="bottom",
                  bbox=dict(facecolor="white", edgecolor="black", boxstyle="round,pad=0.3"))
 
+    # Legend - PROPERLY SPACED TO AVOID SECONDARY AXIS
     h1, l1 = ax1.get_legend_handles_labels()
     h2, l2 = ax2.get_legend_handles_labels()
-    ax1.legend(h1 + h2, l1 + l2, loc="upper center",
-               bbox_to_anchor=(0.5, 1.1), ncol=4, fontsize=12, frameon=True)
+    fig.subplots_adjust(right=0.65)  # More space for legend
+    ax1.legend(
+        h1 + h2, l1 + l2, 
+        loc="upper left", bbox_to_anchor=(1.05, 1),  # Further right to avoid secondary axis
+        fontsize=9, frameon=True
+    )
 
-    fig.tight_layout(rect=(0, 0, 1, 1.3))
+    fig.tight_layout(rect=(0, 0, 0.92, 0.95))  # Adjusted for legend space
     return fig
 
 def plot_offensive_temporal(
@@ -234,17 +249,19 @@ def plot_offensive_temporal(
     active = [(col, label, color) for col, label, color, flag in series_info if flag]
     n = len(active)
     group_w = 0.8
-    bar_w = group_w / n
+    bar_w = group_w / max(n, 1)
     offsets = np.array([(i - (n - 1) / 2) * bar_w for i in range(n)], dtype=float)
-
     x = np.arange(len(df), dtype=float)
 
     fig = Figure(figsize=(14, 7), dpi=120)
     ax1 = fig.add_subplot(111)
     ax2 = ax1.twinx()
 
+    # Collect bar containers so their patches are typed as Rectangles
+    bar_containers: list[BarContainer] = []
     for (col, label, color), off in zip(active, offsets):
-        ax1.bar(x + off, df[col].to_numpy(), bar_w, color=color, label=label)
+        cont = ax1.bar(x + off, df[col].to_numpy(), bar_w, color=color, label=label)
+        bar_containers.append(cont)
     ax1.set_ylabel("Attacks per Set", fontsize=12)
 
     ax2.plot(x, df["atk_accuracy"].to_numpy(), marker="o", linestyle="-", linewidth=3,
@@ -265,25 +282,37 @@ def plot_offensive_temporal(
         title = f"{player_name} {title}"
     ax1.set_title(title, fontsize=16, pad=10)
 
-    for bar in ax1.patches:
-        h = float(bar.get_height())
-        if h > 0:
-            ax1.text(bar.get_x() + bar.get_width() / 2, h / 2, f"{h:.1f}",
-                     ha="center", va="center",
-                     bbox=dict(facecolor="white", edgecolor="black", boxstyle="round,pad=0.3"))
+    # ✅ Safely annotate bars (typed as Rectangle)
+    for cont in bar_containers:
+        for rect in cont.patches:
+            if isinstance(rect, Rectangle):
+                h = float(rect.get_height())
+                if h > 0:
+                    ax1.text(
+                        rect.get_x() + rect.get_width() / 2.0,
+                        h / 2.0,
+                        f"{h:.1f}",
+                        ha="center",
+                        va="center",
+                        bbox=dict(facecolor="white", edgecolor="black", boxstyle="round,pad=0.3"),
+                    )
 
     for xi, val in zip(x, df["atk_accuracy"].to_numpy()):
         ax2.text(float(xi), float(val), f"{val:.3f}",
                  ha="center", va="bottom",
                  bbox=dict(facecolor="lavenderblush", edgecolor="black", boxstyle="round,pad=0.3"))
 
+    # Legend - PROPERLY SPACED TO AVOID SECONDARY AXIS
     h1, l1 = ax1.get_legend_handles_labels()
     h2, l2 = ax2.get_legend_handles_labels()
-    fig.subplots_adjust(right=0.75)
-    ax1.legend(h1 + h2, l1 + l2, loc="upper left", bbox_to_anchor=(1.1, 1),
-               borderaxespad=0.5, fontsize=12, frameon=True)
+    fig.subplots_adjust(right=0.65)  # More space for legend
+    ax1.legend(
+        h1 + h2, l1 + l2, 
+        loc="upper left", bbox_to_anchor=(1.05, 1),  # Further right to avoid secondary axis
+        borderaxespad=0.5, fontsize=9, frameon=True
+    )
 
-    fig.tight_layout(rect=(0, 0, 1, 0.92))
+    fig.tight_layout(rect=(0, 0, 0.92, 0.95))  # Adjusted for legend space
     return fig
 
 def plot_attack_accuracy(
@@ -343,12 +372,20 @@ def plot_attack_accuracy(
 
     ax.set_ylabel("Hitting Percentage")
     ax.set_title(f"{player_name} Hitting Percentage Over Time")
-    ax.legend(title="Player", bbox_to_anchor=(1.05, 1), loc="upper left")
+    
+    # Legend - NO SECONDARY AXIS, so standard positioning
+    fig.subplots_adjust(right=0.75)
+    ax.legend(
+        title="Player", 
+        bbox_to_anchor=(1.02, 1), 
+        loc="upper left",
+        fontsize=9, 
+        frameon=True
+    )
     ax.xaxis.set_major_formatter(DateFormatter("%Y-%m-%d"))
 
-    fig.tight_layout()
+    fig.tight_layout(rect=(0, 0, 0.90, 0.95))
     return fig
-
 
 def plot_player_errors(df: pd.DataFrame, player_name: str) -> Figure:
     """
@@ -388,11 +425,20 @@ def plot_player_errors(df: pd.DataFrame, player_name: str) -> Figure:
     ax.set_xticklabels(ticks, rotation=45, ha="right", fontsize=12)
 
     ax.set_ylabel("Average Total Errors")
-    ax.set_title(f"{player_name} Average Errors Per Set Over Time")
-    ax.legend(title="Player", bbox_to_anchor=(1.05, 1), loc="upper left")
+    ax.set_title(f"{player_name} Average Cumulative Errors Per Set Over Time")
+    
+    # Legend - NO SECONDARY AXIS, so standard positioning
+    fig.subplots_adjust(right=0.75)
+    ax.legend(
+        title="Player", 
+        bbox_to_anchor=(1.02, 1), 
+        loc="upper left",
+        fontsize=9, 
+        frameon=True
+    )
     ax.xaxis.set_major_formatter(DateFormatter("%Y-%m-%d"))
 
-    fig.tight_layout()
+    fig.tight_layout(rect=(0, 0, 0.90, 0.95))
     return fig
 
 
@@ -498,9 +544,16 @@ def plot_assists_per_attack(
         title += " (" + ", ".join(filt) + ")"
     ax1.set_title(title, fontsize=16, pad=20)
 
+    # Legend - PROPERLY SPACED TO AVOID SECONDARY AXIS
     h1, l1 = ax1.get_legend_handles_labels()
     h2, l2 = ax2.get_legend_handles_labels()
-    ax1.legend(h1 + h2, l1 + l2, loc="upper left", bbox_to_anchor=(0, 1))
+    fig.subplots_adjust(right=0.65)  # More space for legend
+    ax1.legend(
+        h1 + h2, l1 + l2, 
+        loc="upper left", bbox_to_anchor=(1.05, 1),  # Further right to avoid secondary axis
+        fontsize=9, 
+        frameon=True
+    )
 
-    fig.tight_layout()
+    fig.tight_layout(rect=(0, 0, 0.92, 0.95))  # Adjusted for legend space
     return fig

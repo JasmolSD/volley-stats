@@ -74,101 +74,68 @@ def render_plot(
 ) -> str:
     """
     Render a plot as base64 based on kind and mode ("cumulative" | "temporal").
-
-    cumulative:
-      - Uses df_overall and your existing cumulative plots:
-        plot_offensive_performance / plot_service_metrics / plot_receive_performance
-
-    temporal:
-      - Uses prepped temporal frames and your temporal plots:
-        plot_offensive_temporal / plot_service_temporal / plot_receive_temporal
     """
     title_player = player_name or "Team"
 
     # Build/prepare the right set of dataframes for the selected mode
-    dfs = prepare_dfs(df, mode)  # <- build_cumulative / build_temporal inside
+    dfs = prepare_dfs(df, mode)
 
     # ---- CUMULATIVE PATH ----
     if mode == "cumulative":
-        # your existing plots expect player-filtered totals
         df_overall = dfs["df_overall"]
         sdf = _filter_by_player(df_overall, player_name)
 
         if kind == "offense":
-            fig = plot_offensive_performance(
-                sdf,
-                player_name=title_player,
-                **{k: v for k, v in kwargs.items() if k != "player_name"},
-            )
+            fig = plot_offensive_performance(sdf, player_name=title_player, **kwargs)
         elif kind == "service":
-            fig = plot_service_metrics(
-                sdf,
-                player_name=title_player,
-                **{k: v for k, v in kwargs.items() if k != "player_name"},
-            )
+            fig = plot_service_metrics(sdf, player_name=title_player, **kwargs)
         elif kind == "receive":
-            fig = plot_receive_performance(
-                sdf,
-                player_name=title_player,
-                **{k: v for k, v in kwargs.items() if k != "player_name"},
-            )
+            fig = plot_receive_performance(sdf, player_name=title_player, **kwargs)
         else:
             raise ValueError(f"Unknown plot kind (cumulative): {kind}")
 
         return fig_to_base64_png(fig)
 
-    # ---- TEMPORAL PATH ----
+    # ---- TEMPORAL PATH ---- 
     elif mode == "temporal":
-        # temporal plots use the time-indexed aggregates
         team_overall = dfs["team_overall"]
-        # Some temporal plots also need player-per-date (no position)
         df_player_np = dfs.get("df_player_date_no_pos", None)
-        # The assists per set plot needs player-per-date (with position)
         df_player = dfs.get("df_player_date", None)
 
+        # DEBUG: Add logging to see which plot is being called
+        print(f"DEBUG: Temporal plot - kind={kind}, player={player_name}")
+
+        # FIXED: Ensure each kind maps to the correct plot function
         if kind == "offense":
-            fig = plot_offensive_temporal(
-                team_overall,
-                player_name=title_player,
-                **{k: v for k, v in kwargs.items() if k != "player_name"},
-            )
+            print("DEBUG: Calling plot_offensive_temporal")
+            fig = plot_offensive_temporal(team_overall, player_name=title_player, **kwargs)
+            
         elif kind == "service":
-            fig = plot_service_temporal(
-                team_overall,
-                player_name=title_player,
-                **{k: v for k, v in kwargs.items() if k != "player_name"},
-            )
+            print("DEBUG: Calling plot_service_temporal") 
+            fig = plot_service_temporal(team_overall, player_name=title_player, **kwargs)
+            
         elif kind == "receive":
-            fig = plot_receive_temporal(
-                team_overall,
-                player_name=title_player,
-                **{k: v for k, v in kwargs.items() if k != "player_name"},
-            )
+            print("DEBUG: Calling plot_receive_temporal")
+            fig = plot_receive_temporal(team_overall, player_name=title_player, **kwargs)
+            
         elif kind == "errors":
-            fig = plot_avg_errors(
-                team_overall,
-                player_name=title_player,
-                **{k: v for k, v in kwargs.items() if k != "player_name"},
-            )
+            print("DEBUG: Calling plot_avg_errors")
+            fig = plot_avg_errors(team_overall, player_name=title_player, **kwargs)
+            
         elif kind == "atk_acc_over_time":
-            fig = plot_attack_accuracy(
-                df_player_np,
-                player_name=title_player,
-                **{k: v for k, v in kwargs.items() if k != "player_name"},
-            )
+            print("DEBUG: Calling plot_attack_accuracy")
+            if df_player_np is None:
+                raise ValueError("df_player_date_no_pos required for attack accuracy plot")
+            fig = plot_attack_accuracy(df_player_np, player_name=title_player, **kwargs)
+            
         elif kind == "avg_errors_over_time":
-            fig = plot_player_errors(
-                df_player_np,
-                player_name=title_player,
-                **{k: v for k, v in kwargs.items() if k != "player_name"},
-            )
-        elif kind == "assists":
-            fig = plot_assists_per_attack(
-                df_player,
-                player_name=title_player,
-                **{k: v for k, v in kwargs.items() if k != "player_name"},
-            )
+            print("DEBUG: Calling plot_player_errors")
+            if df_player_np is None:
+                raise ValueError("df_player_date_no_pos required for player errors plot")
+            fig = plot_player_errors(df_player_np, player_name=title_player, **kwargs)
+            
         else:
+            print(f"DEBUG: Unknown temporal plot kind: {kind}")
             raise ValueError(f"Unknown plot kind (temporal): {kind}")
 
         return fig_to_base64_png(fig)

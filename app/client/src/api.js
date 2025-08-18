@@ -42,12 +42,23 @@ export async function getPlot(token, kind, player, mode = "cumulative") {
 }
 
 // Get AI-generated commentary for a player’s performance
-export async function getCommentary(token, player) {
+export async function getCommentary(token, player, mode) {
     const r = await fetch(`${BASE}/api/commentary`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ token, player }) // send token + player in request body
+        body: JSON.stringify({ token, player, mode }),
     });
-    if (!r.ok) throw new Error("Commentary fetch failed");
+    if (!r.ok) throw new Error("commentary fetch failed");
+    return r.json();
+}
+
+// Change the performance cards based off the player selected or mode
+export async function getSummary(token, player, mode, { signal } = {}) {
+    const u = new URL(`${BASE}/api/summary`);
+    u.searchParams.set("token", token);
+    if (player) u.searchParams.set("player", player);
+    if (mode) u.searchParams.set("mode", mode);
+    const r = await fetch(u, { signal });
+    if (!r.ok) throw new Error("summary fetch failed");
     return r.json();
 }

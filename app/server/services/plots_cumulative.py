@@ -114,17 +114,17 @@ def plot_offensive_performance(
             bbox=dict(facecolor="lavenderblush", edgecolor="black", boxstyle="round,pad=0.3"),
         )
 
-    # Legend
+    # Legend - PROPERLY SPACED TO AVOID SECONDARY AXIS
     h1, l1 = ax1.get_legend_handles_labels()
     h2, l2 = ax2.get_legend_handles_labels()
-    fig.subplots_adjust(right=0.75)
+    fig.subplots_adjust(right=0.65)  # More space for legend
     ax1.legend(
         h1 + h2, l1 + l2,
-        loc="upper left", bbox_to_anchor=(1.07, 1),
-        borderaxespad=0.5, fontsize=12, frameon=True
+        loc="upper left", bbox_to_anchor=(1.05, 1),  # Further right to avoid secondary axis
+        borderaxespad=0.5, fontsize=9, frameon=True
     )
 
-    fig.tight_layout(rect=(0, 0, 1, 0.88))
+    fig.tight_layout(rect=(0, 0, 0.92, 0.95))  # Adjusted for legend space
     return fig
 
 
@@ -201,16 +201,17 @@ def plot_receive_performance(
             bbox=dict(facecolor="peachpuff", edgecolor="black", boxstyle="round,pad=0.3"),
         )
 
-    # Legend
+    # Legend - PROPERLY SPACED TO AVOID SECONDARY AXIS
     h1, l1 = ax1.get_legend_handles_labels()
     h2, l2 = ax2.get_legend_handles_labels()
+    fig.subplots_adjust(right=0.65)  # More space for legend
     ax1.legend(
         h1 + h2, l1 + l2,
-        loc="upper center", bbox_to_anchor=(0.5, 1.1),
-        ncol=6, fontsize=12, frameon=True
+        loc="upper left", bbox_to_anchor=(1.05, 1),  # Further right to avoid secondary axis
+        fontsize=9, frameon=True
     )
 
-    fig.tight_layout(rect=(0, 0, 1, 0.92))
+    fig.tight_layout(rect=(0, 0, 0.92, 0.95))  # Adjusted for legend space
     return fig
 
 
@@ -279,14 +280,15 @@ def plot_service_metrics(
             bbox=dict(facecolor="peachpuff", edgecolor="black", boxstyle="round,pad=0.3"),
         )
 
-    # Legend
+    # Legend - PROPERLY SPACED TO AVOID SECONDARY AXIS
     h1, l1 = ax1.get_legend_handles_labels()
     h2, l2 = ax2.get_legend_handles_labels()
+    fig.subplots_adjust(right=0.65)  # More space for legend
     ax1.legend(
         h1 + h2, l1 + l2,
-        loc="upper center", bbox_to_anchor=(0.5, 1.09),
-        ncol=4, fontsize=12, frameon=True
+        loc="upper left", bbox_to_anchor=(1.05, 1),  # Further right to avoid secondary axis
+        fontsize=9, frameon=True
     )
 
-    fig.tight_layout(rect=(0, 0, 1, 0.90))
+    fig.tight_layout(rect=(0, 0, 0.92, 0.95))  # Adjusted for legend space
     return fig

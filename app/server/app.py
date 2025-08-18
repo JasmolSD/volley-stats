@@ -4,7 +4,7 @@ from flask import Flask, request, jsonify
 from flask_cors import CORS
 from werkzeug.utils import secure_filename
 import os, uuid, pandas as pd
-from typing import cast, TypedDict, Literal
+from typing import cast, TypedDict, Literal, Dict, Any, Optional
 from types_common import PlotKind, UISummary, Meta
 from pathlib import Path
 
@@ -15,10 +15,7 @@ from services.plotting import generate_plots, render_plot
 from services.agents import generate_commentary
 from services.utils.cleanup import purge_dirs
 from services.analysis import (
-    # read_tablelike,
-    # load_and_summarize_csv,   # if you use it elsewhere
     preprocess_dataframe,
-    add_accuracy_metrics,
     compute_summary,
     resolve_player_name,
 )
@@ -52,20 +49,84 @@ class RunState(TypedDict):
 
 RUN_CACHE: dict[str, RunState] = {}
 
-def _get_or_build_ui_summary(token: str) -> UISummary:
+def _get_or_build_ui_summary(token: str, mode:PlotMode, player_name: Optional[str] = None) -> UISummary:
+    """
+    Returns a UISummary for the given token, optionally filtered by player_name.
+    Caches results per (token, normalized player) to avoid recomputation.
+
+    - If player_name is "all", "team", "all/team", or empty/None -> no filtering.
+    - Maintains legacy rs["ui_summary"] for the unfiltered ("ALL") case.
+    """
     rs = RUN_CACHE.get(token)
+
+    # Strict default return (matches UISummary types)
+    default_ui: UISummary = {
+        "rows": 0,
+        "players": [],
+        "date_min": "—",
+        "date_max": "—",
+        "srv_accuracy": 0.0,
+        "rcv_accuracy": 0.0,
+        "atk_accuracy": 0.0,
+        "avg_errors_per_set": 0.0,
+    }
+
     if not rs:
-        return {"rows": 0, "players": [], "date_min": "—", "date_max": "—"}
-    if rs.get("ui_summary"):
-        return rs["ui_summary"]
-    ui = compute_summary(rs["df"])          # ← one call, consistent
-    rs["ui_summary"] = ui                   # cache for next time
+        return default_ui
+
+    # Normalize the requested player key
+    name_raw = (player_name or "").strip()
+    name_norm = name_raw.lower()
+    is_all = (name_norm == "") or (name_norm in {"all", "team", "all/team"})
+    cache_key = "__ALL__" if is_all else name_norm
+
+    meta: Meta = cast(Meta, rs.get("meta") or {})
+    cache: Dict[str, UISummary] = meta.get("ui_summary_cache") or {}
+    # reattach in case we just created them
+    meta["ui_summary_cache"] = cache
+    rs["meta"] = meta
+
+    # fast path: cache hit
+    if cache_key in cache:
+        return cache[cache_key]
+
+    # legacy fast path for ALL
+    if is_all and rs.get("ui_summary"):
+        ui = rs["ui_summary"]
+        cache[cache_key] = ui
+        return ui
+
+    df = rs.get("df")
+    if df is None:
+        return default_ui
+
+    # compute (filtered when needed) and cache
+    ui = compute_summary(df, mode=mode, player_name=None if is_all else name_raw)
+
+    if is_all:
+        rs["ui_summary"] = ui  # maintain legacy unfiltered cache
+
+    cache[cache_key] = ui
     return ui
 
 def normalize_kind(s: str | None) -> PlotKind:
-    if s in ("offense", "service", "receive"):
-        return cast(PlotKind, s)
-    return "offense"
+    """Handle all plot types including temporal-specific ones"""
+    valid_kinds = [
+        # Base kinds (work for both cumulative and temporal)
+        "offense", 
+        "service", 
+        "receive",
+        # Temporal-only kinds
+        "errors", 
+        "atk_acc_over_time", 
+        "avg_errors_over_time"
+    ]
+    
+    if s and str(s).strip() in valid_kinds:
+        return cast(PlotKind, str(s).strip())
+    
+    print(f"WARNING: Unknown plot kind '{s}', defaulting to 'offense'")
+    return "offense"  # Default fallback
 
 def normalize_mode(mode: str | None) -> PlotMode:
     return "temporal" if (mode or "").lower() == "temporal" else "cumulative"
@@ -125,10 +186,9 @@ def upload():
     print(df)
 
     # print("Adding additional metrics...")
-    # Deriving additoinal metrics
+    # Deriving additional metrics
     try:
         df = preprocess_dataframe(df)
-        df = add_accuracy_metrics(df)
     except Exception as e:
         return jsonify({"error": f"failed to compute metrics: {e}", "have": list(df.columns)}), 400
 
@@ -138,8 +198,8 @@ def upload():
     do_profile = request.args.get("profile") in ("1", "true", "yes")
     _profile = profile_dataframe(df) if do_profile else {}
 
-    # this is what your React SummaryCards expects:
-    ui_summary: UISummary = compute_summary(df)
+    # this is what your React SummaryCards expects (base is cumulative):
+    ui_summary: UISummary = compute_summary(df, player_name=None, mode="cumulative")
 
     # generate any static plot images your plotting module wants to write
     _images = generate_plots(df, out_dir=str(app.static_folder), run_id=run_id, summary=_profile)
@@ -197,26 +257,42 @@ def players():
 
     return jsonify({"players": players, "resolved": resolved})
 
+def coerce_plot_mode(raw: str) -> PlotMode:
+    r = (raw or "").strip().lower()
+    if r == "temporal":
+        return "temporal"   # valid PlotMode
+    return "cumulative"      # default/fallback (also valid)
+
 @app.route("/api/summary", methods=["GET"])
 def summary_api():
-    token = request.args.get("token", "")
+    token  = (request.args.get("token", "") or "").strip()
+    player = (request.args.get("player", "") or "").strip()   # "all" | "team" | specific name
+    mode: PlotMode = coerce_plot_mode(request.args.get("mode", ""))    # "offense" | "service" | "receive" | ""
+
     rs = RUN_CACHE.get(token)
     if rs is None:
         return jsonify({"error": "Invalid token"}), 404
-    return jsonify(_get_or_build_ui_summary(token))
+
+    # _get_or_build_ui_summary should implement per-(player,mode) caching as shown earlier
+    ui = _get_or_build_ui_summary(token, player_name=player, mode=mode)
+    return jsonify(ui)
 
 @app.route("/api/plot", methods=["GET"])
 def plot_endpoint():
     token = request.args.get("token", "")
     kind_s = request.args.get("kind", "offense")
-    player = request.args.get("player")  # may be near-miss or empty
-    mode_q = request.args.get("mode", "cumulative")  # default
+    player = request.args.get("player")
+    mode_q = request.args.get("mode", "cumulative")
+    
+    print(f"DEBUG /api/plot: kind_s='{kind_s}', mode_q='{mode_q}', player='{player}'")
+    
     plot_mode: PlotMode = normalize_mode(mode_q)
     kind: PlotKind = normalize_kind(kind_s)
-
+    
+    print(f"DEBUG after normalize: kind='{kind}', plot_mode='{plot_mode}'")
+    
     rs = RUN_CACHE.get(str(token))
     if rs is None:
-        # Keep the shape consistent for the client
         return jsonify({"image": "", "used_player": "", "error": "unknown token"}), 200
 
     df = rs["df"]
@@ -224,9 +300,10 @@ def plot_endpoint():
     try:
         filtered_df, used = resolve_player_name(df, player)
     except Exception as e:
-        # Empty image, but surface the error so UI can notify
         return jsonify({"image": "", "used_player": "", "error": str(e)}), 200
 
+    print(f"DEBUG calling render_plot with: kind='{kind}', mode='{plot_mode}', player='{used}'")
+    
     # Render returns raw base64 (no header)
     img_b64 = render_plot(
         filtered_df,
@@ -240,30 +317,29 @@ def plot_endpoint():
 
     return jsonify({"image": data_url, "used_player": used}), 200
 
+
 @app.route("/api/commentary", methods=["POST"])
 def commentary():
     data = (request.get_json() or {})
-    token = str(data.get("token"))
-    # player = data.get("player")
+    token = str(data.get("token") or "")
+    player = (data.get("player") or "").strip()
+    mode:PlotMode   = coerce_plot_mode((data.get("mode") or "").strip())
 
     rs = RUN_CACHE.get(token)
     if rs is None:
         return jsonify({"commentary": "", "requests": []}), 200
-    
+
     df = rs["df"]
-    images = rs["images"]
-    ui_summary = _get_or_build_ui_summary(token)  # ← no recompute
-    meta:Meta = {
+    images = rs.get("images", [])
+
+    # use new parameters: player + mode
+    ui_summary = _get_or_build_ui_summary(token, player_name=player, mode=mode)
+
+    meta: Meta = {
         "rows": ui_summary["rows"],
         "cols": int(df.shape[1]),
-        "columns": list(df.columns)}
-
-    # # Optional player-specific stats you might want to pass through
-    # player_stats = None
-    # if player and "player_name" in df.columns:
-    #     sdf = df[df["player_name"].astype(str) == str(player)]
-    #     if not sdf.empty:
-    #         player_stats = {"rows": int(sdf.shape[0])}
+        "columns": list(df.columns),
+    }
 
     resp = generate_commentary(summary=ui_summary, meta=meta, images=images)
 
@@ -272,8 +348,9 @@ def commentary():
         return jsonify({"commentary": resp, "requests": []})
     return jsonify({
         "commentary": getattr(resp, "commentary", ""),
-        "requests": getattr(resp, "requests", [])}
-    )
+        "requests": getattr(resp, "requests", []),
+    })
+
 
 if __name__ == "__main__":
     # Change port if you like; 5001 is fine

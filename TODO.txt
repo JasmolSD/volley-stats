@@ -9,9 +9,8 @@ Requirements
 - Make a coding backend for all the python functions
 
 To Fix:
-- The plots look bad, name as the x-axis
-- Percentages are by each name to shift to date and it should fix itself
 - Analyst Commentary is adding the prompt stuff (erase)
-- Team offense stats come up 4x idk why
-- Make it so that when you click a plot it make a bigger pop-out
-- Fix plots so the title isn't hidden by the legend
+- Add a way to filter through data (season, format)
+- Static Team Averages, change player cards to show how much 
+    better/worse the player is than the team
+    Red and green arrows and a %change

@@ -1,19 +1,20 @@
+// components/PlotModal.jsx
 import React, { useEffect, useRef, useState } from "react";
 import "./PlotModal.css";
 
 export default function PlotModal({ title, src, onClose }) {
     const backdropRef = useRef(null);
-    const stageRef = useRef(null);
-    const canvasRef = useRef(null);  // outer container (rounded, shadow)
-    const frameRef = useRef(null);   // visible plot area (above the HUD)
+    const frameRef = useRef(null);
     const imgRef = useRef(null);
 
     const [scale, setScale] = useState(1);
     const [tx, setTx] = useState(0);
     const [ty, setTy] = useState(0);
     const [drag, setDrag] = useState(null);
+    const [isFullscreen, setIsFullscreen] = useState(false);
+    const [baseScale, setBaseScale] = useState(1); // Track the base "fit to screen" scale
 
-    // Fit-to-frame when the image loads (fit inside the visible plot frame, not the HUD)
+    // Fit-to-frame when the image loads
     useEffect(() => {
         const img = imgRef.current;
         const frame = frameRef.current;
@@ -26,28 +27,57 @@ export default function PlotModal({ title, src, onClose }) {
             const ih = img.naturalHeight;
 
             if (iw && ih && fw && fh) {
-                const fitScale = Math.min(fw / iw, fh / ih);
+                const fitScale = Math.min(fw / iw, fh / ih) * 0.9; // 90% to add padding
                 setScale(fitScale);
+                setBaseScale(fitScale); // Store as base scale
                 setTx(0);
                 setTy(0);
             }
         };
 
         img.addEventListener("load", handleLoad);
+        handleLoad(); // Call immediately if already loaded
         return () => img.removeEventListener("load", handleLoad);
     }, [src]);
+
+    // Update base scale when window resizes or fullscreen changes
+    useEffect(() => {
+        const updateBaseScale = () => {
+            const img = imgRef.current;
+            const frame = frameRef.current;
+            if (img && frame) {
+                const fw = frame.clientWidth;
+                const fh = frame.clientHeight;
+                const iw = img.naturalWidth;
+                const ih = img.naturalHeight;
+                if (iw && ih && fw && fh) {
+                    const fitScale = Math.min(fw / iw, fh / ih) * 0.9;
+                    setBaseScale(fitScale);
+                }
+            }
+        };
+
+        window.addEventListener('resize', updateBaseScale);
+        updateBaseScale(); // Update immediately
+
+        return () => window.removeEventListener('resize', updateBaseScale);
+    }, [isFullscreen]);
 
     // Keyboard shortcuts
     useEffect(() => {
         const onKey = (e) => {
             if (e.key === "Escape") onClose();
-            if (e.key === "+") setScale((s) => clamp(s + 0.2, 0.2, 6));
-            if (e.key === "-") setScale((s) => clamp(s - 0.2, 0.2, 6));
+            if (e.key === "+" || e.key === "=") zoomIn();
+            if (e.key === "-" || e.key === "_") zoomOut();
             if (e.key.toLowerCase() === "r") refit();
+            if (e.key.toLowerCase() === "f") toggleFullscreen();
         };
         window.addEventListener("keydown", onKey);
         return () => window.removeEventListener("keydown", onKey);
-    }, [onClose]);
+    }, [onClose, scale, baseScale]);
+
+    const zoomIn = () => setScale((s) => Math.min(s * 1.2, 5));
+    const zoomOut = () => setScale((s) => Math.max(s * 0.8, baseScale)); // Prevent zooming out past base scale
 
     const refit = () => {
         const img = imgRef.current;
@@ -57,52 +87,66 @@ export default function PlotModal({ title, src, onClose }) {
             const fh = frame.clientHeight;
             const iw = img.naturalWidth;
             const ih = img.naturalHeight;
-            const fitScale = Math.min(fw / iw, fh / ih);
+            const fitScale = Math.min(fw / iw, fh / ih) * 0.9;
             setScale(fitScale);
-        } else {
-            setScale(1);
+            setBaseScale(fitScale);
         }
         setTx(0);
         setTy(0);
     };
 
-    // Close if clicking the dark backdrop
-    const closeOnBackdrop = (e) => {
-        if (e.target === backdropRef.current) onClose();
+    const toggleFullscreen = () => {
+        if (!isFullscreen) {
+            // Entering fullscreen - use browser's fullscreen API
+            const container = document.querySelector('.pm-container');
+            if (container.requestFullscreen) {
+                container.requestFullscreen();
+            } else if (container.webkitRequestFullscreen) {
+                container.webkitRequestFullscreen();
+            } else if (container.mozRequestFullScreen) {
+                container.mozRequestFullScreen();
+            } else if (container.msRequestFullscreen) {
+                container.msRequestFullscreen();
+            }
+        } else {
+            // Exiting fullscreen
+            if (document.exitFullscreen) {
+                document.exitFullscreen();
+            } else if (document.webkitExitFullscreen) {
+                document.webkitExitFullscreen();
+            } else if (document.mozCancelFullScreen) {
+                document.mozCancelFullScreen();
+            } else if (document.msExitFullscreen) {
+                document.msExitFullscreen();
+            }
+        }
+        setIsFullscreen(!isFullscreen);
     };
 
-    // Wheel zoom (towards cursor) using the visible frame bounds
-    const onWheel = (e) => {
-        e.preventDefault();
-        const delta = e.deltaY > 0 ? -0.1 : 0.1;
-        const next = clamp(scale + delta, 0.2, 6);
+    // Listen for fullscreen changes
+    useEffect(() => {
+        const handleFullscreenChange = () => {
+            const isCurrentlyFullscreen = !!(
+                document.fullscreenElement ||
+                document.webkitFullscreenElement ||
+                document.mozFullScreenElement ||
+                document.msFullscreenElement
+            );
+            setIsFullscreen(isCurrentlyFullscreen);
+        };
 
-        const rect = frameRef.current.getBoundingClientRect();
-        const cx = e.clientX - rect.left - rect.width / 2 - tx;
-        const cy = e.clientY - rect.top - rect.height / 2 - ty;
-        const factor = next / scale;
+        document.addEventListener('fullscreenchange', handleFullscreenChange);
+        document.addEventListener('webkitfullscreenchange', handleFullscreenChange);
+        document.addEventListener('mozfullscreenchange', handleFullscreenChange);
+        document.addEventListener('MSFullscreenChange', handleFullscreenChange);
 
-        setTx(tx - cx * (factor - 1));
-        setTy(ty - cy * (factor - 1));
-        setScale(next);
-    };
-
-    // Drag to pan (inside the bounded frame)
-    const onMouseDown = (e) => {
-        e.preventDefault();
-        setDrag({ x: e.clientX, y: e.clientY });
-        stageRef.current.classList.add("is-dragging");
-    };
-    const onMouseMove = (e) => {
-        if (!drag) return;
-        setTx((v) => v + (e.clientX - drag.x));
-        setTy((v) => v + (e.clientY - drag.y));
-        setDrag({ x: e.clientX, y: e.clientY });
-    };
-    const endDrag = () => {
-        setDrag(null);
-        stageRef.current?.classList.remove("is-dragging");
-    };
+        return () => {
+            document.removeEventListener('fullscreenchange', handleFullscreenChange);
+            document.removeEventListener('webkitfullscreenchange', handleFullscreenChange);
+            document.removeEventListener('mozfullscreenchange', handleFullscreenChange);
+            document.removeEventListener('MSFullscreenChange', handleFullscreenChange);
+        };
+    }, []);
 
     const download = () => {
         const a = document.createElement("a");
@@ -111,137 +155,151 @@ export default function PlotModal({ title, src, onClose }) {
         a.click();
     };
 
+    // Close if clicking the backdrop
+    const closeOnBackdrop = (e) => {
+        if (e.target === backdropRef.current) onClose();
+    };
+
+    // Wheel zoom
+    const onWheel = (e) => {
+        e.preventDefault();
+        const delta = e.deltaY > 0 ? 0.9 : 1.1;
+        const newScale = Math.max(baseScale, Math.min(5, scale * delta)); // Use baseScale as minimum
+
+        const rect = frameRef.current.getBoundingClientRect();
+        const x = e.clientX - rect.left - rect.width / 2;
+        const y = e.clientY - rect.top - rect.height / 2;
+
+        setTx(tx - x * (newScale / scale - 1));
+        setTy(ty - y * (newScale / scale - 1));
+        setScale(newScale);
+    };
+
+    // Drag to pan
+    const onMouseDown = (e) => {
+        if (e.button !== 0) return; // Only left click
+        e.preventDefault();
+        setDrag({ x: e.clientX - tx, y: e.clientY - ty });
+    };
+
+    const onMouseMove = (e) => {
+        if (!drag) return;
+        setTx(e.clientX - drag.x);
+        setTy(e.clientY - drag.y);
+    };
+
+    const endDrag = () => setDrag(null);
+
     return (
         <div
             ref={backdropRef}
             className="pm-backdrop"
             onClick={closeOnBackdrop}
+            onMouseMove={onMouseMove}
+            onMouseUp={endDrag}
+            onMouseLeave={endDrag}
             role="dialog"
             aria-modal="true"
-            aria-label={`${title} (enlarged view)`}
+            aria-label={`${title} visualization`}
         >
-            <div className="pm-container" onClick={(e) => e.stopPropagation()}>
-                {/* Glass toolbar */}
-                <div className="pm-toolbar">
-                    <div className="pm-titlewrap">
-                        <div className="pm-kicker" aria-hidden>Plot</div>
-                        <div className="pm-title" title={title}>{title}</div>
+            <div className={`pm-container ${isFullscreen ? 'pm-fullscreen' : ''}`}>
+                {/* Glassmorphic Header */}
+                <div className="pm-header">
+                    <div className="pm-header-left">
+                        <div className="pm-title-group">
+                            <div className="pm-title-badge">VISUALIZATION</div>
+                            <h2 className="pm-title">{title}</h2>
+                        </div>
                     </div>
 
-                    {/* Control bar */}
-                    <div className="pm-controlBar" tabIndex={-1}>
-                        <IconButton label="Zoom out (−)" onClick={() => setScale((s) => clamp(s - 0.2, 0.2, 6))}>
-                            <IconMinus />
-                        </IconButton>
-                        <IconButton label="Zoom in (+)" onClick={() => setScale((s) => clamp(s + 0.2, 0.2, 6))}>
-                            <IconPlus />
-                        </IconButton>
-                        <IconButton label="Fit (R)" onClick={refit}>
-                            <IconReset />
-                        </IconButton>
-                        <IconButton label="Download" onClick={download} primary>
-                            <IconDownload />
-                        </IconButton>
-                        <IconButton label="Close (Esc)" onClick={onClose} danger>
-                            <IconClose />
-                        </IconButton>
+                    <div className="pm-controls">
+                        {/* Zoom indicator */}
+                        <div className="pm-zoom-indicator">
+                            <span className="pm-zoom-value">{Math.round(scale * 100)}%</span>
+                        </div>
+
+                        {/* Control buttons */}
+                        <div className="pm-button-group">
+                            <button className="pm-btn" onClick={zoomOut} title="Zoom Out (-)">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                                    <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2" />
+                                    <path d="M8 12h8" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+                                </svg>
+                            </button>
+                            <button className="pm-btn" onClick={zoomIn} title="Zoom In (+)">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                                    <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2" />
+                                    <path d="M12 8v8M8 12h8" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+                                </svg>
+                            </button>
+                            <button className="pm-btn" onClick={refit} title="Reset View (R)">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                                    <path d="M3 12a9 9 0 019-9 9.75 9.75 0 016.74 2.74L21 8" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                                    <path d="M21 3v5h-5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                                    <path d="M21 12a9 9 0 01-9 9 9.75 9.75 0 01-6.74-2.74L3 16" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                                    <path d="M3 21v-5h5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                                </svg>
+                            </button>
+                            <button className="pm-btn" onClick={toggleFullscreen} title="Fullscreen (F)">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                                    {isFullscreen ? (
+                                        <path d="M8 3v3a2 2 0 01-2 2H3m18 0h-3a2 2 0 01-2-2V3m0 18v-3a2 2 0 012-2h3M3 16h3a2 2 0 012 2v3"
+                                            stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+                                    ) : (
+                                        <path d="M8 3H5a2 2 0 00-2 2v3m18 0V5a2 2 0 00-2-2h-3m0 18h3a2 2 0 002-2v-3M3 16v3a2 2 0 002 2h3"
+                                            stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+                                    )}
+                                </svg>
+                            </button>
+                            <button className="pm-btn pm-btn-primary" onClick={download} title="Download">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                                    <path d="M12 3v12m0 0l4-4m-4 4l-4-4M3 17v2a2 2 0 002 2h14a2 2 0 002-2v-2"
+                                        stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                                </svg>
+                            </button>
+                            <button className="pm-btn pm-btn-close" onClick={onClose} title="Close (Esc)">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                                    <path d="M6 6l12 12M18 6L6 18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+                                </svg>
+                            </button>
+                        </div>
                     </div>
                 </div>
 
-                {/* Stage centers the bounded canvas */}
+                {/* Image Frame */}
                 <div
-                    ref={stageRef}
-                    className="pm-stage"
+                    ref={frameRef}
+                    className="pm-frame"
                     onWheel={onWheel}
                     onMouseDown={onMouseDown}
-                    onMouseMove={onMouseMove}
-                    onMouseUp={endDrag}
-                    onMouseLeave={endDrag}
+                    style={{ cursor: drag ? 'grabbing' : scale > 1 ? 'grab' : 'default' }}
                 >
-                    {/* Bounded canvas (rounded, shadow); inside it, frame + HUD */}
-                    <div ref={canvasRef} className="pm-canvas">
-                        {/* Visible plot frame (everything above the HUD) */}
-                        <div ref={frameRef} className="pm-frame">
-                            <img
-                                ref={imgRef}
-                                src={src}
-                                alt={title}
-                                className="pm-img"
-                                style={{
-                                    transform: `translate(-50%, -50%) translate(${tx}px, ${ty}px) scale(${scale})`,
-                                }}
-                                draggable={false}
-                            />
-                        </div>
+                    <img
+                        ref={imgRef}
+                        src={src}
+                        alt={title}
+                        className="pm-image"
+                        style={{
+                            transform: `translate(-50%, -50%) translate(${tx}px, ${ty}px) scale(${scale})`,
+                        }}
+                        draggable={false}
+                    />
+                </div>
 
-                        {/* Full-width HUD, attached flush to the bottom, metallic blue */}
-                        <div className="pm-hud" role="status" aria-live="polite">
-                            <div className="pm-hudContent">
-                                <div className="pm-hudLeft">
-                                    <span className="pm-dot" aria-hidden="true"></span>
-                                    <span className="pm-chip">Zoom</span>
-                                    <strong>{Math.round(scale * 100)}%</strong>
-                                </div>
-                                <div className="pm-hudRight pm-hint">
-                                    Scroll to zoom • Drag to pan • Esc to close
-                                </div>
-                            </div>
-                        </div>
+                {/* Status Bar */}
+                <div className="pm-statusbar">
+                    <div className="pm-status-left">
+                        <span className="pm-status-indicator"></span>
+                        <span className="pm-status-text">Interactive Mode</span>
+                    </div>
+                    <div className="pm-status-center">
+                        <span className="pm-hint">Scroll to zoom • Drag to pan • Double-click to reset</span>
+                    </div>
+                    <div className="pm-status-right">
+                        <span className="pm-shortcut">ESC</span> to close
                     </div>
                 </div>
             </div>
         </div>
     );
 }
-
-/* ---------- Icon Button + Icons ---------- */
-
-function IconButton({ children, label, onClick, danger, primary }) {
-    const cls = `pm-iconBtn ${danger ? "pm-iconBtn--danger" : ""} ${primary ? "pm-iconBtn--primary" : ""}`;
-    return (
-        <button className={cls} onClick={onClick} aria-label={label} title={label}>
-            {children}
-        </button>
-    );
-}
-
-function IconPlus() {
-    return (
-        <svg width="18" height="18" viewBox="0 0 24 24" className="pm-icon">
-            <path d="M12 5v14M5 12h14" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-        </svg>
-    );
-}
-function IconMinus() {
-    return (
-        <svg width="18" height="18" viewBox="0 0 24 24" className="pm-icon">
-            <path d="M5 12h14" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-        </svg>
-    );
-}
-function IconReset() {
-    // modern circular refresh arrow
-    return (
-        <svg width="18" height="18" viewBox="0 0 24 24" className="pm-icon">
-            <path d="M20 12a8 8 0 1 1-2.343-5.657" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-            <path d="M20 4v4h-4" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-        </svg>
-    );
-}
-function IconDownload() {
-    return (
-        <svg width="18" height="18" viewBox="0 0 24 24" className="pm-icon">
-            <path d="M12 3v10m0 0l4-4m-4 4l-4-4" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-            <path d="M5 21h14" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-        </svg>
-    );
-}
-function IconClose() {
-    return (
-        <svg width="18" height="18" viewBox="0 0 24 24" className="pm-icon">
-            <path d="M6 6l12 12M18 6l-12 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-        </svg>
-    );
-}
-
-const clamp = (v, min, max) => Math.max(min, Math.min(max, v));

@@ -6,7 +6,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.figure import Figure
 from fuzzywuzzy import process # type: ignore
-from typing import Literal, Optional, Tuple, Dict
+from typing import Literal, Optional, Tuple, Dict, List
 from types_common import PlotKind, UISummary
 
 # Global Variable for fuzzymatch similarity threshold
@@ -317,12 +317,73 @@ def _infer_date_range(df: pd.DataFrame) -> tuple[str, str]:
                 return s.min().date().isoformat(), s.max().date().isoformat()
     return "—", "—"
 
-def compute_summary(df: pd.DataFrame) -> UISummary:
-    # Assume metrics already added by caller; do not recompute here
-    rows = int(len(df))
-    players = sorted(df["player_name"].dropna().astype(str).unique().tolist()) if "player_name" in df.columns else []
-    dmin, dmax = _infer_date_range(df)
-    return {"rows": rows, "players": players, "date_min": dmin, "date_max": dmax}
+def compute_summary(
+        df: pd.DataFrame,
+        mode: PlotMode, 
+        player_name: Optional[str] = None) -> UISummary:
+    # ---- Unfiltered header fields (strict types) ----
+    df = df.copy()
+    rows: int = int(len(df)) - 1    # to account for a header row
+    players: List[str] = sorted(df["player_name"].dropna().astype(str).unique().tolist()) if "player_name" in df.columns else []
+    dmin, dmax = _infer_date_range(df)  # may return None
+    date_min: str = "" if dmin is None else str(dmin)
+    date_max: str = "" if dmax is None else str(dmax)
+
+    # ---- prepare the df based on the mode ----
+    dfs = prepare_dfs(df, mode=mode)
+    if mode == "cumulative":
+        df = dfs["df_overall"]
+    else:
+        df = dfs["df_player_date_no_pos"]
+
+
+    # ---- Optional filtering (case-insensitive) ----
+    name = (player_name or "").strip().lower()
+    no_filter = (name == "") or (name in {"all", "team", "all/team"})
+    work = df if no_filter or "player_name" not in df.columns else df[df["player_name"].astype(str).str.strip().str.lower() == name]
+
+    # Helper: sum a column if present, else 0.0
+    def s(col: str) -> float:
+        return float(work[col].fillna(0).sum()) if col in work.columns else 0.0
+
+    # ---- SERVING ACCURACY: (srv_total - srv_error) / srv_total ----
+    srv_total = s("srv_total")
+    if srv_total == 0.0:
+        srv_total = s("srv_error") + s("srv_good") + s("srv_ace")
+    srv_error = s("srv_error")
+    srv_accuracy: float = round((srv_total - srv_error) / srv_total, 3) if srv_total > 0 else 0.0
+
+    # ---- RECEIVING ACCURACY: (3*perfect + 2*good + 1*bad) / (3*total) ----
+    rcv_total = s("rcv_total")
+    if rcv_total == 0.0:
+        rcv_total = s("rcv_error") + s("rcv_bad") + s("rcv_good") + s("rcv_perfect")
+    rcv_perf, rcv_good, rcv_bad = s("rcv_perfect"), s("rcv_good"), s("rcv_bad")
+    rcv_num = 3.0 * rcv_perf + 2.0 * rcv_good + 1.0 * rcv_bad
+    rcv_accuracy: float = round(rcv_num / (3.0 * rcv_total), 3) if rcv_total > 0 else 0.0
+
+    # ---- HITTING ACCURACY: (atk_kill - atk_error) / atk_total ----
+    atk_total = s("atk_total")
+    if atk_total == 0.0:
+        atk_total = s("atk_error") + s("atk_bad") + s("atk_good") + s("atk_kill")
+    atk_kill, atk_error = s("atk_kill"), s("atk_error")
+    atk_accuracy: float = round((atk_kill - atk_error) / atk_total, 3) if atk_total > 0 else 0.0
+
+    # ---- TOTAL ERRORS (sum of error columns and fouls; strict float) ----
+    total_errors = s("srv_error") + s("rcv_error") + s("atk_error") + s("blk_error") + s("defensive_error") + s("fouls")
+    total_games = float(work["games_count"].fillna(0).sum()) if "games_count" in work.columns else 0.0
+    avg_errors_per_set: float = round(total_errors / total_games, 3) if total_games > 0 else 0.0
+
+
+    return {
+        "rows": rows,                 # int
+        "players": players,           # List[str]
+        "date_min": date_min,         # str (no None)
+        "date_max": date_max,         # str (no None)
+        "srv_accuracy": srv_accuracy, # float (no None)
+        "rcv_accuracy": rcv_accuracy, # float (no None)
+        "atk_accuracy": atk_accuracy, # float (no None)
+        "avg_errors_per_set": avg_errors_per_set, # float (no None)
+    }
 
 # --- Switching Beteen CUMULATIVE & TEMPORAL PLOTS ---
 def build_cumulative(df: pd.DataFrame) -> Dict[str, pd.DataFrame]:

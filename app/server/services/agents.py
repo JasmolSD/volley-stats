@@ -58,9 +58,10 @@ def _load_model_and_tokenizer(
         else:
             _TOKENIZER.add_special_tokens({"pad_token": "<|pad|>"})
             _MODEL.resize_token_embeddings(len(_TOKENIZER))
-
+    
+    # 3070 GPU
     if use_cuda:
-        _MODEL = _MODEL.to(torch.device("cuda:0"))  # 3070 GPU
+        _MODEL = _MODEL.to(torch.device("cuda:0"))  # type: ignore
 
     _PIPE = TextGenerationPipeline(
         task="text-generation",
