@@ -5,7 +5,6 @@ import { getPlayers, getPlot, getCommentary, getSummary } from "../api.js";
 import PlotModal from "../components/PlotModal.jsx";
 import ModeToggle from "../components/ModeToggle.jsx";
 import PlayerDropdown from "../components/PlayerDropdown.jsx";
-import PlayerPerformance from "../components/PlayerPerformance.jsx";
 
 // Plot Card Component
 function PlotCard({ title, badge, imageSrc, onClick }) {
@@ -51,8 +50,9 @@ function PlotCard({ title, badge, imageSrc, onClick }) {
     );
 }
 
-// Dataset Overview Component
-function DatasetOverview({ summary }) {
+// Summary Stats Component
+function SummaryStats({ summary }) {
+    // Format date range to be more concise
     const formatDateRange = () => {
         if (!summary?.date_min || !summary?.date_max) return '—';
 
@@ -68,7 +68,18 @@ function DatasetOverview({ summary }) {
         return `${formatDate(minDate)} - ${formatDate(maxDate)}`;
     };
 
-    const datasetStats = [
+    // Format performance metrics
+    const formatPercentage = (value) => {
+        if (value === null || value === undefined || isNaN(value)) return '—';
+        return `${Math.round(value * 100)}%`;
+    };
+
+    const formatDecimal = (value, decimals = 1) => {
+        if (value === null || value === undefined || isNaN(value)) return '—';
+        return Number(value).toFixed(decimals);
+    };
+
+    const topStats = [
         {
             value: summary?.rows || '—',
             label: 'Total Records'
@@ -84,44 +95,9 @@ function DatasetOverview({ summary }) {
         }
     ];
 
-    return (
-        <div className="grid grid-cols-3">
-            {datasetStats.map((stat, index) => (
-                <div key={index} className="stat-card" style={{
-                    textAlign: 'center',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    minHeight: '120px'
-                }}>
-                    <div className="stat-value" style={{
-                        fontSize: stat.isDateRange ? 'var(--text-xl)' : 'var(--text-3xl)'
-                    }}>
-                        {stat.value}
-                    </div>
-                    <div className="stat-label">{stat.label}</div>
-                </div>
-            ))}
-        </div>
-    );
-}
-
-// Team Statistics Component
-function TeamStatistics({ summary }) {
-    const formatPercentage = (value) => {
-        if (value === null || value === undefined || isNaN(value)) return '—';
-        return `${Math.round(value * 100)}%`;
-    };
-
-    const formatDecimal = (value, decimals = 1) => {
-        if (value === null || value === undefined || isNaN(value)) return '—';
-        return Number(value).toFixed(decimals);
-    };
-
     const performanceStats = [
         {
-            value: formatDecimal(summary?.avg_errors_per_set),
+            value: formatDecimal(summary?.avg_errors_per_set, 1),
             label: 'Avg Errors per Set'
         },
         {
@@ -139,63 +115,112 @@ function TeamStatistics({ summary }) {
     ];
 
     return (
-        <div className="grid grid-cols-4">
-            {performanceStats.map((stat, index) => (
-                <div key={index} className="stat-card" style={{
-                    background: 'rgba(255, 255, 255, 0.85)',
-                    border: '1px solid rgba(255, 255, 255, 0.3)',
-                    textAlign: 'center',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    minHeight: '120px',
-                    transition: 'all 0.2s ease',
-                    cursor: 'default'
-                }}
-                    onMouseEnter={(e) => {
-                        const card = e.currentTarget;
-                        card.style.borderColor = 'rgba(6, 201, 255, 0.8)';
-                        card.style.boxShadow = '0 0 0 2px rgba(6, 201, 255, 0.6) inset, 0 4px 12px rgba(0, 0, 0, 0.15), 0 0 20px rgba(6, 201, 255, 0.4)';
-                    }}
-                    onMouseLeave={(e) => {
-                        const card = e.currentTarget;
-                        card.style.borderColor = 'rgba(255, 255, 255, 0.3)';
-                        card.style.boxShadow = '0 0 0 1px rgba(255, 255, 255, 0.2) inset, 0 4px 12px rgba(0, 0, 0, 0.15)';
-                    }}
-                >
-                    <div className="stat-value" style={{
-                        fontSize: 'var(--text-2xl)',
-                        color: '#1f2937',
-                        fontWeight: '700',
-                        pointerEvents: 'none'
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-2xl)' }}>
+            {/* Primary Stats */}
+            <div className="grid grid-cols-3">
+                {topStats.map((stat, index) => (
+                    <div key={index} className="stat-card" style={{
+                        textAlign: 'center',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        minHeight: '120px'
                     }}>
-                        {stat.value}
+                        <div className="stat-value" style={{
+                            fontSize: stat.isDateRange ? 'var(--text-xl)' : 'var(--text-3xl)'
+                        }}>
+                            {stat.value}
+                        </div>
+                        <div className="stat-label">{stat.label}</div>
                     </div>
-                    <div className="stat-label" style={{
-                        color: '#6b7280',
-                        fontWeight: '500',
-                        pointerEvents: 'none'
-                    }}>
-                        {stat.label}
+                ))}
+            </div>
+
+            {/* Performance Section Header */}
+            <div style={{ textAlign: 'center', margin: 'var(--space-lg) 0 var(--space-md) 0' }}>
+                <h3 style={{
+                    fontSize: 'var(--text-lg)',
+                    fontWeight: '600',
+                    color: 'var(--text-primary)',
+                    margin: '0 0 var(--space-xs) 0',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.05em'
+                }}>
+                    Performance Metrics
+                </h3>
+                <div style={{
+                    width: '60px',
+                    height: '2px',
+                    background: 'linear-gradient(90deg, #ffffff, rgba(255, 255, 255, 0.7))',
+                    margin: '0 auto',
+                    borderRadius: '1px'
+                }}></div>
+            </div>
+
+            {/* Performance Stats */}
+            <div className="grid grid-cols-4">
+                {performanceStats.map((stat, index) => (
+                    <div
+                        key={index}
+                        className="stat-card"
+                        style={{
+                            background: 'rgba(255, 255, 255, 0.85)',
+                            border: '1px solid rgba(255, 255, 255, 0.3)',
+                            textAlign: 'center',
+                            display: 'flex',
+                            flexDirection: 'column',
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                            minHeight: '120px',
+                            boxShadow: '0 0 0 1px rgba(255, 255, 255, 0.2) inset, 0 4px 12px rgba(0, 0, 0, 0.15)',
+                            transition: 'all 0.2s ease',
+                            cursor: 'default'
+                        }}
+                        onMouseEnter={(e) => {
+                            const card = e.currentTarget;
+                            card.style.borderColor = 'rgba(139, 69, 19, 0.8)';
+                            card.style.boxShadow = '0 0 0 2px rgba(139, 69, 19, 0.6) inset, 0 4px 12px rgba(0, 0, 0, 0.15), 0 0 20px rgba(139, 69, 19, 0.4)';
+                        }}
+                        onMouseLeave={(e) => {
+                            const card = e.currentTarget;
+                            card.style.borderColor = 'rgba(255, 255, 255, 0.3)';
+                            card.style.boxShadow = '0 0 0 1px rgba(255, 255, 255, 0.2) inset, 0 4px 12px rgba(0, 0, 0, 0.15)';
+                        }}
+                    >
+                        <div className="stat-value" style={{
+                            fontSize: 'var(--text-2xl)',
+                            color: '#1f2937',
+                            fontWeight: '700',
+                            pointerEvents: 'none'
+                        }}>
+                            {stat.value}
+                        </div>
+                        <div className="stat-label" style={{
+                            color: '#6b7280',
+                            fontWeight: '500',
+                            pointerEvents: 'none'
+                        }}>
+                            {stat.label}
+                        </div>
                     </div>
-                </div>
-            ))}
+                ))}
+            </div>
         </div>
     );
 }
 
-export default function Results({ token, summary, setLoading }) {
+export default function Results({ token, summary: initialSummary, setLoading }) {
     const navigate = useNavigate();
     const [players, setPlayers] = useState([]);
     const [selectedPlayer, setSelectedPlayer] = useState("");
     const [mode, setMode] = useState("cumulative");
     const [plots, setPlots] = useState([]);
     const [commentary, setCommentary] = useState("");
-    const [playerSummary, setPlayerSummary] = useState(null);
+    const [summary, setSummary] = useState(initialSummary || null);
     const [loadingPlots, setLoadingPlots] = useState(false);
-    const [loadingPlayerSummary, setLoadingPlayerSummary] = useState(false);
-    const [activePlot, setActivePlot] = useState(null);
+    const [loadingSummary, setLoadingSummary] = useState(false);
+    const [activePlot, setActivePlot] = useState(null); // For modal
 
     useEffect(() => {
         if (!token) {
@@ -203,41 +228,16 @@ export default function Results({ token, summary, setLoading }) {
             return;
         }
 
-        const loadPlayers = async () => {
+        // Load players
+        (async () => {
             try {
                 const res = await getPlayers(token);
                 setPlayers(res.players || []);
             } catch (err) {
                 console.error('Failed to load players:', err);
             }
-        };
-
-        loadPlayers();
+        })();
     }, [token, navigate]);
-
-    // Load player summary when player is selected
-    useEffect(() => {
-        if (!token || !selectedPlayer) {
-            setPlayerSummary(null);
-            return;
-        }
-
-        const loadPlayerSummary = async () => {
-            setLoadingPlayerSummary(true);
-            try {
-                const res = await getSummary(token, selectedPlayer, mode);
-                console.log('✅ Player summary loaded:', res);
-                setPlayerSummary(res);
-            } catch (err) {
-                console.error('Failed to load player summary:', err);
-                setPlayerSummary(null);
-            } finally {
-                setLoadingPlayerSummary(false);
-            }
-        };
-
-        loadPlayerSummary();
-    }, [token, selectedPlayer, mode]);
 
     // Determine which plot types to show
     const plotTypes = useMemo(() => {
@@ -258,7 +258,7 @@ export default function Results({ token, summary, setLoading }) {
     useEffect(() => {
         if (!token) return;
 
-        const loadPlots = async () => {
+        (async () => {
             setLoadingPlots(true);
             try {
                 const plotPromises = plotTypes.map(async (plotType) => {
@@ -266,8 +266,10 @@ export default function Results({ token, summary, setLoading }) {
                         console.log(`Fetching plot: ${plotType.key} for player: ${selectedPlayer || 'all'} in ${mode} mode`);
                         const res = await getPlot(token, plotType.key, selectedPlayer || undefined, mode);
 
+                        // Handle different response formats
                         let imageData = res.image;
 
+                        // If image is already a data URL, use it as is
                         if (imageData && imageData.startsWith('data:image')) {
                             return {
                                 type: plotType.key,
@@ -276,6 +278,7 @@ export default function Results({ token, summary, setLoading }) {
                             };
                         }
 
+                        // If it's base64 without the prefix, add it
                         if (imageData && !imageData.startsWith('data:')) {
                             return {
                                 type: plotType.key,
@@ -307,20 +310,36 @@ export default function Results({ token, summary, setLoading }) {
                 setPlots(validPlots);
             } catch (err) {
                 console.error('Failed to load plots:', err);
-                setPlots([]);
+                setPlots([]); // Set empty array on error
             } finally {
                 setLoadingPlots(false);
             }
-        };
-
-        loadPlots();
+        })();
     }, [token, selectedPlayer, mode, plotTypes]);
 
-    // Load commentary
+    // Load summary when player or mode changes
     useEffect(() => {
         if (!token) return;
 
-        const loadCommentary = async () => {
+        (async () => {
+            setLoadingSummary(true);
+            try {
+                const res = await getSummary(token, selectedPlayer || undefined, mode);
+                setSummary(res);
+            } catch (err) {
+                console.error('Failed to load summary:', err);
+                // Keep the previous summary on error
+            } finally {
+                setLoadingSummary(false);
+            }
+        })();
+    }, [token, selectedPlayer, mode]);
+
+    // Load commentary when player or mode changes
+    useEffect(() => {
+        if (!token) return;
+
+        (async () => {
             try {
                 const res = await getCommentary(token, selectedPlayer || undefined, mode);
                 setCommentary(res.commentary || "");
@@ -328,12 +347,11 @@ export default function Results({ token, summary, setLoading }) {
                 console.error('Failed to load commentary:', err);
                 setCommentary("");
             }
-        };
-
-        loadCommentary();
+        })();
     }, [token, selectedPlayer, mode]);
 
     useEffect(() => {
+        // Trigger scroll animations
         setTimeout(() => {
             document.querySelectorAll('.scroll-reveal').forEach(el => {
                 el.classList.add('revealed');
@@ -367,23 +385,24 @@ export default function Results({ token, summary, setLoading }) {
                 </p>
             </section>
 
-            {/* Dataset Overview */}
+            {/* Stats Overview */}
             {summary && (
                 <section className="stats-section scroll-reveal">
                     <h2 style={{ textAlign: 'center', marginBottom: 'var(--space-2xl)' }}>
-                        Dataset Overview
+                        {selectedPlayer ? `${selectedPlayer} Performance` : 'Dataset Overview'}
                     </h2>
-                    <DatasetOverview summary={summary} />
-                </section>
-            )}
-
-            {/* Team Statistics */}
-            {summary && (
-                <section className="stats-section scroll-reveal" style={{ marginTop: 'var(--space-3xl)' }}>
-                    <h2 style={{ textAlign: 'center', marginBottom: 'var(--space-2xl)' }}>
-                        Team Statistics
-                    </h2>
-                    <TeamStatistics summary={summary} />
+                    {loadingSummary ? (
+                        <div style={{ textAlign: 'center', padding: 'var(--space-xl)' }}>
+                            <div className="loading-spinner" style={{
+                                width: '40px',
+                                height: '40px',
+                                margin: '0 auto var(--space-md)'
+                            }}></div>
+                            <p style={{ color: 'var(--text-muted)' }}>Updating summary...</p>
+                        </div>
+                    ) : (
+                        <SummaryStats summary={summary} />
+                    )}
                 </section>
             )}
 
@@ -431,29 +450,8 @@ export default function Results({ token, summary, setLoading }) {
                 </div>
             </section>
 
-            {/* Player Performance Section */}
-            {selectedPlayer && playerSummary && (
-                <section
-                    key={`player-section-${selectedPlayer}-${mode}`}
-                    className="stats-section scroll-reveal revealed"
-                    style={{
-                        marginTop: 'var(--space-3xl)',
-                        opacity: 1,
-                        transform: 'translateY(0)'
-                    }}
-                >
-                    <PlayerPerformance
-                        key={`player-perf-${selectedPlayer}-${JSON.stringify(playerSummary)?.substring(0, 10)}`}
-                        playerSummary={playerSummary}
-                        teamSummary={summary}
-                        playerName={selectedPlayer}
-                        isLoading={loadingPlayerSummary}
-                    />
-                </section>
-            )}
-
             {/* Plot Gallery */}
-            <section className="scroll-reveal" style={{ marginTop: 'var(--space-3xl)' }}>
+            <section className="scroll-reveal">
                 <h2 style={{ textAlign: 'center', marginBottom: 'var(--space-2xl)' }}>
                     Performance Visualizations
                 </h2>
@@ -496,6 +494,31 @@ export default function Results({ token, summary, setLoading }) {
                                 <span> Try selecting a player to see detailed analytics.</span>
                             )}
                         </p>
+                        {/* Fallback placeholder visualizations */}
+                        <div className="grid grid-cols-3" style={{ marginTop: 'var(--space-xl)' }}>
+                            {['Offense', 'Service', 'Receive'].map((type) => (
+                                <div key={type} style={{
+                                    padding: 'var(--space-md)',
+                                    background: 'rgba(255, 255, 255, 0.02)',
+                                    borderRadius: 'var(--radius-lg)',
+                                    border: '1px solid var(--border-color)'
+                                }}>
+                                    <div style={{
+                                        fontSize: '2rem',
+                                        marginBottom: 'var(--space-sm)',
+                                        opacity: 0.5
+                                    }}>
+                                        📊
+                                    </div>
+                                    <div style={{
+                                        fontSize: 'var(--text-sm)',
+                                        color: 'var(--text-muted)'
+                                    }}>
+                                        {type}
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
                     </div>
                 )}
             </section>
