@@ -95,10 +95,10 @@ export default function Home({ setToken, setSummary, setLoading }) {
                     }}
                     aria-label="Upload file zone"
                     style={{
-                        background: 'rgba(255, 255, 255, 0.08)',
+                        background: 'rgba(255, 255, 255, 0.17)',
                         backdropFilter: 'blur(12px)',
                         WebkitBackdropFilter: 'blur(12px)',
-                        border: '2px dashed rgba(255, 255, 255, 0.3)',
+                        border: '2px dashed rgba(255, 255, 255, 0.82)',
                         boxShadow: '0 8px 32px rgba(14, 165, 233, 0.1)'
                     }}
                 >

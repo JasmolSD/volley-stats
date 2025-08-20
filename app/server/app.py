@@ -4,9 +4,10 @@ from flask import Flask, request, jsonify
 from flask_cors import CORS
 from werkzeug.utils import secure_filename
 import os, uuid, pandas as pd
-from typing import cast, TypedDict, Literal, Dict, Any, Optional
+from typing import cast, TypedDict, Literal, Dict, Optional, List
 from types_common import PlotKind, UISummary, Meta
 from pathlib import Path
+from dotenv import load_dotenv
 
 # Additional Functions
 from services.io_loader import load_dataframe
@@ -14,11 +15,24 @@ from services.profiling import profile_dataframe
 from services.plotting import generate_plots, render_plot
 from services.agents import generate_commentary
 from services.utils.cleanup import purge_dirs
+from services.model_config import (
+    initialize_models,
+    validate_commentary_request,
+    generate_plots_for_mode,
+    generate_commentary_with_fallback,
+    generate_basic_statistical_commentary,
+    build_commentary_response,
+    build_error_response
+)
 from services.analysis import (
     preprocess_dataframe,
     compute_summary,
     resolve_player_name,
 )
+
+# Load environment variables
+env_path = Path(__file__).parent / 'services' / '.env'
+load_dotenv(dotenv_path=env_path)
 
 # Serve /static from server/static
 app = Flask(__name__, static_folder="server/static", static_url_path="/static")
@@ -33,9 +47,6 @@ UPLOADS_DIR = Path(app.config['UPLOAD_FOLDER']).resolve()
 for d in (STATIC_DIR, UPLOADS_DIR):
     d.mkdir(parents=True, exist_ok=True)
 
-# Get LLM model
-model_id = str(os.getenv("LLM_MODEL"))
-hf_token = os.getenv("HUGGINGFACE_TOKEN")
 
 # Plotting Modes
 PlotMode = Literal["cumulative", "temporal"]
@@ -173,7 +184,7 @@ def upload():
     tmp_path = os.path.join(app.config['UPLOAD_FOLDER'], f"{run_id}.{ext}")
     file.save(tmp_path)
 
-    # print("File Successfully Uploaded!\nReading as dataframe...")
+    # print("[DEBUG] File Successfully Uploaded!\nReading as dataframe...")
 
     # Single read path (via services.io_loader if it normalizes meta) OR use read_tablelike directly.
     try:
@@ -182,17 +193,15 @@ def upload():
     except Exception as e:
         return jsonify({"error": f"failed to read file: {e}"}), 400
 
-    # print("Data Loaded!")
-    print(df)
+    # print("[DEBUG] Data Loaded!")
+    # print(df)
 
-    # print("Adding additional metrics...")
+    # print("[DEBUG] Adding additional metrics...")
     # Deriving additional metrics
     try:
         df = preprocess_dataframe(df)
     except Exception as e:
         return jsonify({"error": f"failed to compute metrics: {e}", "have": list(df.columns)}), 400
-
-    print("Finished processing data!")
 
     # Optional deep profile (toggle via ?profile=1)
     do_profile = request.args.get("profile") in ("1", "true", "yes")
@@ -211,23 +220,13 @@ def upload():
         "ui_summary": ui_summary,
         }
 
-    print("Generating Commentary!")
-
-    # commentary can live off the lightweight summary + meta
-    commentary_text = generate_commentary(
-        summary=ui_summary,
-        meta=meta, 
-        images=_images,
-        model_id=model_id,
-        hf_token=hf_token
-    )
+    print("Data upload and processing complete!")
 
     return jsonify({
         "run_id": run_id,
         "summary": ui_summary,
         "meta": meta,
-        "images": _images,
-        "llm_commentary": commentary_text  # optional: your UI uses /api/commentary anyway
+        "images": _images
     })
 
 @app.route("/api/players", methods=["GET"])
@@ -318,38 +317,110 @@ def plot_endpoint():
     return jsonify({"image": data_url, "used_player": used}), 200
 
 
+# Simplified app.py endpoint
 @app.route("/api/commentary", methods=["POST"])
 def commentary():
-    data = (request.get_json() or {})
-    token = str(data.get("token") or "")
-    player = (data.get("player") or "").strip()
-    mode:PlotMode   = coerce_plot_mode((data.get("mode") or "").strip())
+    """
+    Generate AI commentary for volleyball performance analysis.
+    All heavy lifting is handled by model_config module.
+    """
+    # Parse request
+    data = request.get_json() or {}
+    token = str(data.get("token", ""))
+    player = (data.get("player", "")).strip()
+    mode: PlotMode = coerce_plot_mode(data.get("mode", ""))
+    
+    # Validate request
+    is_valid, rs, error_msg = validate_commentary_request(token, RUN_CACHE)
+    if not is_valid:
+        response, status = build_error_response(
+            error_message=error_msg,
+            error_code="INVALID_TOKEN" if error_msg and "token" in error_msg.lower() else "UNKNOWN_ERROR"
+        )
+        return jsonify(response), status
+    
+    # Type assertion - rs cannot be None here due to early return above
+    assert rs is not None, "Run state should not be None after validation"
 
-    rs = RUN_CACHE.get(token)
-    if rs is None:
-        return jsonify({"commentary": "", "requests": []}), 200
-
+    # Initialize models
+    text_model_id, vision_model_id, hf_token = initialize_models()
+    if not hf_token:
+        response, status = build_error_response(
+            "HuggingFace authentication not configured",
+            "NO_HF_TOKEN",
+            "Please set HUGGINGFACE_TOKEN in your .env file"
+        )
+        return jsonify(response), status
+    
+    # Extract data and build summary
     df = rs["df"]
     images = rs.get("images", [])
-
-    # use new parameters: player + mode
     ui_summary = _get_or_build_ui_summary(token, player_name=player, mode=mode)
-
+    
     meta: Meta = {
         "rows": ui_summary["rows"],
         "cols": int(df.shape[1]),
         "columns": list(df.columns),
     }
+    
+    # Generate plots
+    from services.plotting import render_plot
+    all_plots, failed_plots, used_player = generate_plots_for_mode(
+        df=df,
+        player=player,
+        mode=mode,
+        resolve_player_name_func=resolve_player_name,
+        render_plot_func=render_plot,
+        normalize_kind_func=normalize_kind  # Pass normalize_kind if you have it
+    )
+    
+    # Check if we have plots to analyze
+    if not all_plots:
+        response, status = build_error_response(
+            "No plots could be generated for analysis",
+            "NO_PLOTS"
+        )
+        response["failed_plots"] = failed_plots
+        return jsonify(response), status
+    
+    # Generate commentary with fallback
+    commentary_text, models_used = generate_commentary_with_fallback(
+        ui_summary=ui_summary,
+        meta=meta,
+        images=images,
+        all_plots=all_plots,
+        text_model_id=text_model_id,
+        vision_model_id=vision_model_id,
+        hf_token=hf_token,
+        generate_commentary_func=generate_commentary,  # Pass your actual function
+        mode=mode,
+        used_player=used_player
+    )
 
-    resp = generate_commentary(summary=ui_summary, meta=meta, images=images)
+    # If AI generation failed build and return response
+    if commentary_text is None:
+        commentary_text = generate_basic_statistical_commentary(
+            ui_summary, mode, used_player
+        )
+        models_used = {
+            "method": "statistical_analysis",
+            "note": "AI models unavailable"
+        }
+        is_fallback = True
+    else:
+        is_fallback = False
 
-    # normalize both string or object return types
-    if isinstance(resp, str):
-        return jsonify({"commentary": resp, "requests": []})
-    return jsonify({
-        "commentary": getattr(resp, "commentary", ""),
-        "requests": getattr(resp, "requests", []),
-    })
+    response = build_commentary_response(
+        commentary_text=commentary_text,
+        all_plots=all_plots,
+        failed_plots=failed_plots,
+        mode=mode,
+        used_player=used_player,
+        models_used=models_used,
+        is_fallback=is_fallback
+    )
+    
+    return jsonify(response)
 
 
 if __name__ == "__main__":

@@ -2,188 +2,16 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { getPlayers, getPlot, getCommentary, getSummary } from "../api.js";
+
+// Import components
 import PlotModal from "../components/PlotModal.jsx";
 import ModeToggle from "../components/ModeToggle.jsx";
 import PlayerDropdown from "../components/PlayerDropdown.jsx";
 import PlayerPerformance from "../components/PlayerPerformance.jsx";
-
-// Plot Card Component
-function PlotCard({ title, badge, imageSrc, onClick }) {
-    const [imageError, setImageError] = useState(false);
-
-    return (
-        <div className="plot-card" onClick={onClick} style={{ cursor: 'zoom-in' }}>
-            <div className="plot-header">
-                <span className="plot-title">{title}</span>
-                <span className="plot-badge">{badge}</span>
-            </div>
-            {!imageError && imageSrc ? (
-                <img
-                    src={imageSrc}
-                    alt={title}
-                    className="plot-image"
-                    onError={(e) => {
-                        console.error(`Failed to load image for ${title}`);
-                        setImageError(true);
-                    }}
-                />
-            ) : (
-                <div style={{
-                    width: '100%',
-                    height: '300px',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    background: 'rgba(255, 255, 255, 0.02)',
-                    color: 'var(--text-muted)'
-                }}>
-                    <div style={{ textAlign: 'center' }}>
-                        <div style={{ fontSize: '3rem', marginBottom: 'var(--space-sm)', opacity: 0.3 }}>
-                            📈
-                        </div>
-                        <div style={{ fontSize: 'var(--text-sm)' }}>
-                            Visualization Loading...
-                        </div>
-                    </div>
-                </div>
-            )}
-        </div>
-    );
-}
-
-// Dataset Overview Component
-function DatasetOverview({ summary }) {
-    const formatDateRange = () => {
-        if (!summary?.date_min || !summary?.date_max) return '—';
-
-        const minDate = new Date(summary.date_min);
-        const maxDate = new Date(summary.date_max);
-
-        const formatDate = (date) => {
-            const month = date.toLocaleDateString('en', { month: 'short' });
-            const year = date.getFullYear();
-            return `${month} ${year}`;
-        };
-
-        return `${formatDate(minDate)} - ${formatDate(maxDate)}`;
-    };
-
-    const datasetStats = [
-        {
-            value: summary?.rows || '—',
-            label: 'Total Records'
-        },
-        {
-            value: summary?.players?.length || '—',
-            label: 'Active Players'
-        },
-        {
-            value: formatDateRange(),
-            label: 'Date Range',
-            isDateRange: true
-        }
-    ];
-
-    return (
-        <div className="grid grid-cols-3">
-            {datasetStats.map((stat, index) => (
-                <div key={index} className="stat-card" style={{
-                    textAlign: 'center',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    minHeight: '120px'
-                }}>
-                    <div className="stat-value" style={{
-                        fontSize: stat.isDateRange ? 'var(--text-xl)' : 'var(--text-3xl)'
-                    }}>
-                        {stat.value}
-                    </div>
-                    <div className="stat-label">{stat.label}</div>
-                </div>
-            ))}
-        </div>
-    );
-}
-
-// Team Statistics Component
-function TeamStatistics({ summary }) {
-    const formatPercentage = (value) => {
-        if (value === null || value === undefined || isNaN(value)) return '—';
-        return `${Math.round(value * 100)}%`;
-    };
-
-    const formatDecimal = (value, decimals = 1) => {
-        if (value === null || value === undefined || isNaN(value)) return '—';
-        return Number(value).toFixed(decimals);
-    };
-
-    const performanceStats = [
-        {
-            value: formatDecimal(summary?.avg_errors_per_set),
-            label: 'Avg Errors per Set'
-        },
-        {
-            value: formatPercentage(summary?.atk_accuracy),
-            label: 'Avg Hitting Rate'
-        },
-        {
-            value: formatPercentage(summary?.rcv_accuracy),
-            label: 'Avg Receiving Accuracy'
-        },
-        {
-            value: formatPercentage(summary?.srv_accuracy),
-            label: 'Avg Serving Accuracy'
-        }
-    ];
-
-    return (
-        <div className="grid grid-cols-4">
-            {performanceStats.map((stat, index) => (
-                <div key={index} className="stat-card" style={{
-                    background: 'rgba(255, 255, 255, 0.85)',
-                    border: '1px solid rgba(255, 255, 255, 0.3)',
-                    textAlign: 'center',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                    minHeight: '120px',
-                    transition: 'all 0.2s ease',
-                    cursor: 'default'
-                }}
-                    onMouseEnter={(e) => {
-                        const card = e.currentTarget;
-                        card.style.borderColor = 'rgba(6, 201, 255, 0.8)';
-                        card.style.boxShadow = '0 0 0 2px rgba(6, 201, 255, 0.6) inset, 0 4px 12px rgba(0, 0, 0, 0.15), 0 0 20px rgba(6, 201, 255, 0.4)';
-                    }}
-                    onMouseLeave={(e) => {
-                        const card = e.currentTarget;
-                        card.style.borderColor = 'rgba(255, 255, 255, 0.3)';
-                        card.style.boxShadow = '0 0 0 1px rgba(255, 255, 255, 0.2) inset, 0 4px 12px rgba(0, 0, 0, 0.15)';
-                    }}
-                >
-                    <div className="stat-value" style={{
-                        fontSize: 'var(--text-2xl)',
-                        color: '#1f2937',
-                        fontWeight: '700',
-                        pointerEvents: 'none'
-                    }}>
-                        {stat.value}
-                    </div>
-                    <div className="stat-label" style={{
-                        color: '#6b7280',
-                        fontWeight: '500',
-                        pointerEvents: 'none'
-                    }}>
-                        {stat.label}
-                    </div>
-                </div>
-            ))}
-        </div>
-    );
-}
+import PlotCard from "../components/PlotCard.jsx";
+import DatasetOverview from "../components/DatasetOverview.jsx";
+import TeamStatistics from "../components/TeamStatistics.jsx";
+import AICommentary from "../components/AICommentary.jsx";
 
 export default function Results({ token, summary, setLoading }) {
     const navigate = useNavigate();
@@ -191,11 +19,13 @@ export default function Results({ token, summary, setLoading }) {
     const [selectedPlayer, setSelectedPlayer] = useState("");
     const [mode, setMode] = useState("cumulative");
     const [plots, setPlots] = useState([]);
-    const [commentary, setCommentary] = useState("");
     const [playerSummary, setPlayerSummary] = useState(null);
     const [loadingPlots, setLoadingPlots] = useState(false);
     const [loadingPlayerSummary, setLoadingPlayerSummary] = useState(false);
     const [activePlot, setActivePlot] = useState(null);
+    const [commentary, setCommentary] = useState("");
+    const [loadingCommentary, setLoadingCommentary] = useState(false);
+    const [commentaryGenerated, setCommentaryGenerated] = useState(false);
 
     useEffect(() => {
         if (!token) {
@@ -316,23 +146,30 @@ export default function Results({ token, summary, setLoading }) {
         loadPlots();
     }, [token, selectedPlayer, mode, plotTypes]);
 
-    // Load commentary
-    useEffect(() => {
+    // Generate commentary on demand
+    const handleGenerateCommentary = async () => {
         if (!token) return;
 
-        const loadCommentary = async () => {
-            try {
-                const res = await getCommentary(token, selectedPlayer || undefined, mode);
-                setCommentary(res.commentary || "");
-            } catch (err) {
-                console.error('Failed to load commentary:', err);
-                setCommentary("");
-            }
-        };
+        setLoadingCommentary(true);
+        try {
+            const res = await getCommentary(token, selectedPlayer || undefined, mode);
+            setCommentary(res.commentary || "");
+            setCommentaryGenerated(true);
+        } catch (err) {
+            console.error('Failed to load commentary:', err);
+            setCommentary("Failed to generate commentary. Please try again.");
+        } finally {
+            setLoadingCommentary(false);
+        }
+    };
 
-        loadCommentary();
-    }, [token, selectedPlayer, mode]);
+    // Reset commentary when player or mode changes
+    useEffect(() => {
+        setCommentary("");
+        setCommentaryGenerated(false);
+    }, [selectedPlayer, mode]);
 
+    // Initialize scroll animations
     useEffect(() => {
         setTimeout(() => {
             document.querySelectorAll('.scroll-reveal').forEach(el => {
@@ -515,52 +352,15 @@ export default function Results({ token, summary, setLoading }) {
                     AI-Powered Insights
                 </h2>
                 <div className="card" style={{ maxWidth: '800px', margin: '0 auto' }}>
-                    <h3 style={{
-                        fontFamily: 'var(--font-display)',
-                        marginBottom: 'var(--space-md)'
-                    }}>
-                        {selectedPlayer ? `Analysis for ${selectedPlayer}` : 'Team Performance Analysis'}
-                    </h3>
-                    {commentary ? (
-                        <div>
-                            {commentary.split('\n\n').map((paragraph, i) => (
-                                <p key={i} style={{
-                                    lineHeight: 1.8,
-                                    color: 'var(--text-secondary)',
-                                    marginBottom: 'var(--space-md)'
-                                }}>
-                                    {paragraph}
-                                </p>
-                            ))}
-                        </div>
-                    ) : (
-                        <p style={{
-                            lineHeight: 1.8,
-                            color: 'var(--text-muted)',
-                            fontStyle: 'italic'
-                        }}>
-                            Generating personalized insights based on your data...
-                        </p>
-                    )}
-
-                    <div style={{
-                        display: 'flex',
-                        gap: 'var(--space-md)',
-                        marginTop: 'var(--space-xl)'
-                    }}>
-                        <button className="btn btn-primary">
-                            View Detailed Report
-                        </button>
-                        <button className="btn btn-secondary">
-                            Export Analysis
-                        </button>
-                        <button
-                            className="btn btn-secondary"
-                            onClick={() => navigate('/')}
-                        >
-                            New Analysis
-                        </button>
-                    </div>
+                    <AICommentary
+                        commentary={commentary}
+                        commentaryGenerated={commentaryGenerated}
+                        loadingCommentary={loadingCommentary}
+                        selectedPlayer={selectedPlayer}
+                        plots={plots}
+                        mode={mode}
+                        onGenerateCommentary={handleGenerateCommentary}
+                    />
                 </div>
             </section>
         </div>

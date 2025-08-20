@@ -14,6 +14,56 @@ export default function PlotModal({ title, src, onClose }) {
     const [isFullscreen, setIsFullscreen] = useState(false);
     const [baseScale, setBaseScale] = useState(1); // Track the base "fit to screen" scale
 
+    // Inject animation styles if not already present
+    useEffect(() => {
+        const styleId = 'plot-modal-animations';
+        if (!document.getElementById(styleId)) {
+            const style = document.createElement('style');
+            style.id = styleId;
+            style.textContent = `
+                @keyframes fadeInOut {
+                    0% {
+                        opacity: 0;
+                        transform: translate(-50%, -50%) scale(0.9);
+                    }
+                    20% {
+                        opacity: 1;
+                        transform: translate(-50%, -50%) scale(1);
+                    }
+                    80% {
+                        opacity: 1;
+                        transform: translate(-50%, -50%) scale(1);
+                    }
+                    100% {
+                        opacity: 0;
+                        transform: translate(-50%, -50%) scale(0.9);
+                    }
+                }
+                @keyframes slideDown {
+                    from {
+                        opacity: 0;
+                        transform: translateX(-50%) translateY(-20px);
+                    }
+                    to {
+                        opacity: 1;
+                        transform: translateX(-50%) translateY(0);
+                    }
+                }
+                @keyframes slideUp {
+                    from {
+                        opacity: 1;
+                        transform: translateX(-50%) translateY(0);
+                    }
+                    to {
+                        opacity: 0;
+                        transform: translateX(-50%) translateY(-20px);
+                    }
+                }
+            `;
+            document.head.appendChild(style);
+        }
+    }, []);
+
     // Fit-to-frame when the image loads
     useEffect(() => {
         const img = imgRef.current;
@@ -71,6 +121,8 @@ export default function PlotModal({ title, src, onClose }) {
             if (e.key === "-" || e.key === "_") zoomOut();
             if (e.key.toLowerCase() === "r") refit();
             if (e.key.toLowerCase() === "f") toggleFullscreen();
+            if (e.key.toLowerCase() === "c") copyImage();
+            if (e.key.toLowerCase() === "d") download();
         };
         window.addEventListener("keydown", onKey);
         return () => window.removeEventListener("keydown", onKey);
@@ -155,6 +207,76 @@ export default function PlotModal({ title, src, onClose }) {
         a.click();
     };
 
+    const copyImage = async () => {
+        try {
+            if (src && src.startsWith('data:image')) {
+                // Convert base64 to blob
+                const base64Data = src.replace(/^data:image\/\w+;base64,/, '');
+                const byteCharacters = atob(base64Data);
+                const byteNumbers = new Array(byteCharacters.length);
+
+                for (let i = 0; i < byteCharacters.length; i++) {
+                    byteNumbers[i] = byteCharacters.charCodeAt(i);
+                }
+
+                const byteArray = new Uint8Array(byteNumbers);
+                const blob = new Blob([byteArray], { type: 'image/png' });
+
+                // Copy to clipboard
+                if (navigator.clipboard && window.ClipboardItem) {
+                    const clipboardItem = new window.ClipboardItem({
+                        'image/png': blob
+                    });
+                    await navigator.clipboard.write([clipboardItem]);
+
+                    // Show success feedback
+                    showCopySuccess();
+                } else {
+                    throw new Error('Clipboard API not supported');
+                }
+            } else {
+                // For regular URLs, fetch and copy
+                const response = await fetch(src);
+                const blob = await response.blob();
+                const clipboardItem = new window.ClipboardItem({
+                    [blob.type]: blob
+                });
+                await navigator.clipboard.write([clipboardItem]);
+                showCopySuccess();
+            }
+        } catch (error) {
+            console.error('Failed to copy image:', error);
+            alert('Failed to copy image. Please try downloading instead.');
+        }
+    };
+
+    const showCopySuccess = () => {
+        const successMsg = document.createElement('div');
+        successMsg.textContent = '✓ Image copied to clipboard!';
+        successMsg.style.cssText = `
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(135deg, #0ea5e9, #0284c7);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 14px;
+            z-index: 100000;
+            pointer-events: none;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            animation: slideDown 0.3s ease-out;
+        `;
+        document.body.appendChild(successMsg);
+
+        setTimeout(() => {
+            successMsg.style.animation = 'slideUp 0.3s ease-out';
+            setTimeout(() => successMsg.remove(), 300);
+        }, 2000);
+    };
+
     // Close if clicking the backdrop
     const closeOnBackdrop = (e) => {
         if (e.target === backdropRef.current) onClose();
@@ -177,7 +299,10 @@ export default function PlotModal({ title, src, onClose }) {
 
     // Drag to pan
     const onMouseDown = (e) => {
-        if (e.button !== 0) return; // Only left click
+        // Skip if right-click (allow context menu)
+        if (e.button === 2) return;
+
+        if (e.button !== 0) return; // Only left click for dragging
         e.preventDefault();
         setDrag({ x: e.clientX - tx, y: e.clientY - ty });
     };
@@ -189,6 +314,15 @@ export default function PlotModal({ title, src, onClose }) {
     };
 
     const endDrag = () => setDrag(null);
+
+    // Handle right-click on image - removed the custom handler to allow default behavior
+    // The copy button in the toolbar handles copying functionality reliably
+
+    // Handle double-click to reset view
+    const handleDoubleClick = (e) => {
+        e.preventDefault();
+        refit();
+    };
 
     return (
         <div
@@ -251,7 +385,13 @@ export default function PlotModal({ title, src, onClose }) {
                                     )}
                                 </svg>
                             </button>
-                            <button className="pm-btn pm-btn-primary" onClick={download} title="Download">
+                            <button className="pm-btn pm-btn-primary" onClick={copyImage} title="Copy Image (C)">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                                    <rect x="9" y="9" width="13" height="13" rx="2" stroke="currentColor" strokeWidth="2" />
+                                    <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1" stroke="currentColor" strokeWidth="2" />
+                                </svg>
+                            </button>
+                            <button className="pm-btn pm-btn-primary" onClick={download} title="Download (D)">
                                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
                                     <path d="M12 3v12m0 0l4-4m-4 4l-4-4M3 17v2a2 2 0 002 2h14a2 2 0 002-2v-2"
                                         stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
@@ -272,6 +412,7 @@ export default function PlotModal({ title, src, onClose }) {
                     className="pm-frame"
                     onWheel={onWheel}
                     onMouseDown={onMouseDown}
+                    onDoubleClick={handleDoubleClick}
                     style={{ cursor: drag ? 'grabbing' : scale > 1 ? 'grab' : 'default' }}
                 >
                     <img
@@ -293,7 +434,7 @@ export default function PlotModal({ title, src, onClose }) {
                         <span className="pm-status-text">Interactive Mode</span>
                     </div>
                     <div className="pm-status-center">
-                        <span className="pm-hint">Scroll to zoom • Drag to pan • Double-click to reset</span>
+                        <span className="pm-hint">Scroll to zoom • Drag to pan • Press C to copy • Press D to download</span>
                     </div>
                     <div className="pm-status-right">
                         <span className="pm-shortcut">ESC</span> to close

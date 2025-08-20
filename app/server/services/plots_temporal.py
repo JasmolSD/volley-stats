@@ -44,7 +44,13 @@ def plot_avg_errors(team_overall: pd.DataFrame, player_name: str) -> Figure:
     sns.lineplot(x="date", y="avg_tot_errors",  data=df, marker="X", color="purple",
                  label="Avg Total Errors", ax=ax)
 
-    ax.axhline(y=6, color="mediumpurple", linestyle="--", linewidth=2, label="Avg Total Errors Goal")
+    # Dynamic error goal depending on team/player
+    if player_name.lower() == "team":
+        error_goal = 6
+    else:
+        error_goal = 1
+
+    ax.axhline(y=error_goal, color="mediumpurple", linestyle="--", linewidth=2, label="Avg Total Errors Goal")
 
     for series, fmt in [
         ("avg_srv_errors", "{:.1f}"),

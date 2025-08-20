@@ -66,7 +66,7 @@ function Footer() {
         <footer>
             <div className="container">
                 <p className="footer-text">
-                    Crafted with precision and passion • Volley Stats © 2025
+                    Made with love, care, and too much time! • Volley Stats © 2025
                 </p>
             </div>
         </footer>

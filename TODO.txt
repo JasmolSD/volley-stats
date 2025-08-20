@@ -9,9 +9,8 @@ Requirements
 - Make a coding backend for all the python functions
 
 To Fix:
+- Analyst Commentary is adding the prompt stuff (erase)
 - Allow for data exports and download everything as a report
 - Add a little table at the end that you can interact with
-- Add an about me page
-- Analyst Commentary is adding the prompt stuff (erase)
 - Add a way to filter through data (season, format)
 - Deploy it as a website
