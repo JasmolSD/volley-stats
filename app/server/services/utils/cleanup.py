@@ -15,6 +15,7 @@ def _force_writable(path: Path) -> None:
     except Exception:
         pass
 
+
 def _on_rm_error(func, path, exc_info):
     """shutil.rmtree error callback: try to make writable then retry."""
     try:
@@ -27,6 +28,7 @@ def _on_rm_error(func, path, exc_info):
             func(path)
         except Exception:
             pass
+
 
 def purge_all_children(dirpath: Path, keep: Optional[Iterable[str]] = None) -> int:
     """
@@ -87,6 +89,7 @@ def purge_all_children(dirpath: Path, keep: Optional[Iterable[str]] = None) -> i
                 pass
 
     return removed
+
 
 def purge_dirs(dirs: Iterable[Path], keep: Optional[Iterable[str]] = None) -> int:
     total = 0

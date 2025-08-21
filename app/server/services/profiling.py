@@ -20,6 +20,7 @@ def _maybe_float(x: Any) -> NumberOrNone:
     except Exception:
         return None
 
+
 def numeric_summary(s: pd.Series) -> Dict[str, NumberOrNone]:
     # Coerce to numeric; NaNs for non-numeric
     s_num = pd.to_numeric(s, errors="coerce")
@@ -45,6 +46,7 @@ def numeric_summary(s: pd.Series) -> Dict[str, NumberOrNone]:
         "skew": _maybe_float(s_real.skew(skipna=True)) if cnt > 2 else None,
     }
 
+
 def categorical_summary(s: pd.Series, topk=10):
     vc = s.astype("string").value_counts(dropna=True).head(topk)
     return {
@@ -53,6 +55,7 @@ def categorical_summary(s: pd.Series, topk=10):
         "n_unique": int(s.nunique(dropna=True)),
         "top_values": [{"value": str(idx), "count": int(cnt)} for idx, cnt in vc.items()]
     }
+
 
 def profile_dataframe(df: pd.DataFrame) -> Dict[str, Any]:
     """

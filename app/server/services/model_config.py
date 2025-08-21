@@ -43,6 +43,7 @@ def get_model_configs():
     
     return text_model_id, vision_model_id
 
+
 def initialize_models():
     """Initialize models with proper error handling and fallbacks."""
     global _MODEL_TEXT, _MODEL_VISION
@@ -66,6 +67,7 @@ def initialize_models():
     
     return text_model_id, vision_model_id, hf_token
 
+
 def validate_commentary_request(token: str, run_cache: Dict) -> Tuple[bool, Optional[Dict], Optional[str]]:
     """
     Validate a commentary request.
@@ -79,6 +81,7 @@ def validate_commentary_request(token: str, run_cache: Dict) -> Tuple[bool, Opti
         return False, None, "Invalid or expired session token"
     
     return True, rs, None
+
 
 def generate_plots_for_mode(
     df,
@@ -130,6 +133,7 @@ def generate_plots_for_mode(
     print(f"  ✓ Successfully generated {len(all_plots)}/{len(plot_kinds)} plots")
     
     return all_plots, failed_plots, used_player
+
 
 def generate_commentary_with_fallback(
     ui_summary: UISummary,
@@ -212,69 +216,6 @@ def generate_commentary_with_fallback(
     print("\n  ❌ All model combinations failed")
     return None, {"error": "All models failed"}
 
-def generate_basic_statistical_commentary(summary: UISummary, mode: str, player: str) -> str:
-    """
-    Generate basic statistical commentary without AI models.
-    Fallback when all AI models fail.
-    """
-    player_name = player or "Team"
-    
-    # Build basic insights from statistics
-    insights = []
-    
-    # Service analysis
-    srv_acc = summary.get('srv_accuracy', 0)
-    if srv_acc > 0.9:
-        insights.append(f"• Excellent service accuracy at {srv_acc:.1%} - well above competitive standards")
-    elif srv_acc > 0.85:
-        insights.append(f"• Good service accuracy at {srv_acc:.1%} - meeting competitive standards")
-    else:
-        insights.append(f"• Service accuracy at {srv_acc:.1%} needs improvement to reach 85%+ competitive standard")
-    
-    # Receive analysis
-    rcv_acc = summary.get('rcv_accuracy', 0)
-    if rcv_acc > 0.75:
-        insights.append(f"• Strong serve-receive performance at {rcv_acc:.1%} - creating good offensive opportunities")
-    elif rcv_acc > 0.65:
-        insights.append(f"• Adequate receive accuracy at {rcv_acc:.1%} - room for improvement")
-    else:
-        insights.append(f"• Receive accuracy at {rcv_acc:.1%} is limiting offensive options - priority for practice")
-    
-    # Attack analysis
-    atk_acc = summary.get('atk_accuracy', 0)
-    if atk_acc > 0.3:
-        insights.append(f"• Outstanding hitting percentage at {atk_acc:.3f} - elite offensive performance")
-    elif atk_acc > 0.2:
-        insights.append(f"• Solid hitting percentage at {atk_acc:.3f} - competitive offensive output")
-    else:
-        insights.append(f"• Hitting percentage at {atk_acc:.3f} indicates offensive struggles")
-    
-    # Error analysis
-    errors = summary.get('avg_errors_per_set', 0)
-    if errors < 4:
-        insights.append(f"• Excellent error control at {errors:.1f} per set - maintaining discipline")
-    elif errors < 6:
-        insights.append(f"• Acceptable error rate at {errors:.1f} per set - some room for improvement")
-    else:
-        insights.append(f"• High error rate at {errors:.1f} per set is giving away too many points")
-    
-    # Add recommendations based on weakest area
-    recommendations = ["\nRecommendations:"]
-    
-    if srv_acc < 0.85:
-        recommendations.append("• Focus on consistent toss placement in serve practice")
-    if rcv_acc < 0.65:
-        recommendations.append("• Increase serve-receive reps with emphasis on platform angle")
-    if atk_acc < 0.2:
-        recommendations.append("• Work on shot selection and identifying open court areas")
-    if errors > 6:
-        recommendations.append("• Implement 'zero error' drills focusing on ball control")
-    
-    # Add header and footer
-    header = f"Statistical Analysis for {player_name} ({mode.title()} View)\n"
-    footer = "\n\nNote: This is a basic statistical summary. AI-powered insights are temporarily unavailable."
-    
-    return header + "\n".join(insights) + "\n".join(recommendations) + footer
 
 def build_commentary_response(
     commentary_text: str,
@@ -301,6 +242,7 @@ def build_commentary_response(
         response["note"] = "Generated using statistical analysis (AI models unavailable)"
     
     return response
+
 
 def build_error_response(
     error_message: Optional[str],
@@ -331,3 +273,4 @@ def build_error_response(
     }
     
     return response, status_codes.get(error_code, 500)
+

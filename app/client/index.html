@@ -5,7 +5,13 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Volley Stats - Performance Analytics Reimagined</title>
-    <link rel="icon" type="image/svg+xml" href="/volleyball.svg" />
+    <!-- Volleyball Favicon using Emoji -->
+    <link rel="icon"
+        href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🏐</text></svg>">
+
+    <!-- Alternative method for older browsers -->
+    <link rel="alternate icon" type="image/png"
+        href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==">
 
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -538,6 +544,24 @@
             background: rgba(255, 255, 255, 0.05);
             box-shadow: var(--shadow-lg);
             transform: translateY(-2px);
+        }
+
+        .card-no-hover {
+            /* All the card styles without hover effects */
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-xl);
+            padding: var(--space-xl);
+            /* Explicitly disable hover */
+            transition: none !important;
+        }
+
+        .card-no-hover:hover {
+            transform: none !important;
+            box-shadow: none !important;
+            background: rgba(255, 255, 255, 0.03) !important;
         }
 
         /* Grid Layouts */

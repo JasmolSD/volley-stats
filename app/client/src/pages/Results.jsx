@@ -27,6 +27,10 @@ export default function Results({ token, summary, setLoading }) {
     const [loadingCommentary, setLoadingCommentary] = useState(false);
     const [commentaryGenerated, setCommentaryGenerated] = useState(false);
 
+    // NEW: State for model information
+    const [modelsUsed, setModelsUsed] = useState(null);
+    const [commentarySummary, setCommentarySummary] = useState(null);
+
     useEffect(() => {
         if (!token) {
             navigate('/');
@@ -146,18 +150,40 @@ export default function Results({ token, summary, setLoading }) {
         loadPlots();
     }, [token, selectedPlayer, mode, plotTypes]);
 
-    // Generate commentary on demand
+    // UPDATED: Generate commentary and capture model information
     const handleGenerateCommentary = async () => {
         if (!token) return;
 
         setLoadingCommentary(true);
         try {
             const res = await getCommentary(token, selectedPlayer || undefined, mode);
+
+            // Extract commentary text
             setCommentary(res.commentary || "");
+
+            // NEW: Extract model information
+            if (res.models_used) {
+                setModelsUsed(res.models_used);
+                console.log('Models used:', res.models_used);
+            } else if (res.text_model && res.vision_model) {
+                // Fallback to direct model fields
+                setModelsUsed({
+                    text: res.text_model,
+                    vision: res.vision_model
+                });
+            }
+
+            // NEW: Store enhanced summary if available
+            if (res.summary) {
+                setCommentarySummary(res.summary);
+                console.log('Commentary summary with stats:', res.summary);
+            }
+
             setCommentaryGenerated(true);
         } catch (err) {
             console.error('Failed to load commentary:', err);
             setCommentary("Failed to generate commentary. Please try again.");
+            setModelsUsed(null);
         } finally {
             setLoadingCommentary(false);
         }
@@ -167,6 +193,8 @@ export default function Results({ token, summary, setLoading }) {
     useEffect(() => {
         setCommentary("");
         setCommentaryGenerated(false);
+        setModelsUsed(null);
+        setCommentarySummary(null);
     }, [selectedPlayer, mode]);
 
     // Initialize scroll animations
@@ -346,12 +374,12 @@ export default function Results({ token, summary, setLoading }) {
                 />
             )}
 
-            {/* AI Commentary */}
+            {/* AI Commentary - ENHANCED WITH MODEL INFO */}
             <section className="scroll-reveal" style={{ marginTop: 'var(--space-3xl)' }}>
                 <h2 style={{ textAlign: 'center', marginBottom: 'var(--space-2xl)' }}>
                     AI-Powered Insights
                 </h2>
-                <div className="card" style={{ maxWidth: '800px', margin: '0 auto' }}>
+                <div className="card-no-hover" style={{ maxWidth: '800px', margin: '0 auto' }}>
                     <AICommentary
                         commentary={commentary}
                         commentaryGenerated={commentaryGenerated}
@@ -360,6 +388,9 @@ export default function Results({ token, summary, setLoading }) {
                         plots={plots}
                         mode={mode}
                         onGenerateCommentary={handleGenerateCommentary}
+                        modelsUsed={modelsUsed}  // NEW: Pass model info
+                        commentarySummary={commentarySummary}  // NEW: Pass enhanced summary
+                        availablePlayers={players}
                     />
                 </div>
             </section>

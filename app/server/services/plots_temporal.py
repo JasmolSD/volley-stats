@@ -13,8 +13,6 @@ from matplotlib.container import BarContainer
 from matplotlib.patches import Rectangle
 import seaborn as sns
 
-
-# --- Temporal Plots ---
 def plot_avg_errors(team_overall: pd.DataFrame, player_name: str) -> Figure:
     """
     Return a Figure: average error rates per set over time.
@@ -87,6 +85,7 @@ def plot_avg_errors(team_overall: pd.DataFrame, player_name: str) -> Figure:
     fig.tight_layout(rect=(0, 0, 0.90, 0.95))
     return fig
 
+
 def plot_service_temporal(team_overall: pd.DataFrame, player_name: str) -> Figure:
     """
     Return a Figure: avg service errors/aces/total (bars) + cumulative accuracy line.
@@ -150,6 +149,7 @@ def plot_service_temporal(team_overall: pd.DataFrame, player_name: str) -> Figur
 
     fig.tight_layout(rect=(0, 0, 0.92, 0.95))  # Adjusted for legend space
     return fig
+
 
 def plot_receive_temporal(team_overall: pd.DataFrame, player_name: str) -> Figure:
     """
@@ -221,6 +221,7 @@ def plot_receive_temporal(team_overall: pd.DataFrame, player_name: str) -> Figur
 
     fig.tight_layout(rect=(0, 0, 0.92, 0.95))  # Adjusted for legend space
     return fig
+
 
 def plot_offensive_temporal(
     team_overall: pd.DataFrame,
@@ -321,6 +322,7 @@ def plot_offensive_temporal(
     fig.tight_layout(rect=(0, 0, 0.92, 0.95))  # Adjusted for legend space
     return fig
 
+
 def plot_attack_accuracy(
     df: pd.DataFrame,
     player_name: str,
@@ -392,6 +394,7 @@ def plot_attack_accuracy(
 
     fig.tight_layout(rect=(0, 0, 0.90, 0.95))
     return fig
+
 
 def plot_player_errors(df: pd.DataFrame, player_name: str) -> Figure:
     """
@@ -563,3 +566,4 @@ def plot_assists_per_attack(
 
     fig.tight_layout(rect=(0, 0, 0.92, 0.95))  # Adjusted for legend space
     return fig
+

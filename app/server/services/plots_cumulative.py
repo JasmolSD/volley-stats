@@ -292,3 +292,4 @@ def plot_service_metrics(
 
     fig.tight_layout(rect=(0, 0, 0.92, 0.95))  # Adjusted for legend space
     return fig
+

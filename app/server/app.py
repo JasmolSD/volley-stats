@@ -4,8 +4,8 @@ from flask import Flask, request, jsonify
 from flask_cors import CORS
 from werkzeug.utils import secure_filename
 import os, uuid, pandas as pd
-from typing import cast, TypedDict, Literal, Dict, Optional, List
-from types_common import PlotKind, UISummary, Meta
+from typing import cast, TypedDict, Dict, Optional
+from types_common import PlotKind, UISummary, Meta, PlotMode
 from pathlib import Path
 from dotenv import load_dotenv
 
@@ -13,14 +13,13 @@ from dotenv import load_dotenv
 from services.io_loader import load_dataframe
 from services.profiling import profile_dataframe
 from services.plotting import generate_plots, render_plot
-from services.agents import generate_commentary
+from services.agents import generate_commentary, generate_basic_statistical_commentary
 from services.utils.cleanup import purge_dirs
 from services.model_config import (
     initialize_models,
     validate_commentary_request,
     generate_plots_for_mode,
     generate_commentary_with_fallback,
-    generate_basic_statistical_commentary,
     build_commentary_response,
     build_error_response
 )
@@ -47,10 +46,6 @@ UPLOADS_DIR = Path(app.config['UPLOAD_FOLDER']).resolve()
 for d in (STATIC_DIR, UPLOADS_DIR):
     d.mkdir(parents=True, exist_ok=True)
 
-
-# Plotting Modes
-PlotMode = Literal["cumulative", "temporal"]
-
 # Simple in-memory cache: run_id -> DataFrame
 class RunState(TypedDict):
     df: pd.DataFrame
@@ -60,7 +55,11 @@ class RunState(TypedDict):
 
 RUN_CACHE: dict[str, RunState] = {}
 
-def _get_or_build_ui_summary(token: str, mode:PlotMode, player_name: Optional[str] = None) -> UISummary:
+def _get_or_build_ui_summary(
+        token: str, 
+        mode:PlotMode, 
+        player_name: Optional[str] = None
+) -> UISummary:
     """
     Returns a UISummary for the given token, optionally filtered by player_name.
     Caches results per (token, normalized player) to avoid recomputation.
@@ -80,6 +79,10 @@ def _get_or_build_ui_summary(token: str, mode:PlotMode, player_name: Optional[st
         "rcv_accuracy": 0.0,
         "atk_accuracy": 0.0,
         "avg_errors_per_set": 0.0,
+        "analysis_mode": mode,
+        "mode_specific_stats": None,
+        "text_model": None,
+        "vision_model": None
     }
 
     if not rs:
@@ -113,6 +116,11 @@ def _get_or_build_ui_summary(token: str, mode:PlotMode, player_name: Optional[st
 
     # compute (filtered when needed) and cache
     ui = compute_summary(df, mode=mode, player_name=None if is_all else name_raw)
+
+    # Debug logging
+    print(f"[DEBUG _get_or_build_ui_summary] Computed summary for mode={mode}, player={cache_key}")
+    print(f"[DEBUG _get_or_build_ui_summary] avg_errors_per_set = {ui.get('avg_errors_per_set', 'NOT FOUND')}")
+
 
     if is_all:
         rs["ui_summary"] = ui  # maintain legacy unfiltered cache
@@ -404,11 +412,19 @@ def commentary():
         )
         models_used = {
             "method": "statistical_analysis",
+            "text": "statistical_analysis",
+            "vision": "none",
             "note": "AI models unavailable"
         }
         is_fallback = True
     else:
         is_fallback = False
+        
+    # Update UI Summary with models_used
+    enriched_summary = dict(ui_summary)  # Create a copy to avoid modifying cache
+    enriched_summary["models_used"] = models_used
+    enriched_summary["analysis_mode"] = mode
+    enriched_summary["analysis_player"] = used_player
 
     response = build_commentary_response(
         commentary_text=commentary_text,
@@ -419,6 +435,12 @@ def commentary():
         models_used=models_used,
         is_fallback=is_fallback
     )
+    # Add the enriched summary to the response
+    response["summary"] = enriched_summary
+    
+    # Also include model names at the top level for easy access
+    response["text_model"] = models_used.get("text", "unknown")
+    response["vision_model"] = models_used.get("vision", "unknown")
     
     return jsonify(response)
 

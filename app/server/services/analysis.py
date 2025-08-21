@@ -1,19 +1,13 @@
 # server/analysis.py
 from __future__ import annotations
-import io, base64
 import pandas as pd
 import numpy as np
-import matplotlib.pyplot as plt
-from matplotlib.figure import Figure
 from fuzzywuzzy import process # type: ignore
-from typing import Literal, Optional, Tuple, Dict, List
-from types_common import PlotKind, UISummary
+from typing import Optional, Tuple, Dict, List, Any
+from types_common import UISummary, PlotMode
 
 # Global Variable for fuzzymatch similarity threshold
 THRESHOLD = 80
-
-# Different plot modes
-PlotMode = Literal["cumulative", "temporal"]
 
 def resolve_player_name(
         df: pd.DataFrame,
@@ -58,6 +52,7 @@ def resolve_player_name(
     filtered_df = df.loc[df["player_key"] == used_key].copy()
     return filtered_df, str(display_name)
 
+
 def load_and_summarize_csv(file_path: str, review: bool = False):
     """
     Loads a CSV file into a pandas DataFrame,
@@ -92,6 +87,7 @@ def load_and_summarize_csv(file_path: str, review: bool = False):
         print(f"📈 Descriptive statistics of the DataFrame:\n{df.describe()}\n")
 
     return df  # Return the cleaned DataFrame
+
 
 def get_player_data(df: pd.DataFrame, player_name: str) -> Tuple[pd.DataFrame, str]:
     """
@@ -160,6 +156,7 @@ def get_player_data(df: pd.DataFrame, player_name: str) -> Tuple[pd.DataFrame, s
         f"Error: '{player_name}' not found. Closest candidate '{closest_match}' scored {score} (< {THRESHOLD})."
     )
 
+
 def preprocess_dataframe(df: pd.DataFrame) -> pd.DataFrame:
     """
     Standardize dataframe before computing metrics.
@@ -204,6 +201,7 @@ def preprocess_dataframe(df: pd.DataFrame) -> pd.DataFrame:
     df = df.fillna(0)
 
     return df
+
 
 def add_accuracy_metrics(df: pd.DataFrame) -> pd.DataFrame:
     """
@@ -265,6 +263,7 @@ def add_accuracy_metrics(df: pd.DataFrame) -> pd.DataFrame:
 
     return df
 
+
 def add_average_metrics(df: pd.DataFrame) -> pd.DataFrame:
     """
     Safe per-game averages; avoids div-by-zero and preserves your rounding.
@@ -303,10 +302,12 @@ def add_average_metrics(df: pd.DataFrame) -> pd.DataFrame:
 
     return df
 
+
 def read_tablelike(file_stream, filename: str) -> pd.DataFrame:
     if filename.lower().endswith((".xlsx", ".xls")):
         return pd.read_excel(file_stream)
     return pd.read_csv(file_stream)
+
 
 def _infer_date_range(df: pd.DataFrame) -> tuple[str, str]:
     for c in ("date", "match_date", "game_date", "timestamp"):
@@ -316,6 +317,7 @@ def _infer_date_range(df: pd.DataFrame) -> tuple[str, str]:
             if not s.empty:
                 return s.min().date().isoformat(), s.max().date().isoformat()
     return "—", "—"
+
 
 def compute_summary(
         df: pd.DataFrame,
@@ -332,15 +334,20 @@ def compute_summary(
     # ---- prepare the df based on the mode ----
     dfs = prepare_dfs(df, mode=mode)
     if mode == "cumulative":
-        df = dfs["df_overall"]
+        df_work = dfs["df_overall"]
+        # Compute cumulative-specific statistics
+        mode_stats = compute_cumulative_statistics(df_work, player_name)
     else:
-        df = dfs["df_player_date_no_pos"]
-
+        df_work = dfs["df_player_date_no_pos"]
+        # Compute temporal-specific statistics
+        mode_stats = compute_temporal_statistics(df_work, player_name)
 
     # ---- Optional filtering (case-insensitive) ----
     name = (player_name or "").strip().lower()
     no_filter = (name == "") or (name in {"all", "team", "all/team"})
-    work = df if no_filter or "player_name" not in df.columns else df[df["player_name"].astype(str).str.strip().str.lower() == name]
+    work = df_work if no_filter or "player_name" not in df_work.columns else df_work[df_work["player_name"].astype(str).str.strip().str.lower() == name]
+
+    print(f"[DEBUG compute_summary] games_count exists: {True if 'games_count' in work.columns else False}")
 
     # Helper: sum a column if present, else 0.0
     def s(col: str) -> float:
@@ -373,8 +380,13 @@ def compute_summary(
     total_games = float(work["games_count"].fillna(0).sum()) if "games_count" in work.columns else 0.0
     avg_errors_per_set: float = round(total_errors / total_games, 3) if total_games > 0 else 0.0
 
+    # Debug logging
+    print(f"[DEBUG compute_summary] Mode: {mode}, Player: {player_name}")
+    print(f"[DEBUG compute_summary] Total errors: {total_errors}, Total games: {total_games}")
+    print(f"[DEBUG compute_summary] Avg errors per set: {avg_errors_per_set}")
 
-    return {
+    # Build the enhanced summary with mode-specific stats
+    summary: UISummary = {
         "rows": rows,                 # int
         "players": players,           # List[str]
         "date_min": date_min,         # str (no None)
@@ -383,7 +395,19 @@ def compute_summary(
         "rcv_accuracy": rcv_accuracy, # float (no None)
         "atk_accuracy": atk_accuracy, # float (no None)
         "avg_errors_per_set": avg_errors_per_set, # float (no None)
+        "analysis_mode": mode,
+        "mode_specific_stats": None,
+        "text_model": None,
+        "vision_model": None
     }
+    
+    # Add mode-specific statistics as additional fields
+    # These will be accessible to the LLM for better insights
+    if mode_stats:
+        summary["mode_specific_stats"] = mode_stats
+    
+    return summary
+
 
 # --- Switching Beteen CUMULATIVE & TEMPORAL PLOTS ---
 def build_cumulative(df: pd.DataFrame) -> Dict[str, pd.DataFrame]:
@@ -404,7 +428,12 @@ def build_cumulative(df: pd.DataFrame) -> Dict[str, pd.DataFrame]:
     )
     # 4) accuracy metrics last
     df_overall = add_accuracy_metrics(df_overall)
+
+    # Debug
+    print(f"[DEBUG build_cumulative] games_count sum: {df_grouped['games_count'].sum()}")
+    
     return {"df_overall": df_overall}
+
 
 def build_temporal(df: pd.DataFrame) -> Dict[str, pd.DataFrame]:
     # initial grouping (same as cumulative step 1)
@@ -450,5 +479,153 @@ def build_temporal(df: pd.DataFrame) -> Dict[str, pd.DataFrame]:
         "df_player_date_no_pos": df_player_date_no_pos
     }
 
+
 def prepare_dfs(df: pd.DataFrame, mode: PlotMode) -> Dict[str, pd.DataFrame]:
     return build_cumulative(df) if mode == "cumulative" else build_temporal(df)
+
+
+def compute_temporal_statistics(df: pd.DataFrame, player_name: Optional[str] = None) -> Dict[str, Any]:
+    """
+    Compute time-series specific statistics for temporal mode.
+    Returns trends, consistency metrics, and performance changes over time.
+    """
+    stats = {}
+    
+    # Filter by player if specified
+    if player_name and "player_name" in df.columns:
+        name = player_name.strip().lower()
+        if name and name not in {"all", "team", "all/team"}:
+            df = df[df["player_name"].astype(str).str.strip().str.lower() == name]
+    
+    # Ensure date column exists and is datetime
+    if "date" not in df.columns:
+        return stats
+    
+    df = df.copy()
+    df["date"] = pd.to_datetime(df["date"], errors="coerce")
+    df = df.sort_values("date")
+    
+    # Calculate trends over time
+    if len(df) > 1:
+        # Service trend
+        if "srv_accuracy" in df.columns:
+            srv_values = df["srv_accuracy"].dropna()
+            if len(srv_values) > 1:
+                srv_trend = np.polyfit(range(len(srv_values)), srv_values, 1)[0]
+                stats["srv_trend"] = float(srv_trend)
+                stats["srv_consistency"] = float(srv_values.std())
+                stats["srv_recent_avg"] = float(srv_values.tail(3).mean())
+                stats["srv_best_game"] = float(srv_values.max())
+                stats["srv_worst_game"] = float(srv_values.min())
+        
+        # Receive trend
+        if "rcv_accuracy" in df.columns:
+            rcv_values = df["rcv_accuracy"].dropna()
+            if len(rcv_values) > 1:
+                rcv_trend = np.polyfit(range(len(rcv_values)), rcv_values, 1)[0]
+                stats["rcv_trend"] = float(rcv_trend)
+                stats["rcv_consistency"] = float(rcv_values.std())
+                stats["rcv_recent_avg"] = float(rcv_values.tail(3).mean())
+                stats["rcv_best_game"] = float(rcv_values.max())
+                stats["rcv_worst_game"] = float(rcv_values.min())
+        
+        # Attack trend
+        if "atk_accuracy" in df.columns:
+            atk_values = df["atk_accuracy"].dropna()
+            if len(atk_values) > 1:
+                atk_trend = np.polyfit(range(len(atk_values)), atk_values, 1)[0]
+                stats["atk_trend"] = float(atk_trend)
+                stats["atk_consistency"] = float(atk_values.std())
+                stats["atk_recent_avg"] = float(atk_values.tail(3).mean())
+                stats["atk_best_game"] = float(atk_values.max())
+                stats["atk_worst_game"] = float(atk_values.min())
+        
+        # Error trend (per set)
+        if "avg_tot_errors" in df.columns:
+            err_values = df["avg_tot_errors"].dropna()
+            if len(err_values) > 1:
+                err_trend = np.polyfit(range(len(err_values)), err_values, 1)[0]
+                stats["error_trend"] = float(err_trend)  # Negative is good
+                stats["error_consistency"] = float(err_values.std())
+                stats["error_recent_avg"] = float(err_values.tail(3).mean())
+                stats["error_best_game"] = float(err_values.min())  # Lowest errors
+                stats["error_worst_game"] = float(err_values.max())
+        
+        # Performance momentum (last 3 games vs overall)
+        if "win" in df.columns:
+            recent_wins = df.tail(3)["win"].sum()
+            total_wins = df["win"].sum()
+            total_games = len(df)
+            stats["recent_win_rate"] = float(recent_wins / min(3, len(df)))
+            stats["overall_win_rate"] = float(total_wins / total_games) if total_games > 0 else 0
+            stats["momentum"] = stats["recent_win_rate"] - stats["overall_win_rate"]
+    
+    # Date range info
+    if not df.empty:
+        stats["first_game"] = df["date"].min().isoformat() if pd.notna(df["date"].min()) else None
+        stats["last_game"] = df["date"].max().isoformat() if pd.notna(df["date"].max()) else None
+        stats["games_analyzed"] = len(df)
+    
+    return stats
+
+
+def compute_cumulative_statistics(df: pd.DataFrame, player_name: Optional[str] = None) -> Dict[str, Any]:
+    """
+    Compute aggregated statistics for cumulative mode.
+    Returns totals, averages, and overall performance metrics.
+    """
+    stats = {}
+    
+    # Filter by player if specified
+    if player_name and "player_name" in df.columns:
+        name = player_name.strip().lower()
+        if name and name not in {"all", "team", "all/team"}:
+            df = df[df["player_name"].astype(str).str.strip().str.lower() == name]
+    
+    if df.empty:
+        return stats
+    
+    # Total games and sets
+    stats["total_games"] = int(df["games_count"].sum()) if "games_count" in df.columns else 0
+    stats["total_wins"] = int(df["win"].sum()) if "win" in df.columns else 0
+    stats["total_losses"] = int(df["lose"].sum()) if "lose" in df.columns else 0
+    
+    # Service totals
+    if "srv_total" in df.columns:
+        stats["total_serves"] = int(df["srv_total"].sum())
+        stats["total_aces"] = int(df["srv_ace"].sum()) if "srv_ace" in df.columns else 0
+        stats["total_srv_errors"] = int(df["srv_error"].sum()) if "srv_error" in df.columns else 0
+        stats["ace_percentage"] = float(stats["total_aces"] / stats["total_serves"]) if stats["total_serves"] > 0 else 0
+    
+    # Receive totals
+    if "rcv_total" in df.columns:
+        stats["total_receives"] = int(df["rcv_total"].sum())
+        stats["total_perfect_passes"] = int(df["rcv_perfect"].sum()) if "rcv_perfect" in df.columns else 0
+        stats["total_rcv_errors"] = int(df["rcv_error"].sum()) if "rcv_error" in df.columns else 0
+        stats["perfect_pass_percentage"] = float(stats["total_perfect_passes"] / stats["total_receives"]) if stats["total_receives"] > 0 else 0
+    
+    # Attack totals
+    if "atk_total" in df.columns:
+        stats["total_attacks"] = int(df["atk_total"].sum())
+        stats["total_kills"] = int(df["atk_kill"].sum()) if "atk_kill" in df.columns else 0
+        stats["total_atk_errors"] = int(df["atk_error"].sum()) if "atk_error" in df.columns else 0
+        stats["kill_percentage"] = float(stats["total_kills"] / stats["total_attacks"]) if stats["total_attacks"] > 0 else 0
+    
+    # Block and dig totals
+    if "blk_total" in df.columns:
+        stats["total_blocks"] = float(df["blk_total"].sum())
+    if "dig_total" in df.columns:
+        stats["total_digs"] = int(df["dig_total"].sum())
+    
+    # Overall efficiency metrics
+    if "assists" in df.columns:
+        stats["total_assists"] = int(df["assists"].sum())
+    
+    # Per-game averages
+    if stats["total_games"] > 0:
+        for key in ["total_serves", "total_aces", "total_attacks", "total_kills", "total_assists"]:
+            if key in stats:
+                stats[f"{key.replace('total_', 'avg_')}_per_game"] = round(stats[key] / stats["total_games"], 2)
+    
+    return stats
+

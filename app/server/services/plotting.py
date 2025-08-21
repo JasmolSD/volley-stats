@@ -27,14 +27,13 @@ from .plots_cumulative import (
     plot_receive_performance,
     plot_service_metrics
 )
-
-
-PlotMode = Literal["cumulative", "temporal"]
+from types_common import PlotMode
 
 # ---------- Tiny utils ----------
 
 def _ensure_dir(path: str) -> None:
     os.makedirs(path, exist_ok=True)
+
 
 def _fig_to_png_bytes(fig: Figure) -> bytes:
     buf = io.BytesIO()
@@ -44,6 +43,7 @@ def _fig_to_png_bytes(fig: Figure) -> bytes:
     buf.seek(0)
     return buf.read()
 
+
 def _save_or_b64(fig: Figure, out_path: Optional[str] = None) -> Optional[str]:
     png = _fig_to_png_bytes(fig)
     if out_path:
@@ -52,10 +52,12 @@ def _save_or_b64(fig: Figure, out_path: Optional[str] = None) -> Optional[str]:
         return None
     return "data:image/png;base64," + base64.b64encode(png).decode("utf-8")
 
+
 def _filter_by_player(df: pd.DataFrame, player_name: Optional[str]) -> pd.DataFrame:
     if player_name and "player_name" in df.columns:
         return df[df["player_name"].astype(str) == str(player_name)]
     return df
+
 
 def fig_to_base64_png(fig: Optional[Figure] = None) -> str:
     if fig is None:
@@ -202,3 +204,4 @@ def generate_plots(
         images.append({"name": filename, "url": f"/static/{run_id}/{filename}"})
 
     return images
+

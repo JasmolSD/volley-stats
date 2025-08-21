@@ -39,7 +39,7 @@ dist/
 *.egg-info/
 
 # Static/tmp artifacts
-server/static/*
-!server/static/.gitkeep
-server/tmp/*
-!server/tmp/.gitkeep
+/server/server/static/**
+!/server/server/static/.gitkeep
+/server/server/tmp/**
+!/server/server/tmp/.gitkeep

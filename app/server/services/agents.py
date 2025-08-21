@@ -46,6 +46,7 @@ def _load_vision_model(
     
     return _VISION_MODEL, _VISION_PROCESSOR
 
+
 def _load_model_and_tokenizer(
         model_id: str,
         hf_token: Optional[str]
@@ -129,6 +130,7 @@ def _load_model_and_tokenizer(
     )
     return _PIPE, _TOKENIZER
 
+
 def load_plot_images(plot_data: Dict[str, Any] | List[Dict[str, Any]]) -> List[Dict[str, Any]]:
     """
     Load and process plot images for vision analysis.
@@ -163,6 +165,7 @@ def load_plot_images(plot_data: Dict[str, Any] | List[Dict[str, Any]]) -> List[D
     
     return processed_images
 
+
 def build_agent_context(
         summary: UISummary,
         meta: Meta,
@@ -170,48 +173,182 @@ def build_agent_context(
         plot_images: List[Dict[str,Any]]
 ) -> str:
     """
-    Turn summary/meta/images/plots into context that can be fed into a VLM.
+    Turn summary/meta/images/plots into DETAILED context with ACTUAL DATA VALUES.
+    This is critical to prevent hallucinations! Now includes mode-specific statistics.
     """
     parts: list[str] = []
 
+    # Determine analysis mode
+    analysis_mode = summary.get('analysis_mode', 'cumulative')  # type: ignore
+    mode_stats = summary.get('mode_specific_stats', {})  # type: ignore
+    
     # Dataset Overview using meta
+    parts.append(f"=== VOLLEYBALL TEAM PERFORMANCE DATA ({analysis_mode.upper()} ANALYSIS) ===\n")
     parts.append(f"Dataset Overview:")
     parts.append(f"- Total Rows: {meta.get('rows', summary['rows'])}")
     parts.append(f"- Total Columns: {meta.get('cols', 'unknown')}")
-    parts.append(f"- Players: {len(summary['players'])} ({', '.join(summary['players'][:5])}{'...' if len(summary['players']) > 5 else ''})")
+    
+    # List actual player names from the data
+    player_list = summary['players']
+    parts.append(f"- Total Players: {len(player_list)}")
+    parts.append(f"- Player Names: {', '.join(player_list)}")
+    
+    # Date range from actual data
     parts.append(f"- Date range: {summary['date_min']} to {summary['date_max']}")
     
     # Column information from meta
     if 'columns' in meta:
         cols = meta['columns']
         parts.append(f"- Available metrics: {len(cols)} columns")
-        if len(cols) <= 10:
-            parts.append(f"  Columns: {', '.join(cols)}")
+        # Include the actual column names so LLM knows what data is available
+        parts.append(f"  Key columns: {', '.join(cols[:20])}")  # First 20 columns
     
-    # Team Performance Summary
-    parts.append(f"\nTeam Performance Averages:")
-    parts.append(f"  • Service Accuracy: {summary.get('srv_accuracy', 0):.1%}")
-    parts.append(f"  • Receive Accuracy: {summary.get('rcv_accuracy', 0):.1%}")
-    parts.append(f"  • Attack Accuracy: {summary.get('atk_accuracy', 0):.3f}")
-    parts.append(f"  • Avg Errors/Set: {summary.get('avg_errors_per_set', 0):.2f}")
+    # CRITICAL: Provide ACTUAL numerical values from the summary
+    parts.append(f"\n=== ACTUAL TEAM PERFORMANCE METRICS (DO NOT MAKE UP NUMBERS) ===")
+    
+    # Service metrics with exact values
+    srv_acc = summary.get('srv_accuracy', 0)
+    parts.append(f"\nService Performance:")
+    parts.append(f"  • Service Accuracy: {srv_acc:.3f} ({srv_acc*100:.1f}%)")
+    parts.append(f"  • This is the ACTUAL measured service accuracy from the data")
+    
+    # Receive metrics with exact values
+    rcv_acc = summary.get('rcv_accuracy', 0)
+    parts.append(f"\nReceive Performance:")
+    parts.append(f"  • Receive Accuracy: {rcv_acc:.3f} ({rcv_acc*100:.1f}%)")
+    parts.append(f"  • This is the ACTUAL measured receive accuracy from the data")
+    
+    # Attack metrics with exact values
+    atk_acc = summary.get('atk_accuracy', 0)
+    parts.append(f"\nAttack Performance:")
+    parts.append(f"  • Attack Accuracy (Hitting Percentage): {atk_acc:.3f}")
+    parts.append(f"  • This is the ACTUAL hitting percentage from the data")
+    
+    # Error metrics with exact values
+    avg_errors = summary.get('avg_errors_per_set', 0)
+    parts.append(f"\nError Metrics:")
+    parts.append(f"  • Average Errors per Set: {avg_errors:.2f}")
+    parts.append(f"  • This is the ACTUAL measured error rate from the data")
+    
+    # MODE-SPECIFIC STATISTICS
+    if analysis_mode == 'temporal' and mode_stats:
+        parts.append(f"\n=== TEMPORAL ANALYSIS - TRENDS AND PATTERNS ===")
+        
+        # Service trends
+        if 'srv_trend' in mode_stats:
+            trend_dir = "improving" if mode_stats['srv_trend'] > 0 else "declining"
+            parts.append(f"\nService Trends:")
+            parts.append(f"  • Trend: {trend_dir} ({mode_stats['srv_trend']:.4f} per game)")
+            parts.append(f"  • Consistency (std dev): {mode_stats.get('srv_consistency', 0):.3f}")
+            parts.append(f"  • Recent 3-game avg: {mode_stats.get('srv_recent_avg', 0)*100:.1f}%")
+            parts.append(f"  • Best game: {mode_stats.get('srv_best_game', 0)*100:.1f}%")
+            parts.append(f"  • Worst game: {mode_stats.get('srv_worst_game', 0)*100:.1f}%")
+        
+        # Receive trends
+        if 'rcv_trend' in mode_stats:
+            trend_dir = "improving" if mode_stats['rcv_trend'] > 0 else "declining"
+            parts.append(f"\nReceive Trends:")
+            parts.append(f"  • Trend: {trend_dir} ({mode_stats['rcv_trend']:.4f} per game)")
+            parts.append(f"  • Consistency (std dev): {mode_stats.get('rcv_consistency', 0):.3f}")
+            parts.append(f"  • Recent 3-game avg: {mode_stats.get('rcv_recent_avg', 0)*100:.1f}%")
+            parts.append(f"  • Best game: {mode_stats.get('rcv_best_game', 0)*100:.1f}%")
+            parts.append(f"  • Worst game: {mode_stats.get('rcv_worst_game', 0)*100:.1f}%")
+        
+        # Attack trends
+        if 'atk_trend' in mode_stats:
+            trend_dir = "improving" if mode_stats['atk_trend'] > 0 else "declining"
+            parts.append(f"\nAttack Trends:")
+            parts.append(f"  • Trend: {trend_dir} ({mode_stats['atk_trend']:.4f} per game)")
+            parts.append(f"  • Consistency (std dev): {mode_stats.get('atk_consistency', 0):.3f}")
+            parts.append(f"  • Recent 3-game avg: {mode_stats.get('atk_recent_avg', 0):.3f}")
+            parts.append(f"  • Best game: {mode_stats.get('atk_best_game', 0):.3f}")
+            parts.append(f"  • Worst game: {mode_stats.get('atk_worst_game', 0):.3f}")
+        
+        # Error trends
+        if 'error_trend' in mode_stats:
+            trend_dir = "improving" if mode_stats['error_trend'] < 0 else "worsening"  # Negative is good for errors
+            parts.append(f"\nError Trends:")
+            parts.append(f"  • Trend: {trend_dir} ({abs(mode_stats['error_trend']):.3f} per game)")
+            parts.append(f"  • Recent 3-game avg: {mode_stats.get('error_recent_avg', 0):.2f} errors/set")
+            parts.append(f"  • Best game: {mode_stats.get('error_best_game', 0):.2f} errors/set")
+            parts.append(f"  • Worst game: {mode_stats.get('error_worst_game', 0):.2f} errors/set")
+        
+        # Momentum
+        if 'momentum' in mode_stats:
+            parts.append(f"\nPerformance Momentum:")
+            parts.append(f"  • Recent win rate: {mode_stats.get('recent_win_rate', 0)*100:.1f}%")
+            parts.append(f"  • Overall win rate: {mode_stats.get('overall_win_rate', 0)*100:.1f}%")
+            parts.append(f"  • Momentum: {'+' if mode_stats['momentum'] > 0 else ''}{mode_stats['momentum']*100:.1f}%")
+    
+    elif analysis_mode == 'cumulative' and mode_stats:
+        parts.append(f"\n=== CUMULATIVE TOTALS AND AVERAGES ===")
+        
+        # Game totals
+        parts.append(f"\nGames Summary:")
+        parts.append(f"  • Total games: {mode_stats.get('total_games', 0)}")
+        parts.append(f"  • Wins: {mode_stats.get('total_wins', 0)}")
+        parts.append(f"  • Losses: {mode_stats.get('total_losses', 0)}")
+        
+        # Service totals
+        if 'total_serves' in mode_stats:
+            parts.append(f"\nService Totals:")
+            parts.append(f"  • Total serves: {mode_stats['total_serves']}")
+            parts.append(f"  • Total aces: {mode_stats.get('total_aces', 0)} ({mode_stats.get('ace_percentage', 0)*100:.1f}%)")
+            parts.append(f"  • Total errors: {mode_stats.get('total_srv_errors', 0)}")
+            parts.append(f"  • Avg serves/game: {mode_stats.get('avg_serves_per_game', 0):.1f}")
+            parts.append(f"  • Avg aces/game: {mode_stats.get('avg_aces_per_game', 0):.1f}")
+        
+        # Receive totals
+        if 'total_receives' in mode_stats:
+            parts.append(f"\nReceive Totals:")
+            parts.append(f"  • Total receives: {mode_stats['total_receives']}")
+            parts.append(f"  • Perfect passes: {mode_stats.get('total_perfect_passes', 0)} ({mode_stats.get('perfect_pass_percentage', 0)*100:.1f}%)")
+            parts.append(f"  • Total errors: {mode_stats.get('total_rcv_errors', 0)}")
+        
+        # Attack totals
+        if 'total_attacks' in mode_stats:
+            parts.append(f"\nAttack Totals:")
+            parts.append(f"  • Total attacks: {mode_stats['total_attacks']}")
+            parts.append(f"  • Total kills: {mode_stats.get('total_kills', 0)} ({mode_stats.get('kill_percentage', 0)*100:.1f}%)")
+            parts.append(f"  • Total errors: {mode_stats.get('total_atk_errors', 0)}")
+            parts.append(f"  • Avg attacks/game: {mode_stats.get('avg_attacks_per_game', 0):.1f}")
+            parts.append(f"  • Avg kills/game: {mode_stats.get('avg_kills_per_game', 0):.1f}")
+        
+        # Other totals
+        if 'total_blocks' in mode_stats:
+            parts.append(f"  • Total blocks: {mode_stats['total_blocks']:.1f}")
+        if 'total_digs' in mode_stats:
+            parts.append(f"  • Total digs: {mode_stats['total_digs']}")
+        if 'total_assists' in mode_stats:
+            parts.append(f"  • Total assists: {mode_stats['total_assists']}")
+            parts.append(f"  • Avg assists/game: {mode_stats.get('avg_assists_per_game', 0):.1f}")
+
+    # Add interpretation guidelines
+    parts.append(f"\n=== IMPORTANT INSTRUCTIONS ===")
+    parts.append("1. USE ONLY THE NUMBERS PROVIDED ABOVE - DO NOT MAKE UP ANY STATISTICS")
+    parts.append("2. All percentages and values are already calculated - use them exactly as shown")
+    parts.append("3. When discussing player performance, only mention players from the list above")
+    parts.append("4. Base your analysis on the actual data values provided, not assumptions")
+    parts.append(f"5. This is {analysis_mode.upper()} analysis - focus on {'trends over time' if analysis_mode == 'temporal' else 'overall totals and averages'}")
 
     # Static Images Information
     if images:
-        parts.append(f"\nStatic Analysis Images: {len(images)} plot(s) available")
+        parts.append(f"\n=== Static Analysis Images ===")
+        parts.append(f"Available: {len(images)} plot(s)")
         for i, img in enumerate(images):
             if isinstance(img, dict):
                 parts.append(f"  - {img.get('name', f'Image {i+1}')}: {img.get('url', 'available')}")
-            else:
-                parts.append(f"  - Image {i+1}: {img}")
     
     # Visual analysis context for dynamic plots
     if plot_images:
-        parts.append(f"\nDynamic Visualizations: {len(plot_images)} plot(s) for analysis")
+        parts.append(f"\n=== Dynamic Visualizations for Analysis ===")
+        parts.append(f"Total plots: {len(plot_images)}")
         for i, img in enumerate(plot_images):
             meta_info = img.get("metadata", {})
-            parts.append(f"  - Plot {i+1}: {meta_info.get('kind', 'Unknown')} analysis for {meta_info.get('player', 'team')}")
+            parts.append(f"  - Plot {i+1}: {meta_info.get('kind', 'Unknown')} for {meta_info.get('player', 'team')} ({meta_info.get('mode', 'unknown')} view)")
     
     return "\n".join(parts)
+
 
 def visually_analyze_plot(
         plot_base_64: str,
@@ -221,8 +358,7 @@ def visually_analyze_plot(
         model_id: str = "HuggingFaceTB/SmolVLM-Instruct",
 ) -> str:
     """
-    Analyze a plot image (encoded to base64) using a VLM.
-    Any Models used must be VLMs, else no useful commentary will be provided.
+    Analyze a plot image (encoded to base64) using a VLM with ACTUAL DATA VALUES.
     """
     try:
         # Load the VLM
@@ -239,14 +375,14 @@ def visually_analyze_plot(
         plot_kind = plot_metadata.get("kind", "unknown")
         player = plot_metadata.get("used_player", "team")
 
-        # Create conversation-style prompt for SmolVLM
+        # Create conversation-style prompt with ACTUAL VALUES
         messages = [
             {
                 "role": "user",
                 "content": [
                     {
                         "type": "image",
-                        "image": img  # Pass PIL Image directly
+                        "image": img
                     },
                     {
                         "type": "text", 
@@ -254,19 +390,18 @@ def visually_analyze_plot(
                         Plot type: {plot_kind}
                         Player/Team focus: {player}
 
-                        Current team statistics:
-                        - Service Accuracy: {summary.get('srv_accuracy', 0):.1%}
-                        - Receive Accuracy: {summary.get('rcv_accuracy', 0):.1%}  
-                        - Attack Accuracy: {summary.get('atk_accuracy', 0):.3f}
+                        ACTUAL MEASURED TEAM STATISTICS (USE THESE EXACT VALUES):
+                        - Service Accuracy: {summary.get('srv_accuracy', 0):.3f} ({summary.get('srv_accuracy', 0)*100:.1f}%)
+                        - Receive Accuracy: {summary.get('rcv_accuracy', 0):.3f} ({summary.get('rcv_accuracy', 0)*100:.1f}%)
+                        - Attack Accuracy (Hitting %): {summary.get('atk_accuracy', 0):.3f}
                         - Avg Errors/Set: {summary.get('avg_errors_per_set', 0):.2f}
 
                         Analyze this chart and describe:
-                        1. What are the main visual patterns or trends you observe?
-                        2. Which players or time periods show strong/weak performance?
-                        3. Are there any concerning patterns or outliers?
-                        4. What specific improvements would you recommend based on what you see?
-
-                        Be specific about what you observe in the chart - mention colors, bar heights, line trends, and any labels you can see."""
+                        1. What patterns or trends are visible in the chart?
+                        2. How do the visual elements relate to the statistics above?
+                        3. What performance insights can be drawn?
+                        
+                        IMPORTANT: Use only the statistics provided above. Do not invent new numbers."""
                     }
                 ]
             }
@@ -288,26 +423,26 @@ def visually_analyze_plot(
         device = next(model.parameters()).device
         inputs = {k: v.to(device) if torch.is_tensor(v) else v for k, v in inputs.items()}
 
-        # Generate Response (no gradient to save memory)
+        # Generate Response
         with torch.no_grad():
             generated_ids = model.generate(
-                **inputs,   #unpack the dictionary of inputs
+                **inputs,
                 max_new_tokens=500,
-                do_sample=True,     # probabilistic sampling rather than greedy decoding (highest probability)
-                temperature=0.8,    # not too creative but not too conservative
+                do_sample=True,
+                temperature=0.7,  # Lower temperature for more factual output
                 top_p=0.95,
                 pad_token_id=processor.tokenizer.pad_token_id,
                 eos_token_id=processor.tokenizer.eos_token_id
             )
 
-        # Decode the response from tokens into readable text
+        # Decode the response
         generated_response = processor.batch_decode(
             generated_ids[:, inputs['input_ids'].size(1):] if inputs['input_ids'].size(1) < generated_ids.size(1) else generated_ids,
             skip_special_tokens=True,
             clean_up_tokenization_spaces=True
         )
 
-        analysis = generated_response[0]  if generated_response else "Unable to analyze image..."
+        analysis = generated_response[0] if generated_response else "Unable to analyze image..."
 
         # Format the analysis
         formatted_analysis = f"Visual analysis ({plot_kind} - {player}):\n\t{analysis}"
@@ -316,19 +451,19 @@ def visually_analyze_plot(
     except Exception as e:
         return f"Unable to analyze plot visually: {str(e)}"
 
+
 def generate_commentary_with_plots(
         summary: UISummary,
         meta: Meta,
         images: Sequence[ImageRef],
-        plot_data: Dict[str, Any] | List[Dict[str, Any]],  # Can be single or multiple plots
+        plot_data: Dict[str, Any] | List[Dict[str, Any]],
         hf_token: str,
         vision_model_id: str = "HuggingFaceTB/SmolVLM-Instruct",
         text_model_id: str = "meta-llama/Llama-3.2-3B-Instruct",
         max_new_tokens: int = 512,
-) -> str:
+) -> Optional[str]:
     """
-    Enhanced commentary generation that analyzes plot images.
-    This is the main implementation function.
+    Enhanced commentary generation that uses ACTUAL DATA VALUES.
     """
     # Process plot images
     visual_insights = []
@@ -344,7 +479,7 @@ def generate_commentary_with_plots(
         )
         visual_insights.append(insight)
 
-    # Build context
+    # Build context with ACTUAL DATA
     context = build_agent_context(
         summary=summary,
         meta=meta,
@@ -352,16 +487,17 @@ def generate_commentary_with_plots(
         plot_images=plot_images
     )
     
-    # System prompt
+    # System prompt emphasizing data accuracy
     system = (
-        "You are an expert volleyball analyst and coach with deep knowledge of statistics and performance metrics. "
-        "You provide insightful, actionable commentary that helps teams improve their performance. "
-        "Your analysis is data-driven, specific, and constructive. "
-        "Focus on practical recommendations and positive reinforcement while addressing areas for improvement. "
-        "DO NOT make up numbers or statistics not directly provided!"
+        "You are an expert volleyball analyst providing data-driven insights. "
+        "You MUST use the EXACT statistics provided - never make up numbers. "
+        "When you see 'Service Accuracy: 0.844 (84.4%)', you must use exactly 84.4%, not any other value. "
+        "Similarly for all other metrics. Your analysis should be based solely on the provided data. "
+        "Focus on practical recommendations based on the actual measured performance. "
+        "If a metric shows 0.612 for receive accuracy, that means 61.2% - use this exact value."
     )
 
-    # Build user prompt with visual insights
+    # Build user prompt with actual data emphasis
     user_parts = [
         f"Volleyball Team Analysis Report\n",
         f"{context}\n"
@@ -372,23 +508,22 @@ def generate_commentary_with_plots(
         for insight in visual_insights:
             user_parts.append(f"\n{insight}")
     
-    # Add synthesis instructions if multiple plots
-    if len(plot_images) > 1:
-        user_parts.append(
-            "\n\nSYNTHESIS TASK - Analyze across ALL visualizations:"
-            "\n• What patterns appear in multiple charts?"
-            "\n• How do different metrics relate to each other?"
-            "\n• What's the overall performance story?"
-        )
+    # Provide the actual values again in the instructions
+    user_parts.append(
+        f"\n\nREMINDER - Use these EXACT values in your analysis:"
+        f"\n• Service Accuracy: {summary.get('srv_accuracy', 0)*100:.1f}%"
+        f"\n• Receive Accuracy: {summary.get('rcv_accuracy', 0)*100:.1f}%"
+        f"\n• Attack Accuracy: {summary.get('atk_accuracy', 0):.3f}"
+        f"\n• Avg Errors/Set: {summary.get('avg_errors_per_set', 0):.2f}"
+        f"\n• Players: {', '.join(summary.get('players', [])[:10])}"
+    )
     
     user_parts.append(
-        "\n\nBased on all available data and visualizations, provide 4-6 detailed insights covering:\n"
-        "• Performance strengths and specific achievements\n"
-        "• Areas needing immediate attention\n"
-        "• Individual player highlights or concerns\n"
-        "• Tactical adjustments for upcoming matches\n"
-        "• Specific drills or practice focus areas\n"
-        "\nBe specific with numbers and player names. Keep a constructive, coaching-oriented tone."
+        "\n\nBased on the EXACT data values provided above, generate 4-6 insights covering:\n"
+        "• Performance strengths using the actual percentages\n"
+        "• Areas needing improvement based on the metrics\n"
+        "• Specific recommendations tied to the data\n"
+        "\nBe specific with the numbers provided. DO NOT make up any statistics."
     )
 
     user = "".join(user_parts)
@@ -423,7 +558,7 @@ def generate_commentary_with_plots(
         prompt,
         max_new_tokens=max_new_tokens,
         do_sample=True,
-        temperature=0.7,  # Slightly lower for more focused output
+        temperature=0.6,  # Lower temperature for more factual output
         eos_token_id=tok.eos_token_id,
         pad_token_id=tok.eos_token_id if tok.eos_token_id is not None else tok.pad_token_id,
         return_full_text=False,
@@ -435,18 +570,254 @@ def generate_commentary_with_plots(
     if text.startswith(prompt):
         text = text[len(prompt):].lstrip()
 
-    # Ensure bullets if needed
-    if "•" not in text and "-" not in text and "1." not in text:
-        lines = [l.strip() for l in text.split(". ") if l.strip()]
-        if lines:
-            bullets = "\n".join(f"• {l.rstrip('.')}" for l in lines[:6])
-            return bullets
-
-    # Validate output
+    # Validate that the output contains actual values
     if not text or len(text.strip()) < 50:
-        return "Commentary unavailable"
+        # Return none so we can use fallback commmentary
+        text = None
 
     return text
+
+
+def generate_basic_statistical_commentary(
+        summary: UISummary, 
+        mode: str, 
+        player: str
+) -> str:
+    """
+    Generate basic statistical commentary without AI models.
+    Mode-aware fallback when all AI models fail.
+    """
+    player_name = player or "Team"
+    
+    # Get mode-specific statistics if available
+    mode_stats = summary.get('mode_specific_stats', {})  # type: ignore
+    
+    # Build header based on mode
+    if mode.lower() == 'temporal':
+        header = f"Temporal Statistical Analysis for {player_name} - Performance Trends\n"
+    else:
+        header = f"Cumulative Statistical Analysis for {player_name} - Overall Performance\n"
+    
+    insights = []
+    
+    # Core performance metrics (same for both modes)
+    srv_acc = summary.get('srv_accuracy', 0)
+    rcv_acc = summary.get('rcv_accuracy', 0)
+    atk_acc = summary.get('atk_accuracy', 0)
+    errors = summary.get('avg_errors_per_set', 0)
+    
+    # Service analysis
+    if srv_acc > 0.9:
+        insights.append(f"• Excellent service accuracy at {srv_acc:.1%} - well above competitive standards")
+    elif srv_acc > 0.85:
+        insights.append(f"• Good service accuracy at {srv_acc:.1%} - meeting competitive standards")
+    else:
+        insights.append(f"• Service accuracy at {srv_acc:.1%} needs improvement to reach 85%+ competitive standard")
+    
+    # Receive analysis
+    if rcv_acc > 0.75:
+        insights.append(f"• Strong serve-receive performance at {rcv_acc:.1%} - creating good offensive opportunities")
+    elif rcv_acc > 0.65:
+        insights.append(f"• Adequate receive accuracy at {rcv_acc:.1%} - room for improvement")
+    else:
+        insights.append(f"• Receive accuracy at {rcv_acc:.1%} is limiting offensive options - priority for practice")
+    
+    # Attack analysis
+    if atk_acc > 0.3:
+        insights.append(f"• Outstanding hitting percentage at {atk_acc:.3f} - elite offensive performance")
+    elif atk_acc > 0.2:
+        insights.append(f"• Solid hitting percentage at {atk_acc:.3f} - competitive offensive output")
+    else:
+        insights.append(f"• Hitting percentage at {atk_acc:.3f} indicates offensive struggles")
+    
+    # Error analysis
+    if errors < 4:
+        insights.append(f"• Excellent error control at {errors:.1f} per set - maintaining discipline")
+    elif errors < 6:
+        insights.append(f"• Acceptable error rate at {errors:.1f} per set - some room for improvement")
+    else:
+        insights.append(f"• High error rate at {errors:.1f} per set is giving away too many points")
+    
+    # MODE-SPECIFIC INSIGHTS
+    if mode.lower() == 'temporal' and mode_stats:
+        insights.append("\nTrend Analysis:")
+        
+        # Service trend
+        if 'srv_trend' in mode_stats:
+            srv_trend = mode_stats['srv_trend']
+            if srv_trend > 0.001:
+                insights.append(f"• Service improving: +{srv_trend:.4f} per game trend")
+            elif srv_trend < -0.001:
+                insights.append(f"• Service declining: {srv_trend:.4f} per game trend")
+            else:
+                insights.append("• Service performance stable over time")
+            
+            if 'srv_recent_avg' in mode_stats:
+                recent = mode_stats['srv_recent_avg'] * 100
+                insights.append(f"  - Recent 3-game average: {recent:.1f}%")
+        
+        # Receive trend
+        if 'rcv_trend' in mode_stats:
+            rcv_trend = mode_stats['rcv_trend']
+            if rcv_trend > 0.001:
+                insights.append(f"• Receive improving: +{rcv_trend:.4f} per game trend")
+            elif rcv_trend < -0.001:
+                insights.append(f"• Receive declining: {rcv_trend:.4f} per game trend")
+            else:
+                insights.append("• Receive performance stable over time")
+            
+            if 'rcv_recent_avg' in mode_stats:
+                recent = mode_stats['rcv_recent_avg'] * 100
+                insights.append(f"  - Recent 3-game average: {recent:.1f}%")
+        
+        # Attack trend
+        if 'atk_trend' in mode_stats:
+            atk_trend = mode_stats['atk_trend']
+            if atk_trend > 0.001:
+                insights.append(f"• Attack improving: +{atk_trend:.4f} per game trend")
+            elif atk_trend < -0.001:
+                insights.append(f"• Attack declining: {atk_trend:.4f} per game trend")
+            else:
+                insights.append("• Attack performance stable over time")
+            
+            if 'atk_recent_avg' in mode_stats:
+                recent = mode_stats['atk_recent_avg']
+                insights.append(f"  - Recent 3-game hitting %: {recent:.3f}")
+        
+        # Error trend (negative is good)
+        if 'error_trend' in mode_stats:
+            err_trend = mode_stats['error_trend']
+            if err_trend < -0.01:
+                insights.append(f"• Errors improving (decreasing): {abs(err_trend):.3f} fewer per game")
+            elif err_trend > 0.01:
+                insights.append(f"• Errors worsening (increasing): +{err_trend:.3f} more per game")
+            else:
+                insights.append("• Error rate stable over time")
+            
+            if 'error_recent_avg' in mode_stats:
+                recent = mode_stats['error_recent_avg']
+                insights.append(f"  - Recent 3-game average: {recent:.2f} errors/set")
+        
+        # Momentum
+        if 'momentum' in mode_stats and 'recent_win_rate' in mode_stats:
+            momentum = mode_stats['momentum']
+            recent_wr = mode_stats['recent_win_rate'] * 100
+            overall_wr = mode_stats.get('overall_win_rate', 0) * 100
+            
+            if momentum > 0.1:
+                insights.append(f"• Strong positive momentum: Recent wins ({recent_wr:.0f}%) exceed season average ({overall_wr:.0f}%)")
+            elif momentum < -0.1:
+                insights.append(f"• Negative momentum: Recent wins ({recent_wr:.0f}%) below season average ({overall_wr:.0f}%)")
+            else:
+                insights.append(f"• Steady performance: Recent and overall win rates aligned (~{overall_wr:.0f}%)")
+    
+    elif mode.lower() == 'cumulative' and mode_stats:
+        insights.append("\nCumulative Totals:")
+        
+        # Games summary
+        if 'total_games' in mode_stats:
+            total_games = mode_stats['total_games']
+            total_wins = mode_stats.get('total_wins', 0)
+            total_losses = mode_stats.get('total_losses', 0)
+            win_pct = (total_wins / total_games * 100) if total_games > 0 else 0
+            insights.append(f"• Record: {total_wins}-{total_losses} ({win_pct:.1f}% win rate) across {total_games} games")
+        
+        # Service totals
+        if 'total_serves' in mode_stats:
+            total_serves = mode_stats['total_serves']
+            total_aces = mode_stats.get('total_aces', 0)
+            ace_pct = mode_stats.get('ace_percentage', 0) * 100
+            avg_serves = mode_stats.get('avg_serves_per_game', 0)
+            insights.append(f"• Service: {total_serves} total serves with {total_aces} aces ({ace_pct:.1f}%)")
+            insights.append(f"  - Averaging {avg_serves:.1f} serves per game")
+        
+        # Attack totals
+        if 'total_attacks' in mode_stats:
+            total_attacks = mode_stats['total_attacks']
+            total_kills = mode_stats.get('total_kills', 0)
+            kill_pct = mode_stats.get('kill_percentage', 0) * 100
+            avg_kills = mode_stats.get('avg_kills_per_game', 0)
+            insights.append(f"• Offense: {total_attacks} total attacks with {total_kills} kills ({kill_pct:.1f}%)")
+            insights.append(f"  - Averaging {avg_kills:.1f} kills per game")
+        
+        # Receive totals
+        if 'total_receives' in mode_stats:
+            total_rcv = mode_stats['total_receives']
+            perfect_passes = mode_stats.get('total_perfect_passes', 0)
+            perfect_pct = mode_stats.get('perfect_pass_percentage', 0) * 100
+            insights.append(f"• Receive: {total_rcv} total passes with {perfect_passes} perfect ({perfect_pct:.1f}%)")
+        
+        # Other stats
+        if 'total_blocks' in mode_stats:
+            insights.append(f"• Defense: {mode_stats['total_blocks']:.1f} total blocks")
+        if 'total_digs' in mode_stats:
+            insights.append(f"• Defense: {mode_stats['total_digs']} total digs")
+        if 'total_assists' in mode_stats:
+            avg_assists = mode_stats.get('avg_assists_per_game', 0)
+            insights.append(f"• Setting: {mode_stats['total_assists']} total assists ({avg_assists:.1f} per game)")
+    
+    # RECOMMENDATIONS based on mode and performance
+    recommendations = ["\nRecommendations:"]
+    
+    if mode.lower() == 'temporal' and mode_stats:
+        # Temporal-specific recommendations based on trends
+        if mode_stats.get('srv_trend', 0) < -0.001:
+            recommendations.append("• Service trending down - review technique and mental approach")
+        elif srv_acc < 0.85:
+            recommendations.append("• Focus on consistent toss placement in serve practice")
+        
+        if mode_stats.get('rcv_trend', 0) < -0.001:
+            recommendations.append("• Receive declining - increase passing reps and footwork drills")
+        elif rcv_acc < 0.65:
+            recommendations.append("• Prioritize serve-receive with emphasis on platform control")
+        
+        if mode_stats.get('atk_trend', 0) < -0.001:
+            recommendations.append("• Attack efficiency declining - review approach angles and timing")
+        elif atk_acc < 0.2:
+            recommendations.append("• Work on shot selection and reading blockers")
+        
+        if mode_stats.get('error_trend', 0) > 0.01:
+            recommendations.append("• Errors increasing - implement controlled scrimmages for consistency")
+        elif errors > 6:
+            recommendations.append("• High error baseline - focus on ball control fundamentals")
+        
+        if mode_stats.get('momentum', 0) < -0.1:
+            recommendations.append("• Address negative momentum with team building and mental training")
+    
+    else:
+        assert mode_stats   # make sure it's not empty
+        # Cumulative recommendations based on overall performance
+        if srv_acc < 0.85:
+            recommendations.append("• Focus on consistent toss placement in serve practice")
+            if mode_stats.get('ace_percentage', 0) < 0.05:
+                recommendations.append("• Develop more aggressive serving options for ace opportunities")
+        
+        if rcv_acc < 0.65:
+            recommendations.append("• Increase serve-receive reps with emphasis on platform angle")
+            if mode_stats.get('perfect_pass_percentage', 0) < 0.3:
+                recommendations.append("• Work on passing accuracy to enable better offensive sets")
+        
+        if atk_acc < 0.2:
+            recommendations.append("• Work on shot selection and identifying open court areas")
+            if mode_stats.get('kill_percentage', 0) < 0.25:
+                recommendations.append("• Develop power and placement for higher kill conversion")
+        
+        if errors > 6:
+            recommendations.append("• Implement 'zero error' drills focusing on ball control")
+        
+        # Win rate recommendations
+        if mode_stats.get('total_games', 0) > 0:
+            win_rate = mode_stats.get('total_wins', 0) / mode_stats['total_games']
+            if win_rate < 0.4:
+                recommendations.append("• Focus on mental toughness and closing tight sets")
+    
+    # Add footer
+    footer = f"\n\nNote: Statistical summary based on {summary.get('rows', 0)} data points from {summary.get('date_min', 'N/A')} to {summary.get('date_max', 'N/A')}."
+    footer += "\nAI-powered insights temporarily unavailable - using statistical analysis only."
+    
+    return header + "\n".join(insights) + "\n".join(recommendations) + footer
+
+
 
 def generate_commentary(
         summary: UISummary,
@@ -457,7 +828,7 @@ def generate_commentary(
         vision_model_id: str = "HuggingFaceTB/SmolVLM-Instruct",
         text_model_id: str = "HuggingFaceTB/SmolVLM-Instruct",
         max_new_tokens: int = 512
-) -> str:
+) -> Optional[str]:
     """
     Main wrapper function for commentary generation.
     Handles all the edge cases and calls generate_commentary_with_plots.
@@ -488,3 +859,4 @@ def generate_commentary(
     except Exception as e:
         print(f"Commentary generation failed: {e}")
         return "Commentary unavailable"
+

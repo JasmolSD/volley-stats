@@ -1,6 +1,16 @@
 # types_common.py
 from __future__ import annotations
-from typing import TypedDict, List, Dict, Literal, Union, Mapping, Sequence
+from typing import (
+    TypedDict, 
+    List, 
+    Dict, 
+    Literal, 
+    Union, 
+    Mapping, 
+    Sequence, 
+    Optional,
+    Any
+)
 import pandas as pd
 
 PlotKind = Literal[
@@ -10,6 +20,11 @@ PlotKind = Literal[
     "errors", 
     "atk_acc_over_time", 
     "avg_errors_over_time"
+]
+
+PlotMode = Literal[
+    "cumulative",
+    "temporal"
 ]
 
 ImageRef = Union[str, Mapping[str, str]]
@@ -24,6 +39,10 @@ class UISummary(TypedDict):
     rcv_accuracy: float
     srv_accuracy: float
     avg_errors_per_set: float
+    analysis_mode: PlotMode
+    mode_specific_stats: Optional[Dict[str, Any]]
+    vision_model: Optional[str]
+    text_model: Optional[str]
 
 class Meta(TypedDict, total=False):
     rows: int
