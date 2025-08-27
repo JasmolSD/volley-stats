@@ -459,3 +459,5 @@ def commentary():
 if __name__ == "__main__":
     # Change port if you like; 5001 is fine
     app.run(host="0.0.0.0", port=int(os.getenv("PORT", 5001)))
+
+print(f"App module loaded. Flask app exists: {'app' in dir()}")
