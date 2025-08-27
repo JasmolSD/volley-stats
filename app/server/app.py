@@ -29,9 +29,20 @@ from services.analysis import (
     resolve_player_name,
 )
 
-# Load environment variables
-env_path = Path(__file__).parent / 'services' / '.env'
-load_dotenv(dotenv_path=env_path)
+# Conditional import for local development
+if os.getenv('RENDER') != 'true':
+    try:
+        from dotenv import load_dotenv
+        env_path = Path(__file__).parent / 'services' / '.env'
+        if env_path.exists():
+            load_dotenv(dotenv_path=env_path)
+            print("✓ Loaded .env file for local development")
+        else:
+            print("ℹ️ No .env file found, using system environment variables")
+    except ImportError:
+        print("ℹ️ python-dotenv not installed, using system environment variables")
+else:
+    print("✓ Running on Render - using platform environment variables")
 
 # Serve /static from server/static
 app = Flask(__name__, static_folder="server/static", static_url_path="/static")
