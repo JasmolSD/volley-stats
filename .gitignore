@@ -43,3 +43,6 @@ dist/
 !/server/server/static/.gitkeep
 /server/server/tmp/**
 !/server/server/tmp/.gitkeep
+
+# Misc files
+delete_me.py
