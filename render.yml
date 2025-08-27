@@ -4,24 +4,18 @@ services:
   # Backend API Service (Flask)
   - type: web
     name: volley-stats-api
-    runtime: python
+    runtime: docker
     region: oregon
     plan: free
-    rootDir: app/server
-    buildCommand: |
-      pip install --upgrade pip
-      pip install -r requirements.txt
-    startCommand: python -c "import app" && python -m gunicorn app:app --bind 0.0.0.0:$PORT --workers 2 --timeout 120
+    dockerfilePath: ./application/server/Dockerfile
+    dockerContext: ./application/server    
     envVars:
+      - key: RENDER
+        value: true
       - key: FLASK_ENV
         value: production
       - key: CORS_ORIGINS
         value: https://volley-stats.onrender.com
-      - key: PYTHONUNBUFFERED
-        value: 1
-      - key: PORT
-        value: 5001
-      # Add your HuggingFace token as a secret in Render dashboard
       - key: HUGGINGFACE_TOKEN
         sync: false
     healthCheckPath: /api/health
@@ -33,7 +27,7 @@ services:
     runtime: static
     region: oregon
     plan: free
-    rootDir: app/client
+    rootDir: application/client
     buildCommand: |
       npm install
       npm run build

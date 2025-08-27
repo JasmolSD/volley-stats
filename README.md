@@ -95,7 +95,7 @@ graph LR
 
 ```
 volley-stats/
-├── app/
+├── src/
 │   ├── client/               # React frontend
 │   │   ├── src/
 │   │   │   ├── pages/       # React pages
