@@ -31,8 +31,13 @@ services:
     buildCommand: |
       npm install
       npm run build
-    staticPublishPath: dist
+    publishDir: dist
     pullRequestPreviewsEnabled: true
+    envVars:
+      - key: VITE_API_URL
+        value: https://volley-stats.onrender.com
+      - key: NODE_ENV
+        value: production
     headers:
       - path: /*
         name: X-Frame-Options
@@ -47,11 +52,6 @@ services:
       - type: rewrite
         source: /*
         destination: /index.html
-    envVars:
-      - key: VITE_API_URL
-        value: https://volley-stats-api.onrender.com
-      - key: NODE_ENV
-        value: production
 
 # Database (if needed in future)
 # databases:
