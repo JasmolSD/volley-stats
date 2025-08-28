@@ -12,7 +12,7 @@ RUN apt-get update && apt-get install -y \
 
 # Copy and install requirements
 COPY requirements.txt .
-RUN pip install --user --no-cache-dir -r requirements.txt
+RUN pip install --user --no-cache-dir --no-warn-script-location -r requirements.txt
 
 # Stage 2: Runtime
 FROM python:3.11-slim
@@ -24,6 +24,9 @@ COPY --from=builder /root/.local /root/.local
 
 # Copy application code
 COPY . .
+
+# Debug: List files
+RUN ls -la && python -c "import os; print('Files:', os.listdir('.'))"
 
 # Make sure scripts in .local are usable
 ENV PATH=/root/.local/bin:$PATH
