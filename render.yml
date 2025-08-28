@@ -3,7 +3,7 @@
 services:
   # Backend API Service (Flask)
   - type: web
-    name: volley-stats-api
+    name: volley-stats
     runtime: docker
     region: oregon
     plan: free
@@ -23,7 +23,7 @@ services:
 
   # Frontend Static Site (React)
   - type: static
-    name: volley-stats-ui
+    name: volley-stats-frontend
     runtime: static
     region: oregon
     plan: free
