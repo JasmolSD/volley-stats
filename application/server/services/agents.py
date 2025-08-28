@@ -112,6 +112,7 @@ def _load_model_and_tokenizer(
         hf_token: Optional[str]
 ) -> Tuple[Any, Any]:
     """Load text model/tokenizer with fallback to open models."""
+
     global _PIPE, _TOKENIZER, _MODEL
 
     if _PIPE is not None and _TOKENIZER is not None:
