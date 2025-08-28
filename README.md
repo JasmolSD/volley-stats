@@ -293,7 +293,7 @@ This project is licensed under the **GPL-3.0 License** - see the [LICENSE](LICEN
 ## 💬 Contact
 
 **Jasmol S. Dhesi**  
-🔗 [GitHub](https://github.com/JasmolSD) | 📧 [Email](mailto:your-email@example.com) | 🏐 [LinkedIn](https://www.linkedin.com/in/jasmoldhesi/)
+🔗 [GitHub](https://github.com/JasmolSD) | 🏐 [LinkedIn](https://www.linkedin.com/in/jasmoldhesi/)
 
 ---
 
