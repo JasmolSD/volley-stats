@@ -1,0 +1,210 @@
+/* src/pages/Home.css */
+
+/* CSS Variables */
+:root {
+    --primary-blue: #0ea5e9;
+    --secondary-purple: #8b5cf6;
+    --text-muted: rgba(255, 255, 255, 0.7);
+    --space-sm: 0.5rem;
+    --space-md: 1rem;
+    --space-lg: 1.5rem;
+    --space-xl: 2rem;
+    --space-2xl: 3rem;
+    --space-3xl: 4rem;
+    --text-xs: 0.75rem;
+    --text-sm: 0.875rem;
+    --text-base: 1rem;
+    --text-lg: 1.125rem;
+}
+
+/* Sample Data Container - NEW STYLES */
+.sample-data-container {
+    margin-top: 2rem;
+    animation: fadeIn 0.8s ease-out 0.3s both;
+}
+
+.sample-divider {
+    position: relative;
+    text-align: center;
+    margin: 1.5rem 0;
+}
+
+.sample-divider::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(90deg,
+            transparent 0%,
+            rgba(255, 255, 255, 0.3) 20%,
+            rgba(255, 255, 255, 0.3) 80%,
+            transparent 100%);
+    transform: translateY(-50%);
+}
+
+.sample-divider span {
+    position: relative;
+    display: inline-block;
+    padding: 0 1.5rem;
+    background: #0f172a;
+    /* Match your app's background */
+    color: rgba(255, 255, 255, 0.5);
+    font-size: 0.875rem;
+    letter-spacing: 0.1em;
+    font-weight: 500;
+}
+
+.sample-buttons {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.sample-btn {
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.5rem;
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: none;
+    outline: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.sample-btn-primary {
+    background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+    color: white;
+    box-shadow: 0 4px 20px rgba(139, 92, 246, 0.3);
+}
+
+.sample-btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 30px rgba(139, 92, 246, 0.4);
+}
+
+.sample-btn-outline {
+    background: transparent;
+    color: #0ea5e9;
+    border: 2px solid #0ea5e9;
+    box-shadow: 0 0 20px rgba(14, 165, 233, 0.1);
+}
+
+.sample-btn-outline:hover {
+    background: rgba(14, 165, 233, 0.1);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 20px rgba(14, 165, 233, 0.2);
+}
+
+/* Button (for CTA button) */
+.btn {
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.5rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: none;
+    outline: none;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #0ea5e9, #0284c7);
+    color: white;
+    box-shadow: 0 4px 20px rgba(14, 165, 233, 0.3);
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 30px rgba(14, 165, 233, 0.4);
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.scroll-reveal {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+}
+
+.scroll-reveal.revealed {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Upload Zone Hover/Drag States */
+.upload-zone {
+    transition: all 0.3s ease;
+}
+
+.upload-zone:hover {
+    border-color: #0ea5e9 !important;
+    box-shadow: 0 12px 40px rgba(14, 165, 233, 0.2) !important;
+    transform: translateY(-2px);
+}
+
+.upload-zone.dragging {
+    border-color: #0ea5e9 !important;
+    background: rgba(14, 165, 233, 0.1) !important;
+    box-shadow: 0 12px 48px rgba(14, 165, 233, 0.3) !important;
+}
+
+/* Grid System */
+.grid {
+    display: grid;
+    gap: 2rem;
+}
+
+.grid-cols-3 {
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+}
+
+.grid-cols-4 {
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .sample-buttons {
+        flex-direction: column;
+        width: 100%;
+        max-width: 300px;
+        margin: 0 auto;
+    }
+
+    .sample-btn {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .grid-cols-3,
+    .grid-cols-4 {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 480px) {
+    .sample-data-container {
+        margin-top: 1.5rem;
+    }
+
+    .sample-btn {
+        font-size: 0.875rem;
+        padding: 0.625rem 1.25rem;
+    }
+}

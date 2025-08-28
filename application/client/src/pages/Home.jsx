@@ -2,6 +2,10 @@
 import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { uploadFile } from "../api.js";
+import "./Home.css"; // Import the CSS file
+
+const SAMPLE_FILE_PATH = '/data/sample_data.csv'; // Path to sample file in public folder
+const SAMPLE_FILE_NAME = 'sample_data.csv';
 
 export default function Home({ setToken, setSummary, setLoading }) {
     const navigate = useNavigate();
@@ -48,6 +52,32 @@ export default function Home({ setToken, setSummary, setLoading }) {
             alert("Upload or analysis failed. Please try again with a valid CSV/XLSX file.");
         }
     }
+
+    // Handle using sample data
+    const handleUseSampleData = async () => {
+        try {
+            const response = await fetch(SAMPLE_FILE_PATH);
+            if (!response.ok) {
+                throw new Error('Sample file not found');
+            }
+            const blob = await response.blob();
+            const file = new File([blob], SAMPLE_FILE_NAME, { type: 'text/csv' });
+            await handleFileUpload(file);
+        } catch (err) {
+            console.error('Failed to load sample data:', err);
+            alert('Failed to load sample data. Please ensure sample_data.csv is in the public directory.');
+        }
+    };
+
+    // Handle downloading sample CSV
+    const handleDownloadSample = () => {
+        const link = document.createElement('a');
+        link.href = SAMPLE_FILE_PATH;
+        link.download = SAMPLE_FILE_NAME;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    };
 
     const handleDragOver = (e) => {
         e.preventDefault();
@@ -116,6 +146,7 @@ export default function Home({ setToken, setSummary, setLoading }) {
                     <div className="upload-icon">📊</div>
                     <h3 className="upload-title">Drop Your Data Here</h3>
                     <p className="upload-subtitle">Support for CSV, XLSX, and XLS files</p>
+                    <p className="upload-subtitle">Input data should be structured like the sample csv!</p>
                     <p style={{
                         color: 'var(--text-muted)',
                         fontSize: 'var(--text-xs)',
@@ -124,6 +155,27 @@ export default function Home({ setToken, setSummary, setLoading }) {
                     }}>
                         or click to browse
                     </p>
+                </div>
+
+                {/* Sample Data Options - NEW SECTION */}
+                <div className="sample-data-container">
+                    <div className="sample-divider">
+                        <span>OR</span>
+                    </div>
+                    <div className="sample-buttons">
+                        <button
+                            className="sample-btn sample-btn-primary"
+                            onClick={handleUseSampleData}
+                        >
+                            📁 Use Sample Data
+                        </button>
+                        <button
+                            className="sample-btn sample-btn-outline"
+                            onClick={handleDownloadSample}
+                        >
+                            ⬇️ Download Sample CSV
+                        </button>
+                    </div>
                 </div>
             </section>
 
