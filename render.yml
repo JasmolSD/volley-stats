@@ -15,15 +15,15 @@ services:
       - key: FLASK_ENV
         value: production
       - key: CORS_ORIGINS
-        value: https://volley-stats-api.onrender.com
+        value: https://volley-stats-ui.onrender.com
       - key: HUGGINGFACE_TOKEN
         sync: false
     healthCheckPath: /api/health
     autoDeploy: false
 
   # Frontend Static Site (React)
-  - type: web
-    name: volley-stats
+  - type: static
+    name: volley-stats-ui
     runtime: static
     region: oregon
     plan: free
