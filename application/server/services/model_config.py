@@ -160,7 +160,7 @@ def generate_commentary_with_fallback(
     
     # Try primary models first
     try:
-        commentary_text = generate_commentary_func(
+        commentary_text, text_model_id, vision_model_id = generate_commentary_func(
             summary=ui_summary,
             meta=meta,
             images=images,
@@ -171,7 +171,7 @@ def generate_commentary_with_fallback(
             max_new_tokens=1024
         )
         
-        if commentary_text and commentary_text != "Commentary unavailable":
+        if commentary_text and not commentary_text.startswith("Commentary unavailable"):
             print("  ✓ Commentary generated successfully")
             return commentary_text, {"text": text_model_id, "vision": vision_model_id}
         else:

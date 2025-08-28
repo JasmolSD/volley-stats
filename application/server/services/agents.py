@@ -1,8 +1,18 @@
 from __future__ import annotations
 from typing import List, Dict, Any, Optional, Sequence, Tuple, cast
 from types_common import UISummary, Meta, ImageRef
-from transformers import AutoTokenizer, AutoModelForCausalLM, AutoProcessor, AutoModelForImageTextToText
-import torch
+import requests
+
+HAVE_LLM = False
+USE_API = True
+
+try:
+    from transformers import AutoTokenizer, AutoModelForCausalLM, AutoProcessor, AutoModelForImageTextToText
+    import torch
+    HAVE_LLM = True
+except ImportError:
+    pass
+
 
 # Libraries for vision analysis of plots
 from PIL import Image
@@ -15,6 +25,56 @@ _TOKENIZER: Optional[Any] = None
 _PIPE: Optional[Any] = None
 _VISION_MODEL: Optional[Any] = None
 _VISION_PROCESSOR: Optional[Any] = None
+
+# HuggingFace Inference API endpoint
+HF_API_URL = "https://router.huggingface.co/v1/chat/completions"
+
+def call_hf_api(
+    model_id: str,
+    prompt: str,
+    hf_token: str,
+    max_tokens: int = 500
+) -> Optional[str]:
+    """Call HuggingFace Chat Completions API"""
+    headers = {"Authorization": f"Bearer {hf_token}"}
+    
+    payload = {
+        "messages": [
+            {
+                "role": "system",
+                "content": "You are an expert volleyball analyst providing data-driven insights."
+            },
+            {
+                "role": "user", 
+                "content": prompt
+            }
+        ],
+        "model": model_id,
+        "max_tokens": max_tokens,
+        "temperature": 0.7
+    }
+    
+    try:
+        response = requests.post(
+            HF_API_URL,
+            headers=headers,
+            json=payload,
+            timeout=30
+        )
+        
+        if response.status_code == 200:
+            result = response.json()
+            # Extract message content from chat format
+            if "choices" in result and len(result["choices"]) > 0:
+                return result["choices"][0]["message"]["content"]
+            return None
+        else:
+            print(f"HF API error: {response.status_code} - {response.text}")
+            return None
+            
+    except Exception as e:
+        print(f"HF API exception: {e}")
+        return None
 
 def _load_vision_model(
     model_id: str = "HuggingFaceTB/SmolVLM-Instruct",
@@ -461,7 +521,7 @@ def generate_commentary_with_plots(
         vision_model_id: str = "HuggingFaceTB/SmolVLM-Instruct",
         text_model_id: str = "meta-llama/Llama-3.2-3B-Instruct",
         max_new_tokens: int = 512,
-) -> Optional[str]:
+) -> Optional[tuple]:
     """
     Enhanced commentary generation that uses ACTUAL DATA VALUES.
     """
@@ -573,9 +633,10 @@ def generate_commentary_with_plots(
     # Validate that the output contains actual values
     if not text or len(text.strip()) < 50:
         # Return none so we can use fallback commmentary
-        text = None
-
-    return text
+        return None, text_model_id, vision_model_id
+    else:
+        print("LLM Commentary Successful!")
+        return text, text_model_id, vision_model_id
 
 
 def generate_basic_statistical_commentary(
@@ -817,6 +878,90 @@ def generate_basic_statistical_commentary(
     
     return header + "\n".join(insights) + "\n".join(recommendations) + footer
 
+# --- API ---
+def generate_commentary_with_api(
+        summary: UISummary,
+        meta: Meta,
+        images: Sequence[ImageRef],
+        plot_data: Dict[str, Any] | List[Dict[str, Any]],
+        hf_token: str,
+        model_id: str = "HuggingFaceTB/SmolLM3-3B:hf-inference",  # Use text model
+        max_new_tokens: int = 512,
+) -> Optional[tuple]:
+    """
+    Enhanced commentary using plot metadata + text model.
+    """
+    if not hf_token:
+        return None
+    
+    # Extract plot information programmatically (no vision needed)
+    plot_descriptions = []
+    if plot_data:
+        if isinstance(plot_data, list):
+            for plot in plot_data:
+                plot_type = plot.get('kind', 'unknown')
+                mode = plot.get('mode', 'cumulative')
+                player = plot.get('used_player', 'Team')
+                
+                # Describe what the plot shows based on your data
+                if plot_type == 'offense':
+                    desc = f"Offensive performance plot shows {summary.get('kills', 0)} kills with {summary.get('atk_accuracy', 0)*100:.1f}% accuracy"
+                elif plot_type == 'service':
+                    desc = f"Service plot indicates {summary.get('aces', 0)} aces and {summary.get('srv_accuracy', 0)*100:.1f}% accuracy"
+                elif plot_type == 'errors':
+                    desc = f"Error analysis shows {summary.get('avg_errors_per_set', 0):.1f} average errors per set"
+                else:
+                    desc = f"{plot_type} analysis for {player}"
+                    
+                plot_descriptions.append(desc)
+    
+    # Build context with plot descriptions
+    context = build_agent_context(
+        summary=summary,
+        meta=meta,
+        images=images,
+        plot_images=[]  # Don't need actual images
+    )
+    
+    # Add plot descriptions to context
+    if plot_descriptions:
+        context += "\n\nVisualization Analysis:\n" + "\n".join([f"- {desc}" for desc in plot_descriptions])
+    
+    # System prompt
+    system = (
+        "You are an expert volleyball analyst providing data-driven insights. "
+        "You have access to performance data and visualization descriptions. "
+        "Use ONLY the exact statistics provided - never make up numbers."
+    )
+
+    # Build user prompt
+    user_parts = [
+        f"Volleyball Team Analysis Report\n",
+        f"{context}\n",
+        f"\n\nKEY METRICS:",
+        f"\n• Service Accuracy: {summary.get('srv_accuracy', 0)*100:.1f}%",
+        f"\n• Receive Accuracy: {summary.get('rcv_accuracy', 0)*100:.1f}%", 
+        f"\n• Attack Accuracy: {summary.get('atk_accuracy', 0)*100:.1f}%",
+        f"\n• Avg Errors/Set: {summary.get('avg_errors_per_set', 0):.2f}",
+        "\n\nProvide 4-6 insights and recommendations based on this data."
+    ]
+
+    prompt = system + "\n\n" + "".join(user_parts) + "\n\nAnalysis:"
+    
+    # Use your existing call_hf_api function
+    text = call_hf_api(
+        model_id=model_id,
+        prompt=prompt,
+        hf_token=hf_token,
+        max_tokens=max_new_tokens
+    )
+    
+    # Validate output
+    if text and len(text.strip()) > 50:
+        print(f"Generated Response using HF API\n\tModel Used: {model_id}")
+        return text.strip(), model_id, model_id
+    else:
+        return None
 
 
 def generate_commentary(
@@ -828,35 +973,50 @@ def generate_commentary(
         vision_model_id: str = "HuggingFaceTB/SmolVLM-Instruct",
         text_model_id: str = "HuggingFaceTB/SmolVLM-Instruct",
         max_new_tokens: int = 512
-) -> Optional[str]:
+) -> Optional[tuple]:
     """
     Main wrapper function for commentary generation.
     Handles all the edge cases and calls generate_commentary_with_plots.
     """
+    # No LLM
+    if not HAVE_LLM:
+        return "Commentary unavailable - using statistical analysis instead", "statistical_analysis"
+    
     # Handle missing parameters
     if not hf_token:
-        return "Commentary unavailable - no API token provided"
+        return "Commentary unavailable - no API token provided", "statistical_analysis", "statistical_analysis"
     
     if images is None:
         images = []
     
     # If no plot data, return basic statistical commentary
     if not plot_data:
-        return "Commentary unavailable"
+        return "Commentary unavailable", "statistical_analysis", "statistical_analysis"
     
     try:
-        # Main commentary generation with plots
-        return generate_commentary_with_plots(
-            summary=summary,
-            meta=meta,
-            images=images,
-            plot_data=plot_data,
-            hf_token=hf_token,
-            vision_model_id=vision_model_id,
-            text_model_id=text_model_id,
-            max_new_tokens=max_new_tokens
-        )
+        if not USE_API:
+            # Main commentary generation with plots (local)
+            return generate_commentary_with_plots(
+                summary=summary,
+                meta=meta,
+                images=images,
+                plot_data=plot_data,
+                hf_token=hf_token,
+                vision_model_id=vision_model_id,
+                text_model_id=text_model_id,
+                max_new_tokens=max_new_tokens
+            )
+        else:
+            return generate_commentary_with_api(
+                summary=summary,
+                meta=meta,
+                images=images,
+                plot_data=plot_data,
+                hf_token=hf_token,
+                model_id="HuggingFaceTB/SmolLM3-3B:hf-inference",
+                max_new_tokens=max_new_tokens
+            )
     except Exception as e:
         print(f"Commentary generation failed: {e}")
-        return "Commentary unavailable"
+        return "Commentary unavailable", "statistical_analysis", "statistical_analysis"
 

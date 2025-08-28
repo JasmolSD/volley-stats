@@ -166,7 +166,7 @@ export default function AICommentary({
                             <>
                                 <span className="loading-spinner-small"></span>
                                 <span className="loading-button-text">
-                                    Analyzing... (3-5 minutes)
+                                    Analyzing...
                                 </span>
                             </>
                         ) : (
