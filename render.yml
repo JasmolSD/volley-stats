@@ -28,9 +28,7 @@ services:
     region: oregon
     plan: free
     rootDir: application/client
-    buildCommand: |
-      npm install
-      npm run build
+    buildCommand: npm install && npm run build
     publishDir: dist
     pullRequestPreviewsEnabled: true
     envVars:
