@@ -12,7 +12,7 @@ from matplotlib.figure import Figure
 from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
 
 # import functions from other files
-from .analysis import prepare_dfs
+from ..analysis import prepare_dfs
 from .plots_temporal import (
     plot_service_temporal,
     plot_assists_per_attack,    # to add

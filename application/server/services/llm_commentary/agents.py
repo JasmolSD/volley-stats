@@ -7,7 +7,12 @@ HAVE_LLM = False
 USE_API = True
 
 try:
-    from transformers import AutoTokenizer, AutoModelForCausalLM, AutoProcessor, AutoModelForImageTextToText
+    from transformers import (
+        AutoTokenizer,
+        AutoModelForCausalLM, 
+        AutoProcessor, 
+        AutoModelForImageTextToText
+        )
     import torch
     HAVE_LLM = True
 except ImportError:
@@ -90,12 +95,12 @@ def _load_vision_model(
     if hf_token:
         common_kwargs["token"] = hf_token
     
-    use_cuda = torch.cuda.is_available()
-    dtype = torch.float16 if use_cuda else torch.float32
+    use_cuda = torch.cuda.is_available()    # type: ignore
+    dtype = torch.float16 if use_cuda else torch.float32    # type: ignore
     
     # Load SmolVLM processor and model
-    _VISION_PROCESSOR = AutoProcessor.from_pretrained(model_id, **common_kwargs)
-    _VISION_MODEL = AutoModelForImageTextToText.from_pretrained(
+    _VISION_PROCESSOR = AutoProcessor.from_pretrained(model_id, **common_kwargs)    # type: ignore
+    _VISION_MODEL = AutoModelForImageTextToText.from_pretrained(    # type: ignore
         model_id,
         torch_dtype=dtype,
         **common_kwargs
@@ -122,14 +127,14 @@ def _load_model_and_tokenizer(
     if hf_token:
         common_kwargs["token"] = hf_token
 
-    use_cuda = torch.cuda.is_available()
-    dtype = torch.float16 if use_cuda else torch.float32
+    use_cuda = torch.cuda.is_available()    # type: ignore
+    dtype = torch.float16 if use_cuda else torch.float32    # type: ignore
 
     # Try to load the requested model
     try:
         print(f"Attempting to load model: {model_id}")
-        _TOKENIZER = AutoTokenizer.from_pretrained(model_id, **common_kwargs)
-        _MODEL = AutoModelForCausalLM.from_pretrained(
+        _TOKENIZER = AutoTokenizer.from_pretrained(model_id, **common_kwargs)   # type: ignore
+        _MODEL = AutoModelForCausalLM.from_pretrained(      # type: ignore
             model_id,
             torch_dtype=dtype,
             **common_kwargs
@@ -149,8 +154,8 @@ def _load_model_and_tokenizer(
         for fallback_id in fallback_models:
             try:
                 print(f"Trying fallback model: {fallback_id}")
-                _TOKENIZER = AutoTokenizer.from_pretrained(fallback_id, **common_kwargs)
-                _MODEL = AutoModelForCausalLM.from_pretrained(
+                _TOKENIZER = AutoTokenizer.from_pretrained(fallback_id, **common_kwargs)    # type: ignore
+                _MODEL = AutoModelForCausalLM.from_pretrained(  # type: ignore
                     fallback_id,
                     torch_dtype=dtype,
                     **common_kwargs
@@ -176,7 +181,7 @@ def _load_model_and_tokenizer(
             _MODEL.resize_token_embeddings(len(_TOKENIZER))
     
     if use_cuda:
-        _MODEL = _MODEL.to(torch.device("cuda:0"))
+        _MODEL = _MODEL.to(torch.device("cuda:0"))      # type: ignore
 
     from transformers import pipeline
     _PIPE = pipeline(
@@ -482,10 +487,10 @@ def visually_analyze_plot(
 
         # Ensure all inputs are on same device as model
         device = next(model.parameters()).device
-        inputs = {k: v.to(device) if torch.is_tensor(v) else v for k, v in inputs.items()}
+        inputs = {k: v.to(device) if torch.is_tensor(v) else v for k, v in inputs.items()}      # type: ignore
 
         # Generate Response
-        with torch.no_grad():
+        with torch.no_grad():       # type: ignore
             generated_ids = model.generate(
                 **inputs,
                 max_new_tokens=500,

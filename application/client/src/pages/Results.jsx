@@ -23,7 +23,7 @@ export default function Results({ token, summary, setLoading }) {
     const [loadingPlots, setLoadingPlots] = useState(false);
     const [loadingPlayerSummary, setLoadingPlayerSummary] = useState(false);
     const [activePlot, setActivePlot] = useState(null);
-    const [commentary, setCommentary] = useState("");
+    const [commentary, setCommentary] = useState("");   // Must be empty string, not null/unk
     const [loadingCommentary, setLoadingCommentary] = useState(false);
     const [commentaryGenerated, setCommentaryGenerated] = useState(false);
 
@@ -157,8 +157,11 @@ export default function Results({ token, summary, setLoading }) {
         setLoadingCommentary(true);
         try {
             const res = await getCommentary(token, selectedPlayer || undefined, mode);
+            console.log('Full response from backend:', res);
+            console.log('Commentary field:', res.commentary);
+            console.log('Type of commentary:', typeof res.commentary);
 
-            // Extract commentary text
+            // Fallback to empty string
             setCommentary(res.commentary || "");
 
             // NEW: Extract model information

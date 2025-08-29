@@ -7,7 +7,7 @@
 
 **Transform your volleyball data into actionable insights with AI-powered analytics and beautiful visualizations.**
 
-🔗 **[Try the Live App](https://volley-stats-ui.onrender.com)** | 📊 **[API Documentation](https://volley-stats-api.onrender.com/api/health)** 
+🔗 **[Try the Live App](https://volley-stats-ui.onrender.com)** | 📊 **[API Documentation](https://volley-stats.onrender.com)** 
 
 ---
 

@@ -189,7 +189,7 @@ def generate_commentary_with_fallback(
                 print(f"\n  🔄 Trying fallback: {fallback_text} + {fallback_vision}")
                 
                 try:
-                    commentary_text = generate_commentary_func(
+                    commentary_text, fallback_text, fallback_vision = generate_commentary_func(
                         summary=ui_summary,
                         meta=meta,
                         images=images,
@@ -200,7 +200,7 @@ def generate_commentary_with_fallback(
                         max_new_tokens=1024
                     )
                     
-                    if commentary_text and commentary_text != "Commentary unavailable":
+                    if commentary_text and not commentary_text.startswith("Commentary unavailable"):
                         print(f"  ✓ Fallback successful!")
                         return commentary_text, {
                             "text": fallback_text,

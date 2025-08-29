@@ -232,266 +232,272 @@ export default function AICommentary({
                         {/* Divider bar between models and commentary */}
                         <div className="commentary-divider"></div>
 
-                        {commentary.split('\n').map((paragraph, idx, allParagraphs) => {
-                            if (paragraph.trim()) {
-                                const trimmed = paragraph.trim();
+                        {typeof commentary === 'string' && commentary ? (
+                            commentary.split('\n').map((paragraph, idx, allParagraphs) => {
+                                if (paragraph.trim()) {
+                                    const trimmed = paragraph.trim();
 
-                                // Skip lines that were marked as processed
-                                if (trimmed === '') return null;
+                                    // Skip lines that were marked as processed
+                                    if (trimmed === '') return null;
 
-                                // Main section headers with ### 
-                                if (trimmed.startsWith('###')) {
-                                    const headerText = trimmed.replace(/^###\s*/, '');
-                                    return (
-                                        <h3 key={idx} className={`commentary-main-header ${idx === 0 ? 'first-header' : ''}`}>
-                                            {headerText}
-                                        </h3>
-                                    );
-                                }
+                                    // Main section headers with ### 
+                                    if (trimmed.startsWith('###')) {
+                                        const headerText = trimmed.replace(/^###\s*/, '');
+                                        return (
+                                            <h3 key={idx} className={`commentary-main-header ${idx === 0 ? 'first-header' : ''}`}>
+                                                {headerText}
+                                            </h3>
+                                        );
+                                    }
 
-                                // Insight headers (e.g., "**Insight 1: Strengths**")
-                                else if (trimmed.match(/^\*\*Insight\s+\d+:.*\*\*$/)) {
-                                    const headerText = trimmed.replace(/\*\*/g, '');
-                                    return (
-                                        <h3 key={idx} className="commentary-insight-header">
-                                            {headerText}
-                                        </h3>
-                                    );
-                                }
+                                    // Insight headers (e.g., "**Insight 1: Strengths**")
+                                    else if (trimmed.match(/^\*\*Insight\s+\d+:.*\*\*$/)) {
+                                        const headerText = trimmed.replace(/\*\*/g, '');
+                                        return (
+                                            <h3 key={idx} className="commentary-insight-header">
+                                                {headerText}
+                                            </h3>
+                                        );
+                                    }
 
-                                // Main section headers with ** (backwards compatibility)
-                                else if (trimmed.startsWith('**') && trimmed.endsWith('**') && !trimmed.includes(':')) {
-                                    const headerText = trimmed.replace(/\*\*/g, '');
-                                    return (
-                                        <h3 key={idx} className={`commentary-main-header ${idx === 0 ? 'first-header' : ''}`}>
-                                            {headerText}
-                                        </h3>
-                                    );
-                                }
+                                    // Main section headers with ** (backwards compatibility)
+                                    else if (trimmed.startsWith('**') && trimmed.endsWith('**') && !trimmed.includes(':')) {
+                                        const headerText = trimmed.replace(/\*\*/g, '');
+                                        return (
+                                            <h3 key={idx} className={`commentary-main-header ${idx === 0 ? 'first-header' : ''}`}>
+                                                {headerText}
+                                            </h3>
+                                        );
+                                    }
 
-                                // Bullet points with * at the start
-                                else if (trimmed.startsWith('* ')) {
-                                    // Remove the asterisk and space, then process as before
-                                    const bulletContent = trimmed.substring(2).trim();
-                                    return (
-                                        <div key={idx} className="commentary-numbered-item no-number">
-                                            <div className="commentary-item-content full-width">
-                                                <span className="commentary-item-text">
-                                                    {parseBoldText(bulletContent)}
-                                                </span>
+                                    // Bullet points with * at the start
+                                    else if (trimmed.startsWith('* ')) {
+                                        // Remove the asterisk and space, then process as before
+                                        const bulletContent = trimmed.substring(2).trim();
+                                        return (
+                                            <div key={idx} className="commentary-numbered-item no-number">
+                                                <div className="commentary-item-content full-width">
+                                                    <span className="commentary-item-text">
+                                                        {parseBoldText(bulletContent)}
+                                                    </span>
+                                                </div>
                                             </div>
-                                        </div>
-                                    );
-                                }
+                                        );
+                                    }
 
-                                // Check if this line is just a number with or without ** (1, 2, 3, etc. or **1**, **2**, etc.) 
-                                else if (/^(\*\*)?\d+(\*\*)?$/.test(trimmed)) {
-                                    const number = trimmed.replace(/\*\*/g, '');
-                                    const nextIdx = idx + 1;
+                                    // Check if this line is just a number with or without ** (1, 2, 3, etc. or **1**, **2**, etc.) 
+                                    else if (/^(\*\*)?\d+(\*\*)?$/.test(trimmed)) {
+                                        const number = trimmed.replace(/\*\*/g, '');
+                                        const nextIdx = idx + 1;
 
-                                    // Look for the label and content in next lines
-                                    if (nextIdx < allParagraphs.length) {
-                                        const labelLine = allParagraphs[nextIdx]?.trim();
+                                        // Look for the label and content in next lines
+                                        if (nextIdx < allParagraphs.length) {
+                                            const labelLine = allParagraphs[nextIdx]?.trim();
 
-                                        // Check if the label line has bold formatting
-                                        if (labelLine && labelLine.startsWith('**')) {
-                                            // Extract label and inline content from format like "**Receiving and Attacking**: content"
-                                            if (labelLine.includes('**:')) {
-                                                // Match pattern: **Label**: content
-                                                const labelParts = labelLine.match(/^\*\*([^*]+)\*\*:\s*(.*)$/);
-                                                if (labelParts) {
-                                                    const [, label, inlineContent] = labelParts;
+                                            // Check if the label line has bold formatting
+                                            if (labelLine && labelLine.startsWith('**')) {
+                                                // Extract label and inline content from format like "**Receiving and Attacking**: content"
+                                                if (labelLine.includes('**:')) {
+                                                    // Match pattern: **Label**: content
+                                                    const labelParts = labelLine.match(/^\*\*([^*]+)\*\*:\s*(.*)$/);
+                                                    if (labelParts) {
+                                                        const [, label, inlineContent] = labelParts;
 
-                                                    // Clean the label - remove any trailing colon if present
-                                                    const cleanLabel = label.replace(/:+$/, '').trim();
+                                                        // Clean the label - remove any trailing colon if present
+                                                        const cleanLabel = label.replace(/:+$/, '').trim();
 
-                                                    // Check if there's additional content on the next line
-                                                    const contentLine = allParagraphs[nextIdx + 1]?.trim();
-                                                    let fullContent = cleanContent(inlineContent);
+                                                        // Check if there's additional content on the next line
+                                                        const contentLine = allParagraphs[nextIdx + 1]?.trim();
+                                                        let fullContent = cleanContent(inlineContent);
 
-                                                    // If there's content on the next line that's not a header or number
-                                                    if (contentLine && !contentLine.startsWith('**') && !/^(\*\*)?\d+(\*\*)?$/.test(contentLine) && !contentLine.startsWith('* ')) {
-                                                        const cleanedNextContent = cleanContent(contentLine);
-                                                        fullContent = fullContent ? fullContent + ' ' + cleanedNextContent : cleanedNextContent;
-                                                        allParagraphs[nextIdx + 1] = '';
-                                                    }
+                                                        // If there's content on the next line that's not a header or number
+                                                        if (contentLine && !contentLine.startsWith('**') && !/^(\*\*)?\d+(\*\*)?$/.test(contentLine) && !contentLine.startsWith('* ')) {
+                                                            const cleanedNextContent = cleanContent(contentLine);
+                                                            fullContent = fullContent ? fullContent + ' ' + cleanedNextContent : cleanedNextContent;
+                                                            allParagraphs[nextIdx + 1] = '';
+                                                        }
 
-                                                    // Mark processed line
-                                                    allParagraphs[nextIdx] = '';
+                                                        // Mark processed line
+                                                        allParagraphs[nextIdx] = '';
 
-                                                    return (
-                                                        <div key={idx} className="commentary-numbered-item">
-                                                            <span className="commentary-number-badge">
-                                                                {number}
-                                                            </span>
-                                                            <div className="commentary-item-content">
-                                                                <strong className="commentary-item-label">
-                                                                    {cleanLabel}
-                                                                </strong>
-                                                                <div className="commentary-item-text">
-                                                                    {highlightContent(fullContent)}
+                                                        return (
+                                                            <div key={idx} className="commentary-numbered-item">
+                                                                <span className="commentary-number-badge">
+                                                                    {number}
+                                                                </span>
+                                                                <div className="commentary-item-content">
+                                                                    <strong className="commentary-item-label">
+                                                                        {cleanLabel}
+                                                                    </strong>
+                                                                    <div className="commentary-item-text">
+                                                                        {highlightContent(fullContent)}
+                                                                    </div>
                                                                 </div>
                                                             </div>
-                                                        </div>
-                                                    );
-                                                }
-                                            } else {
-                                                // Handle format like "**Label**" on one line, content on next
-                                                const cleanLabel = labelLine.replace(/\*\*/g, '').replace(/:+$/, '').trim();
-                                                const contentLine = allParagraphs[nextIdx + 1]?.trim();
+                                                        );
+                                                    }
+                                                } else {
+                                                    // Handle format like "**Label**" on one line, content on next
+                                                    const cleanLabel = labelLine.replace(/\*\*/g, '').replace(/:+$/, '').trim();
+                                                    const contentLine = allParagraphs[nextIdx + 1]?.trim();
 
-                                                if (contentLine && !contentLine.startsWith('**') && !/^(\*\*)?\d+(\*\*)?$/.test(contentLine) && !contentLine.startsWith('* ')) {
-                                                    const cleanedContent = cleanContent(contentLine);
+                                                    if (contentLine && !contentLine.startsWith('**') && !/^(\*\*)?\d+(\*\*)?$/.test(contentLine) && !contentLine.startsWith('* ')) {
+                                                        const cleanedContent = cleanContent(contentLine);
 
-                                                    // Mark these lines as processed
-                                                    allParagraphs[nextIdx] = '';
-                                                    allParagraphs[nextIdx + 1] = '';
+                                                        // Mark these lines as processed
+                                                        allParagraphs[nextIdx] = '';
+                                                        allParagraphs[nextIdx + 1] = '';
 
-                                                    return (
-                                                        <div key={idx} className="commentary-numbered-item">
-                                                            <span className="commentary-number-badge">
-                                                                {number}
-                                                            </span>
-                                                            <div className="commentary-item-content">
-                                                                <strong className="commentary-item-label">
-                                                                    {cleanLabel}
-                                                                </strong>
-                                                                <span className="commentary-item-text">
-                                                                    {highlightContent(cleanedContent)}
+                                                        return (
+                                                            <div key={idx} className="commentary-numbered-item">
+                                                                <span className="commentary-number-badge">
+                                                                    {number}
                                                                 </span>
+                                                                <div className="commentary-item-content">
+                                                                    <strong className="commentary-item-label">
+                                                                        {cleanLabel}
+                                                                    </strong>
+                                                                    <span className="commentary-item-text">
+                                                                        {highlightContent(cleanedContent)}
+                                                                    </span>
+                                                                </div>
                                                             </div>
-                                                        </div>
-                                                    );
+                                                        );
+                                                    }
                                                 }
                                             }
                                         }
                                     }
-                                }
 
-                                // Numbered items with dot notation (1. 2. 3. etc)
-                                else if (trimmed.match(/^\d+\.\s/)) {
-                                    // Handle both formats: "1. **Label:** Content" and "1. Content"
-                                    if (trimmed.match(/^\d+\.\s*\*\*/)) {
-                                        // Format: "1. **Service Accuracy:** content"
-                                        const parts = trimmed.match(/^(\d+)\.\s*\*\*([^:*]+):?\*\*\s*:?\s*(.*)$/);
-                                        if (parts) {
-                                            const [, number, label, content] = parts;
-                                            const cleanedContent = cleanContent(content);
-                                            return (
-                                                <div key={idx} className="commentary-numbered-item">
-                                                    <span className="commentary-number-badge">
-                                                        {number}
-                                                    </span>
-                                                    <div className="commentary-item-content">
-                                                        <strong className="commentary-item-label">
-                                                            {label.trim()}
-                                                        </strong>
-                                                        <span className="commentary-item-text">
-                                                            {highlightContent(cleanedContent)}
+                                    // Numbered items with dot notation (1. 2. 3. etc)
+                                    else if (trimmed.match(/^\d+\.\s/)) {
+                                        // Handle both formats: "1. **Label:** Content" and "1. Content"
+                                        if (trimmed.match(/^\d+\.\s*\*\*/)) {
+                                            // Format: "1. **Service Accuracy:** content"
+                                            const parts = trimmed.match(/^(\d+)\.\s*\*\*([^:*]+):?\*\*\s*:?\s*(.*)$/);
+                                            if (parts) {
+                                                const [, number, label, content] = parts;
+                                                const cleanedContent = cleanContent(content);
+                                                return (
+                                                    <div key={idx} className="commentary-numbered-item">
+                                                        <span className="commentary-number-badge">
+                                                            {number}
                                                         </span>
+                                                        <div className="commentary-item-content">
+                                                            <strong className="commentary-item-label">
+                                                                {label.trim()}
+                                                            </strong>
+                                                            <span className="commentary-item-text">
+                                                                {highlightContent(cleanedContent)}
+                                                            </span>
+                                                        </div>
                                                     </div>
-                                                </div>
-                                            );
-                                        }
-                                    } else {
-                                        // Simple format: "1. Content without label"
-                                        const parts = trimmed.match(/^(\d+)\.\s*(.*)$/);
-                                        if (parts) {
-                                            const [, number, content] = parts;
-                                            const cleanedContent = cleanContent(content);
-                                            return (
-                                                <div key={idx} className="commentary-numbered-item simple">
-                                                    <span className="commentary-number-badge">
-                                                        {number}
-                                                    </span>
-                                                    <div className="commentary-item-content">
-                                                        <span className="commentary-item-text">
-                                                            {highlightContent(cleanedContent)}
+                                                );
+                                            }
+                                        } else {
+                                            // Simple format: "1. Content without label"
+                                            const parts = trimmed.match(/^(\d+)\.\s*(.*)$/);
+                                            if (parts) {
+                                                const [, number, content] = parts;
+                                                const cleanedContent = cleanContent(content);
+                                                return (
+                                                    <div key={idx} className="commentary-numbered-item simple">
+                                                        <span className="commentary-number-badge">
+                                                            {number}
                                                         </span>
+                                                        <div className="commentary-item-content">
+                                                            <span className="commentary-item-text">
+                                                                {highlightContent(cleanedContent)}
+                                                            </span>
+                                                        </div>
                                                     </div>
-                                                </div>
-                                            );
+                                                );
+                                            }
                                         }
                                     }
-                                }
 
-                                // Bullet points (•) or dash or arrow
-                                else if (trimmed.startsWith('•') || trimmed.startsWith('-') || trimmed.startsWith('→')) {
-                                    let bulletContent = cleanContent(trimmed.replace(/^[•\-→]\s*/, ''));
+                                    // Bullet points (•) or dash or arrow
+                                    else if (trimmed.startsWith('•') || trimmed.startsWith('-') || trimmed.startsWith('→')) {
+                                        let bulletContent = cleanContent(trimmed.replace(/^[•\-→]\s*/, ''));
 
-                                    // Clean up **: ** pattern after player names
-                                    bulletContent = bulletContent.replace(/\*\*([^*]+)\*\*:\s*\*\*/g, '**$1**:');
+                                        // Clean up **: ** pattern after player names
+                                        bulletContent = bulletContent.replace(/\*\*([^*]+)\*\*:\s*\*\*/g, '**$1**:');
 
-                                    // Check if this is a player-specific bullet (e.g., "**Allyn**:" or "Allyn:")
-                                    let processedContent;
-                                    const playerBulletMatch = bulletContent.match(/^\*\*([^*]+)\*\*:\s*(.*)$/);
-                                    const simplePlayerMatch = bulletContent.match(/^([^:]+):\s*(.*)$/);
+                                        // Check if this is a player-specific bullet (e.g., "**Allyn**:" or "Allyn:")
+                                        let processedContent;
+                                        const playerBulletMatch = bulletContent.match(/^\*\*([^*]+)\*\*:\s*(.*)$/);
+                                        const simplePlayerMatch = bulletContent.match(/^([^:]+):\s*(.*)$/);
 
-                                    if (playerBulletMatch) {
-                                        // Format: "**PlayerName**: content"
-                                        const [, playerName, content] = playerBulletMatch;
-                                        // Clean any leading ** from content
-                                        const cleanedContent = content.replace(/^\*\*\s*/, '');
-                                        processedContent = (
-                                            <>
-                                                <strong className="commentary-bold">
-                                                    {highlightContent(playerName)}
-                                                </strong>
-                                                {': '}
-                                                {parseBoldText(cleanedContent)}
-                                            </>
+                                        if (playerBulletMatch) {
+                                            // Format: "**PlayerName**: content"
+                                            const [, playerName, content] = playerBulletMatch;
+                                            // Clean any leading ** from content
+                                            const cleanedContent = content.replace(/^\*\*\s*/, '');
+                                            processedContent = (
+                                                <>
+                                                    <strong className="commentary-bold">
+                                                        {highlightContent(playerName)}
+                                                    </strong>
+                                                    {': '}
+                                                    {parseBoldText(cleanedContent)}
+                                                </>
+                                            );
+                                        } else if (simplePlayerMatch && availablePlayers?.some(p =>
+                                            simplePlayerMatch[1].trim().toLowerCase() === p.toLowerCase()
+                                        )) {
+                                            // Format: "PlayerName: content" (without bold markers)
+                                            const [, playerName, content] = simplePlayerMatch;
+                                            // Clean any leading ** from content
+                                            const cleanedContent = content.replace(/^\*\*\s*/, '');
+                                            processedContent = (
+                                                <>
+                                                    <strong className="commentary-bold">
+                                                        {highlightContent(playerName.trim())}
+                                                    </strong>
+                                                    {': '}
+                                                    {parseBoldText(cleanedContent)}
+                                                </>
+                                            );
+                                        } else {
+                                            // Regular bullet content
+                                            processedContent = parseBoldText(bulletContent);
+                                        }
+
+                                        return (
+                                            <div key={idx} className="commentary-bullet-point">
+                                                <span className="bullet-icon">✦</span>
+                                                <span className="bullet-content">
+                                                    {processedContent}
+                                                </span>
+                                            </div>
                                         );
-                                    } else if (simplePlayerMatch && availablePlayers?.some(p =>
-                                        simplePlayerMatch[1].trim().toLowerCase() === p.toLowerCase()
-                                    )) {
-                                        // Format: "PlayerName: content" (without bold markers)
-                                        const [, playerName, content] = simplePlayerMatch;
-                                        // Clean any leading ** from content
-                                        const cleanedContent = content.replace(/^\*\*\s*/, '');
-                                        processedContent = (
-                                            <>
-                                                <strong className="commentary-bold">
-                                                    {highlightContent(playerName.trim())}
-                                                </strong>
-                                                {': '}
-                                                {parseBoldText(cleanedContent)}
-                                            </>
-                                        );
-                                    } else {
-                                        // Regular bullet content
-                                        processedContent = parseBoldText(bulletContent);
                                     }
 
-                                    return (
-                                        <div key={idx} className="commentary-bullet-point">
-                                            <span className="bullet-icon">✦</span>
-                                            <span className="bullet-content">
-                                                {processedContent}
-                                            </span>
-                                        </div>
-                                    );
-                                }
+                                    // Check for inline bold text
+                                    else if (trimmed.includes('**')) {
+                                        return (
+                                            <p key={idx} className="commentary-paragraph">
+                                                {parseBoldText(trimmed)}
+                                            </p>
+                                        );
+                                    }
 
-                                // Check for inline bold text
-                                else if (trimmed.includes('**')) {
-                                    return (
-                                        <p key={idx} className="commentary-paragraph">
-                                            {parseBoldText(trimmed)}
-                                        </p>
-                                    );
+                                    // Regular paragraphs
+                                    else {
+                                        return (
+                                            <p key={idx} className="commentary-paragraph">
+                                                {highlightContent(trimmed)}
+                                            </p>
+                                        );
+                                    }
                                 }
-
-                                // Regular paragraphs
-                                else {
-                                    return (
-                                        <p key={idx} className="commentary-paragraph">
-                                            {highlightContent(trimmed)}
-                                        </p>
-                                    );
-                                }
-                            }
-                            return null;
-                        })}
+                                return null;
+                            })
+                        ) : (
+                            <p className="commentary-paragraph">
+                                No commentary text available.
+                            </p>
+                        )}
                     </div>
 
                     {/* Additional Stats from Summary (if available) */}

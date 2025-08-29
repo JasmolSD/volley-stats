@@ -12,10 +12,13 @@ from dotenv import load_dotenv
 # Additional Functions
 from services.io_loader import load_dataframe
 from services.profiling import profile_dataframe
-from services.plotting import generate_plots, render_plot
-from services.agents import generate_commentary, generate_basic_statistical_commentary
+from services.visualizations.plotting import generate_plots, render_plot
 from services.utils.cleanup import purge_dirs
-from services.model_config import (
+from services.llm_commentary.agents import (
+    generate_commentary, 
+    generate_basic_statistical_commentary
+)
+from services.llm_commentary.model_config import (
     initialize_models,
     validate_commentary_request,
     generate_plots_for_mode,
@@ -383,7 +386,6 @@ def commentary():
     }
     
     # Generate plots
-    from services.plotting import render_plot
     all_plots, failed_plots, used_player = generate_plots_for_mode(
         df=df,
         player=player,

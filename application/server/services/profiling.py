@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Dict, Any, Union, Optional
+from typing import Dict, Any, Optional
 import numpy as np
 import pandas as pd
 
