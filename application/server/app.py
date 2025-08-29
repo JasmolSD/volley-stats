@@ -413,7 +413,6 @@ def commentary():
         text_model_id=text_model_id,
         vision_model_id=vision_model_id,
         hf_token=hf_token,
-        generate_commentary_func=generate_commentary,  # Pass your actual function
         mode=mode,
         used_player=used_player
     )

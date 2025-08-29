@@ -3,10 +3,10 @@ from typing import List, Dict, Any, Optional, Sequence, Tuple, cast
 from types_common import UISummary, Meta, ImageRef
 import requests
 
-HAVE_LLM = False
 USE_API = True
 
 try:
+    # for local model deployment
     from transformers import (
         AutoTokenizer,
         AutoModelForCausalLM, 
@@ -14,7 +14,6 @@ try:
         AutoModelForImageTextToText
         )
     import torch
-    HAVE_LLM = True
 except ImportError:
     pass
 
@@ -64,7 +63,7 @@ def call_hf_api(
             HF_API_URL,
             headers=headers,
             json=payload,
-            timeout=30
+            timeout=30     # timeout after 30 sec
         )
         
         if response.status_code == 200:
@@ -527,7 +526,7 @@ def generate_commentary_with_plots(
         vision_model_id: str = "HuggingFaceTB/SmolVLM-Instruct",
         text_model_id: str = "meta-llama/Llama-3.2-3B-Instruct",
         max_new_tokens: int = 512,
-) -> Optional[tuple]:
+) -> tuple:
     """
     Enhanced commentary generation that uses ACTUAL DATA VALUES.
     """
@@ -893,12 +892,12 @@ def generate_commentary_with_api(
         hf_token: str,
         model_id: str = "HuggingFaceTB/SmolLM3-3B:hf-inference",  # Use text model
         max_new_tokens: int = 512,
-) -> Optional[tuple]:
+) -> tuple:
     """
     Enhanced commentary using plot metadata + text model.
     """
     if not hf_token:
-        return None
+        return None, model_id, model_id
     
     # Extract plot information programmatically (no vision needed)
     plot_descriptions = []
@@ -967,7 +966,7 @@ def generate_commentary_with_api(
         print(f"Generated Response using HF API\n\tModel Used: {model_id}")
         return text.strip(), model_id, model_id
     else:
-        return None
+        return None, model_id, model_id
 
 
 def generate_commentary(
@@ -979,15 +978,11 @@ def generate_commentary(
         vision_model_id: str = "HuggingFaceTB/SmolVLM-Instruct",
         text_model_id: str = "HuggingFaceTB/SmolVLM-Instruct",
         max_new_tokens: int = 512
-) -> Optional[tuple]:
+) -> tuple:
     """
     Main wrapper function for commentary generation.
     Handles all the edge cases and calls generate_commentary_with_plots.
     """
-    # No LLM
-    if not HAVE_LLM:
-        return "Commentary unavailable - using statistical analysis instead", "statistical_analysis"
-    
     # Handle missing parameters
     if not hf_token:
         return "Commentary unavailable - no API token provided", "statistical_analysis", "statistical_analysis"

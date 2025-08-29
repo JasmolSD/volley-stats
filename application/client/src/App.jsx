@@ -2,7 +2,7 @@
 import { useState, useEffect } from "react";
 import { BrowserRouter, Routes, Route, useLocation, useNavigate } from "react-router-dom";
 import Home from "./pages/Home.jsx";
-import Results from "./pages/Results.jsx";
+import Analysis from "./pages/Analysis.jsx";
 import About from "./pages/About.jsx";
 import ScrollToTop from "./components/ScrollToTop.jsx"; // Import ScrollToTop component
 
@@ -24,8 +24,8 @@ function Header() {
         e.preventDefault();
         if (path === '#home') {
             navigate('/');
-        } else if (path === '#analysis' || path === '#insights') {
-            navigate('/results');
+        } else if (path === '#analysis') {
+            navigate('/analysis');
         } else if (path === '#about') {
             navigate('/about')
         }
@@ -44,12 +44,12 @@ function Header() {
                         Home
                     </a>
                     <a href="#analysis" onClick={(e) => handleNavClick(e, '#analysis')}
-                        className={location.pathname === '/results' ? 'active' : ''}>
+                        className={location.pathname === '/analysis' ? 'active' : ''}>
                         Analysis
                     </a>
-                    <a href="#insights" onClick={(e) => handleNavClick(e, '#insights')}>
+                    {/* <a href="#insights" onClick={(e) => handleNavClick(e, '#insights')}>
                         Insights
-                    </a>
+                    </a> */}
                     <a href="#about" onClick={(e) => handleNavClick(e, '#about')}
                         className={location.pathname === '/about' ? 'active' : ''}>
                         About
@@ -153,9 +153,9 @@ export default function App() {
                             }
                         />
                         <Route
-                            path="/results"
+                            path="/analysis"
                             element={
-                                <Results
+                                <Analysis
                                     token={token}
                                     summary={summary}
                                     setLoading={setLoading}

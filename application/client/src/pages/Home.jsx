@@ -44,7 +44,7 @@ export default function Home({ setToken, setSummary, setLoading }) {
             // Add a small delay for smooth transition
             setTimeout(() => {
                 setLoading(false);
-                navigate("/results");
+                navigate("/analysis");
             }, 500);
         } catch (err) {
             console.error(err);

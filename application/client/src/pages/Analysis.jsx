@@ -1,4 +1,4 @@
-// pages/Results.jsx
+// pages/Analysis.jsx
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { getPlayers, getPlot, getCommentary, getSummary } from "../api.js";
@@ -13,7 +13,7 @@ import DatasetOverview from "../components/DatasetOverview.jsx";
 import TeamStatistics from "../components/TeamStatistics.jsx";
 import AICommentary from "../components/AICommentary.jsx";
 
-export default function Results({ token, summary, setLoading }) {
+export default function Analysis({ token, summary, setLoading }) {
     const navigate = useNavigate();
     const [players, setPlayers] = useState([]);
     const [selectedPlayer, setSelectedPlayer] = useState("");
@@ -32,8 +32,8 @@ export default function Results({ token, summary, setLoading }) {
     const [commentarySummary, setCommentarySummary] = useState(null);
 
     useEffect(() => {
-        if (!token) {
-            navigate('/');
+        if (!token || !summary) {
+            navigate('/');  // Redirect to home if no data
             return;
         }
 

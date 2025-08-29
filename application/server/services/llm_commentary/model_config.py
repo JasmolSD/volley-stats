@@ -1,6 +1,7 @@
 import os
 from typing import Dict, Any, List, Optional, Tuple
 from types_common import UISummary, Meta
+from .agents import generate_commentary
 
 #  Default model configurations
 DEFAULT_TEXT_MODEL = "microsoft/phi-2"  # Open model, no license required
@@ -143,7 +144,6 @@ def generate_commentary_with_fallback(
     text_model_id: str,
     vision_model_id: str,
     hf_token: str,
-    generate_commentary_func,
     mode: str,
     used_player: str
 ) -> Tuple[Optional[str], Dict[str, Any]]:
@@ -160,7 +160,7 @@ def generate_commentary_with_fallback(
     
     # Try primary models first
     try:
-        commentary_text, text_model_id, vision_model_id = generate_commentary_func(
+        commentary_text, text_model_id, vision_model_id = generate_commentary(
             summary=ui_summary,
             meta=meta,
             images=images,
@@ -189,7 +189,7 @@ def generate_commentary_with_fallback(
                 print(f"\n  🔄 Trying fallback: {fallback_text} + {fallback_vision}")
                 
                 try:
-                    commentary_text, fallback_text, fallback_vision = generate_commentary_func(
+                    commentary_text, fallback_text, fallback_vision = generate_commentary(
                         summary=ui_summary,
                         meta=meta,
                         images=images,
