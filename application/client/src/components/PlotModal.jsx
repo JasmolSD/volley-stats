@@ -267,7 +267,16 @@ export default function PlotModal({ title, src, onClose }) {
             e.preventDefault();
             touchRef.current.initialDistance = getTouchDistance(touches);
             touchRef.current.initialScale = scale;
-            touchRef.current.center = getTouchCenter(touches);
+
+            // Store initial position for stable zoom
+            const center = getTouchCenter(touches);
+            const rect = frameRef.current.getBoundingClientRect();
+            touchRef.current.center = {
+                x: center.x - rect.left - rect.width / 2,
+                y: center.y - rect.top - rect.height / 2
+            };
+            touchRef.current.initialPosition = { ...position };
+
             setIsDragging(false);
         }
     };
@@ -286,29 +295,25 @@ export default function PlotModal({ title, src, onClose }) {
             // Pinch zoom
             e.preventDefault();
             const currentDistance = getTouchDistance(touches);
-            const currentCenter = getTouchCenter(touches);
 
             // Calculate new scale
-            const scaleChange = currentDistance / touchRef.current.initialDistance;
+            const scaleRatio = currentDistance / touchRef.current.initialDistance;
             const newScale = Math.max(
                 baseScale,
-                Math.min(5, touchRef.current.initialScale * scaleChange)
+                Math.min(5, touchRef.current.initialScale * scaleRatio)
             );
 
-            // Calculate position adjustment for zoom center
-            const rect = frameRef.current.getBoundingClientRect();
-            const centerX = currentCenter.x - rect.left - rect.width / 2;
-            const centerY = currentCenter.y - rect.top - rect.height / 2;
+            // Calculate how much the scale changed from initial
+            const scaleDelta = newScale / touchRef.current.initialScale;
 
-            // Update scale and position
+            // Adjust position to keep the pinch center point stationary
+            // This formula keeps the point under the pinch center in the same place
+            setPosition({
+                x: touchRef.current.initialPosition.x + touchRef.current.center.x * (1 - scaleDelta),
+                y: touchRef.current.initialPosition.y + touchRef.current.center.y * (1 - scaleDelta)
+            });
+
             setScale(newScale);
-
-            // Adjust position to zoom from touch center
-            const scaleDiff = newScale / touchRef.current.initialScale;
-            setPosition(prev => ({
-                x: prev.x + (currentCenter.x - touchRef.current.center.x),
-                y: prev.y + (currentCenter.y - touchRef.current.center.y)
-            }));
         }
     };
 
@@ -316,7 +321,7 @@ export default function PlotModal({ title, src, onClose }) {
         if (e.touches.length === 0) {
             setIsDragging(false);
         } else if (e.touches.length === 1) {
-            // Switch from pinch to pan
+            // Switch from pinch to pan - update reference position
             touchRef.current.lastPos = {
                 x: e.touches[0].clientX - position.x,
                 y: e.touches[0].clientY - position.y
