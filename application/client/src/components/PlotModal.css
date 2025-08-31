@@ -17,7 +17,6 @@
     /* Add padding for header - adjust based on your header height */
     animation: pm-fade-in 0.3s cubic-bezier(0.16, 1, 0.3, 1);
     overflow-y: auto;
-    touch-action: none;
     /* Allow scrolling if needed */
 }
 
@@ -46,7 +45,6 @@
         0 0 120px rgba(14, 165, 233, 0.1);
     animation: pm-slide-up 0.4s cubic-bezier(0.16, 1, 0.3, 1);
     position: relative;
-    touch-action: none;
 }
 
 .pm-container.pm-fullscreen {
@@ -474,52 +472,6 @@
 .pm-btn:focus-visible {
     outline: 2px solid #0ea5e9;
     outline-offset: 2px;
-}
-
-/* Light theme adjustments */
-@media (prefers-color-scheme: light) {
-    .pm-backdrop {
-        background: rgba(248, 250, 252, 0.95);
-    }
-
-    .pm-container {
-        background: linear-gradient(135deg,
-                rgba(255, 255, 255, 0.95) 0%,
-                rgba(248, 250, 252, 0.9) 100%);
-        border: 1px solid rgba(15, 23, 42, 0.1);
-        box-shadow:
-            0 0 0 1px rgba(15, 23, 42, 0.05) inset,
-            0 24px 64px rgba(15, 23, 42, 0.15),
-            0 0 120px rgba(14, 165, 233, 0.08);
-    }
-
-    .pm-header {
-        background: linear-gradient(135deg,
-                rgba(255, 255, 255, 0.8) 0%,
-                rgba(248, 250, 252, 0.7) 100%);
-        border-bottom: 1px solid rgba(15, 23, 42, 0.08);
-    }
-
-    .pm-title {
-        color: #0f172a;
-    }
-
-    .pm-btn {
-        color: #475569;
-    }
-
-    .pm-btn:hover {
-        color: #0f172a;
-        background: rgba(15, 23, 42, 0.06);
-        border-color: rgba(15, 23, 42, 0.1);
-    }
-
-    .pm-statusbar {
-        background: linear-gradient(135deg,
-                rgba(255, 255, 255, 0.7) 0%,
-                rgba(248, 250, 252, 0.6) 100%);
-        border-top: 1px solid rgba(15, 23, 42, 0.08);
-    }
 }
 
 /* Mobile Close Bar */
