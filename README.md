@@ -154,7 +154,7 @@ source venv/bin/activate  # On Windows: venv\Scripts\activate
 pip install -r requirements.txt
 
 # Set environment variables (create .env file)
-echo "HUGGINGFACE_TOKEN=your_token_here" > services/.env
+echo "HF_TOKEN=your_token_here" > services/.env
 
 # Run the Flask server
 python app.py

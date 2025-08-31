@@ -370,7 +370,7 @@ def commentary():
         response, status = build_error_response(
             "HuggingFace authentication not configured",
             "NO_HF_TOKEN",
-            "Please set HUGGINGFACE_TOKEN in your .env file"
+            "Please set HF_TOKEN in your .env file"
         )
         return jsonify(response), status
     

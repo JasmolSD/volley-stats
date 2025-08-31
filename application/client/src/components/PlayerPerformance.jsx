@@ -1,5 +1,5 @@
 // components/PlayerPerformance.jsx
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 
 // Metric category icons (using simple SVG paths)
 const MetricIcons = {

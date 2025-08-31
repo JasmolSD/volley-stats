@@ -1,4 +1,4 @@
-import React from "react";
+// components/SmallSpinner.jsx
 
 export default function SmallSpinner({ label = "Loading…" }) {
     return (

@@ -1,3 +1,5 @@
+// components/PlotPicker.jsx
+
 const KINDS = [
     { value: "offense", label: "Offense" },
     { value: "receive", label: "Receive" },

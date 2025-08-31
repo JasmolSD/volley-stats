@@ -16,7 +16,7 @@ services:
         value: production
       - key: CORS_ORIGINS
         value: https://volley-stats-ui.onrender.com
-      - key: HUGGINGFACE_TOKEN
+      - key: HF_TOKEN
         sync: false
     healthCheckPath: /api/health
     autoDeploy: false

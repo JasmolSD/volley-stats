@@ -1,5 +1,4 @@
 // components/ModeToggle.jsx
-import React from "react";
 
 export default function ModeToggle({ mode, onChange }) {
     return (

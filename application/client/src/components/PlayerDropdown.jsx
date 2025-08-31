@@ -1,5 +1,5 @@
 // components/PlayerDropdown.jsx
-import React, { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect } from "react";
 import { resolvePlayer } from "../api.js";
 
 export default function PlayerDropdown({ players, value, onChange, token }) {

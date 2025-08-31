@@ -1,5 +1,5 @@
 // components/PlotModal.jsx
-import React, { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import "./PlotModal.css";
 
 export default function PlotModal({ title, src, onClose }) {
@@ -13,6 +13,23 @@ export default function PlotModal({ title, src, onClose }) {
     const [drag, setDrag] = useState(null);
     const [isFullscreen, setIsFullscreen] = useState(false);
     const [baseScale, setBaseScale] = useState(1); // Track the base "fit to screen" scale
+
+    // Detect website header height
+    useEffect(() => {
+        // Find the website header (adjust selector as needed for your site)
+        const header = document.querySelector('.site-header, header, [class*="header"]');
+        if (header) {
+            const headerHeight = header.offsetHeight;
+            const headerZIndex = window.getComputedStyle(header).zIndex;
+
+            // Apply offset to the modal container
+            const container = document.querySelector('.pm-container');
+            if (container) {
+                container.style.marginTop = `${headerHeight + 10}px`;
+                container.style.maxHeight = `calc(100vh - ${headerHeight + 20}px)`;
+            }
+        }
+    }, []);
 
     // Inject animation styles if not already present
     useEffect(() => {
@@ -264,7 +281,7 @@ export default function PlotModal({ title, src, onClose }) {
             border-radius: 8px;
             font-weight: 600;
             font-size: 14px;
-            z-index: 100000;
+            z-index: 100002;
             pointer-events: none;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
             animation: slideDown 0.3s ease-out;
@@ -279,12 +296,16 @@ export default function PlotModal({ title, src, onClose }) {
 
     // Close if clicking the backdrop
     const closeOnBackdrop = (e) => {
-        if (e.target === backdropRef.current) onClose();
+        // Ensure it works with touch events too
+        if (e.target === backdropRef.current || e.target.classList.contains('pm-backdrop')) {
+            onClose();
+        }
     };
 
     // Wheel zoom
     const onWheel = (e) => {
         e.preventDefault();
+        e.stopPropagation(); // Add this to stop event bubbling
         const delta = e.deltaY > 0 ? 0.9 : 1.1;
         const newScale = Math.max(baseScale, Math.min(5, scale * delta)); // Use baseScale as minimum
 
@@ -296,6 +317,50 @@ export default function PlotModal({ title, src, onClose }) {
         setTy(ty - y * (newScale / scale - 1));
         setScale(newScale);
     };
+
+    // Prevent body scrolling when modal is open
+    useEffect(() => {
+        // Save original styles
+        const originalOverflow = document.body.style.overflow;
+        const originalHeight = document.documentElement.style.height;
+        const originalOverflowHtml = document.documentElement.style.overflow;
+
+        // Method 1: Just use overflow hidden (simplest, usually works)
+        document.body.style.overflow = 'hidden';
+        document.documentElement.style.overflow = 'hidden';
+        document.documentElement.style.height = '100%';
+
+        // Prevent wheel events from scrolling the page
+        const preventWheel = (e) => {
+            e.preventDefault();
+        };
+
+        // Prevent touch scrolling on mobile
+        const preventTouch = (e) => {
+            if (e.target.closest('.pm-backdrop')) {
+                e.preventDefault();
+            }
+        };
+
+        // Add listeners to the modal backdrop
+        const backdrop = document.querySelector('.pm-backdrop');
+        if (backdrop) {
+            backdrop.addEventListener('wheel', preventWheel, { passive: false });
+            backdrop.addEventListener('touchmove', preventTouch, { passive: false });
+        }
+
+        // Cleanup
+        return () => {
+            document.body.style.overflow = originalOverflow;
+            document.documentElement.style.overflow = originalOverflowHtml;
+            document.documentElement.style.height = originalHeight;
+
+            if (backdrop) {
+                backdrop.removeEventListener('wheel', preventWheel);
+                backdrop.removeEventListener('touchmove', preventTouch);
+            }
+        };
+    }, []);
 
     // Drag to pan
     const onMouseDown = (e) => {
@@ -339,6 +404,15 @@ export default function PlotModal({ title, src, onClose }) {
             <div className={`pm-container ${isFullscreen ? 'pm-fullscreen' : ''}`}>
                 {/* Glassmorphic Header */}
                 <div className="pm-header">
+                    <div className="pm-mobile-close-bar">
+                        <button className="pm-mobile-close-btn" onClick={onClose}>
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"
+                                    fill="currentColor" />
+                            </svg>
+                            <span>Close</span>
+                        </button>
+                    </div>
                     <div className="pm-header-left">
                         <div className="pm-title-group">
                             <div className="pm-title-badge">VISUALIZATION</div>
@@ -354,19 +428,19 @@ export default function PlotModal({ title, src, onClose }) {
 
                         {/* Control buttons */}
                         <div className="pm-button-group">
-                            <button className="pm-btn" onClick={zoomOut} title="Zoom Out (-)">
+                            <button className="pm-btn pm-btn-zoom-out" onClick={zoomOut} title="Zoom Out (-)">
                                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
                                     <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2" />
                                     <path d="M8 12h8" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
                                 </svg>
                             </button>
-                            <button className="pm-btn" onClick={zoomIn} title="Zoom In (+)">
+                            <button className="pm-btn pm-btn-zoom-in" onClick={zoomIn} title="Zoom In (+)">
                                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
                                     <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2" />
                                     <path d="M12 8v8M8 12h8" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
                                 </svg>
                             </button>
-                            <button className="pm-btn" onClick={refit} title="Reset View (R)">
+                            <button className="pm-btn pm-btn-reset" onClick={refit} title="Reset View (R)">
                                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
                                     <path d="M3 12a9 9 0 019-9 9.75 9.75 0 016.74 2.74L21 8" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                                     <path d="M21 3v5h-5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
@@ -374,7 +448,7 @@ export default function PlotModal({ title, src, onClose }) {
                                     <path d="M3 21v-5h5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                                 </svg>
                             </button>
-                            <button className="pm-btn" onClick={toggleFullscreen} title="Fullscreen (F)">
+                            <button className="pm-btn pm-btn-fullscreen" onClick={toggleFullscreen} title="Fullscreen (F)">
                                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
                                     {isFullscreen ? (
                                         <path d="M8 3v3a2 2 0 01-2 2H3m18 0h-3a2 2 0 01-2-2V3m0 18v-3a2 2 0 012-2h3M3 16h3a2 2 0 012 2v3"
@@ -385,13 +459,13 @@ export default function PlotModal({ title, src, onClose }) {
                                     )}
                                 </svg>
                             </button>
-                            <button className="pm-btn pm-btn-primary" onClick={copyImage} title="Copy Image (C)">
+                            <button className="pm-btn pm-btn-primary pm-btn-copy" onClick={copyImage} title="Copy Image (C)">
                                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
                                     <rect x="9" y="9" width="13" height="13" rx="2" stroke="currentColor" strokeWidth="2" />
                                     <path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1" stroke="currentColor" strokeWidth="2" />
                                 </svg>
                             </button>
-                            <button className="pm-btn pm-btn-primary" onClick={download} title="Download (D)">
+                            <button className="pm-btn pm-btn-primary pm-btn-download" onClick={download} title="Download (D)">
                                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
                                     <path d="M12 3v12m0 0l4-4m-4 4l-4-4M3 17v2a2 2 0 002 2h14a2 2 0 002-2v-2"
                                         stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />

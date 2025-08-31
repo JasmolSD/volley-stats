@@ -1,5 +1,4 @@
-import React from "react";
-
+// components/LoadingOverlay.jsx
 export default function LoadingOverlay({ show, message = "Processing your stats…" }) {
     if (!show) return null;
     return (

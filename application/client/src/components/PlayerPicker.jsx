@@ -1,4 +1,4 @@
-import React from "react";
+// components/PlayerPicker.jsx
 
 export default function PlayerPicker({ players, value, onChange }) {
     return (

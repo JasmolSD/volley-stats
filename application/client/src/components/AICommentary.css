@@ -99,9 +99,180 @@
 }
 
 /* Commentary Placeholder */
+/* Commentary Placeholder - Enhanced for Mobile */
 .commentary-placeholder {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
     text-align: center;
     padding: var(--space-2xl) var(--space-xl);
+    min-height: 400px;
+    width: 100%;
+}
+
+.commentary-placeholder h3 {
+    font-family: var(--font-display);
+    font-size: var(--text-2xl);
+    font-weight: 600;
+    margin: 0 0 var(--space-md) 0;
+    color: white;
+}
+
+.placeholder-description {
+    font-size: var(--text-base);
+    line-height: 1.5;
+    color: var(--text-muted);
+    margin: 0 auto var(--space-xl);
+    max-width: 320px;
+}
+
+.commentary-icon {
+    font-size: 5rem;
+    margin-bottom: var(--space-lg);
+    filter: grayscale(0.2);
+    line-height: 1;
+    animation: pulse 2s ease-in-out infinite;
+}
+
+/* Update button primary styles for better mobile appearance */
+.btn.btn-primary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-sm);
+    padding: var(--space-md) var(--space-xl);
+    font-size: var(--text-base);
+    font-weight: 600;
+    border-radius: var(--radius-md);
+    background: linear-gradient(135deg, var(--aurora-500), var(--aurora-600));
+    color: white;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s var(--ease-out-expo);
+    min-width: 200px;
+    box-shadow: 0 4px 12px rgba(14, 165, 233, 0.3);
+}
+
+.btn.btn-primary:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(14, 165, 233, 0.4);
+}
+
+.btn.btn-primary:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+    box-shadow: none;
+}
+
+/* Loading time notice - enhanced */
+.loading-time-notice {
+    margin-top: var(--space-lg);
+    padding: var(--space-md);
+    background: rgba(14, 165, 233, 0.1);
+    border: 1px solid rgba(14, 165, 233, 0.2);
+    border-radius: var(--radius-md);
+    font-size: var(--text-sm);
+    line-height: 1.5;
+    color: var(--text-secondary);
+    max-width: 320px;
+    animation: fadeIn 0.4s ease;
+}
+
+/* Enhanced pulse animation for icon */
+@keyframes pulse {
+
+    0%,
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+
+    50% {
+        transform: scale(1.08);
+        opacity: 0.8;
+    }
+}
+
+/* Mobile-specific adjustments */
+@media (max-width: 480px) {
+    .commentary-placeholder {
+        padding: var(--space-xl) var(--space-md);
+        min-height: 350px;
+    }
+
+    .commentary-icon {
+        font-size: 3.5rem;
+    }
+
+    .commentary-placeholder h3 {
+        font-size: var(--text-xl);
+    }
+
+    .placeholder-description {
+        font-size: var(--text-sm);
+        max-width: 280px;
+        margin-bottom: var(--space-lg);
+    }
+
+    .btn.btn-primary {
+        font-size: var(--text-sm);
+        padding: var(--space-sm) var(--space-lg);
+        min-width: 180px;
+    }
+
+    .loading-time-notice {
+        font-size: var(--text-xs);
+        max-width: 280px;
+        padding: var(--space-sm) var(--space-md);
+    }
+}
+
+/* Tablet adjustments */
+@media (min-width: 481px) and (max-width: 768px) {
+    .commentary-placeholder {
+        padding: var(--space-2xl) var(--space-lg);
+    }
+
+    .commentary-icon {
+        font-size: 4rem;
+    }
+
+    .placeholder-description {
+        max-width: 360px;
+    }
+}
+
+/* Large screens */
+@media (min-width: 769px) {
+    .commentary-placeholder {
+        padding: var(--space-3xl) var(--space-2xl);
+        min-height: 450px;
+    }
+
+    .commentary-icon {
+        font-size: 5.5rem;
+    }
+
+    .commentary-placeholder h3 {
+        font-size: var(--text-3xl);
+    }
+
+    .placeholder-description {
+        font-size: var(--text-lg);
+        max-width: 450px;
+    }
+
+    .btn.btn-primary {
+        padding: var(--space-md) var(--space-2xl);
+        font-size: var(--text-lg);
+        min-width: 240px;
+    }
+
+    .loading-time-notice {
+        max-width: 450px;
+        font-size: var(--text-base);
+    }
 }
 
 /* Model Information Header */

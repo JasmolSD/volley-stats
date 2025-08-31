@@ -1,3 +1,5 @@
+// commponents/SummaryCards.jsx
+
 export default function SummaryCards({ summary }) {
     const rows = summary?.rows ?? 0;
     const players = Array.isArray(summary?.players) ? summary.players.length : 0;

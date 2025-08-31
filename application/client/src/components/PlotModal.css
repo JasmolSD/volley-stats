@@ -7,17 +7,29 @@
     background: rgba(10, 15, 28, 0.95);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
-    z-index: 10000;
+    z-index: 9999;
+    /* Lower z-index, below header */
     display: flex;
-    align-items: center;
+    align-items: flex-start;
+    /* Changed from center */
     justify-content: center;
+    padding-top: 80px;
+    /* Add padding for header - adjust based on your header height */
     animation: pm-fade-in 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    overflow-y: auto;
+    touch-action: none;
+    /* Allow scrolling if needed */
 }
 
 /* Container */
 .pm-container {
     width: min(90vw, 1400px);
-    height: min(85vh, 900px);
+    height: min(calc(100vh - 100px), 900px);
+    /* Account for header height */
+    max-height: calc(100vh - 100px);
+    /* Ensure it doesn't go under header */
+    margin-top: 0;
+    /* Will be set dynamically by JS */
     background: linear-gradient(135deg,
             rgba(255, 255, 255, 0.08) 0%,
             rgba(255, 255, 255, 0.04) 100%);
@@ -33,13 +45,22 @@
         0 24px 64px rgba(0, 0, 0, 0.4),
         0 0 120px rgba(14, 165, 233, 0.1);
     animation: pm-slide-up 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    position: relative;
+    touch-action: none;
 }
 
 .pm-container.pm-fullscreen {
+    position: fixed;
+    top: 0;
+    left: 0;
     width: 100vw;
     height: 100vh;
+    max-height: 100vh;
+    margin-top: 0;
     border-radius: 0;
     border: none;
+    z-index: 100000;
+    /* Only go above header in fullscreen */
 }
 
 /* Header */
@@ -302,38 +323,149 @@
 }
 
 /* Responsive */
+/* Mobile-specific overrides */
+/* Mobile-specific overrides for better space usage */
+/* Ultra-minimal mobile mode */
 @media (max-width: 768px) {
-    .pm-container {
-        width: 95vw;
-        height: 90vh;
-        border-radius: 16px;
+
+    .pm-backdrop {
+        padding: 0;
+        align-items: center;
+        justify-content: center;
     }
 
+    /* Combine title and controls into single row */
     .pm-header {
-        padding: 16px;
+        display: flex;
+        align-items: center;
+        padding: 10px;
+        height: 60px;
+    }
+
+    .pm-container {
+        width: 95vw;
+        /* Slightly smaller than full width */
+        height: auto;
+        /* Auto height based on content */
+        max-height: 90vh;
+        /* Leave some breathing room */
+        border-radius: 12px;
+        /* Subtle rounding */
+        margin: 10px;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .pm-title-badge {
+        display: none;
+        /* Hide badge on mobile */
     }
 
     .pm-title {
-        font-size: 18px;
+        font-size: 16px;
+        font-weight: 600;
+        margin: 0;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        line-height: 1.2;
     }
 
+    /* Only show essential buttons */
     .pm-button-group {
+        display: flex;
         gap: 4px;
-        padding: 4px;
     }
 
-    .pm-btn {
-        width: 36px;
-        height: 36px;
+    /* Hide zoom and fullscreen buttons on mobile */
+    .pm-btn-zoom-out,
+    .pm-btn-zoom-in,
+    .pm-btn-fullscreen {
+        display: none;
+    }
+
+    .pm-frame {
+        flex: 1;
+        padding: 10px;
+        /* Minimal padding */
+        background: radial-gradient(circle at center,
+                rgba(14, 165, 233, 0.03) 0%,
+                transparent 70%);
+        /* Or match your chart background */
+        min-height: 300px;
+        /* Reasonable minimum */
+        max-height: calc(90vh - 88px);
+        /* Account for header and status bar */
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+        overflow: hidden;
     }
 
     .pm-statusbar {
-        padding: 8px 16px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 6px 12px;
+        height: 38px;
+        background: rgba(255, 255, 255, 0.03);
         font-size: 11px;
+    }
+}
+
+/* Very small mobile screens */
+@media (max-width: 480px) {
+
+    /* Hide less critical elements */
+    .pm-zoom-indicator {
+        display: none;
     }
 
     .pm-status-center {
         display: none;
+    }
+
+    /* Even more compact buttons */
+    .pm-btn {
+        width: 32px;
+        height: 32px;
+    }
+
+    .pm-title {
+        font-size: 14px;
+    }
+}
+
+/* Handle the status bar text better */
+@media (max-width: 768px) {
+    .pm-hint {
+        display: none;
+        /* Hide the hint text on mobile to save space */
+    }
+
+    /* Or show abbreviated version */
+    .pm-hint::before {
+        content: "Pinch to zoom • Drag to pan";
+        font-size: 10px;
+    }
+
+    .pm-hint {
+        font-size: 0;
+        /* Hide original text */
+    }
+}
+
+/* iOS safe areas */
+@supports (padding: env(safe-area-inset-top)) {
+    @media (max-width: 768px) {
+        .pm-header {
+            padding-top: calc(12px + env(safe-area-inset-top));
+        }
+
+        .pm-statusbar {
+            padding-bottom: calc(8px + env(safe-area-inset-bottom));
+        }
     }
 }
 
@@ -387,4 +519,40 @@
                 rgba(248, 250, 252, 0.6) 100%);
         border-top: 1px solid rgba(15, 23, 42, 0.08);
     }
+}
+
+/* Mobile Close Bar */
+.pm-mobile-close-bar {
+    display: none;
+    position: sticky;
+    top: 0;
+    z-index: 100001;
+    /* Above container content */
+    background: linear-gradient(135deg,
+            rgba(239, 68, 68, 0.95) 0%,
+            rgba(220, 38, 38, 0.95) 100%);
+    padding: 12px;
+    border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+}
+
+.pm-mobile-close-btn {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 14px 20px;
+    background: rgba(255, 255, 255, 0.1);
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    border-radius: 12px;
+    color: white;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.pm-mobile-close-btn:active {
+    background: rgba(255, 255, 255, 0.2);
+    transform: scale(0.98);
 }

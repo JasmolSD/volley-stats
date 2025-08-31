@@ -53,12 +53,12 @@ def initialize_models():
     text_model_id, vision_model_id = get_model_configs()
     
     # Load HuggingFace token
-    hf_token = os.getenv("HUGGINGFACE_TOKEN", "").strip()
+    hf_token = os.getenv("HF_TOKEN", "").strip()
     
     if not hf_token:
-        print("⚠️ WARNING: HUGGINGFACE_TOKEN not found!")
+        print("⚠️ WARNING: HF_TOKEN not found!")
         print("  Some models may not be accessible without authentication.")
-        print("  Set HUGGINGFACE_TOKEN in your .env file")
+        print("  Set HF_TOKEN in your .env file")
     else:
         print(f"✓ HuggingFace token loaded (length: {len(hf_token)})")
     

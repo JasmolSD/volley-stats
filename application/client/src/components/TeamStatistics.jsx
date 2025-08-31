@@ -1,4 +1,5 @@
 // components/TeamStatistics.jsx
+
 export default function TeamStatistics({ summary }) {
     const formatPercentage = (value) => {
         if (value === null || value === undefined || isNaN(value)) return '—';

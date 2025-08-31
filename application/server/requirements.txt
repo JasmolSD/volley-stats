@@ -26,9 +26,13 @@ requests
 # --- LLMs/high memory ---
 # openai
 # transformers
+# sentence-transformers
 # kernels
 # torch
 # torchvision
 # torchaudio
 # accelerate
 # hf_xet
+# --- RAG ---
+# faiss-cpu
+# llama-index
