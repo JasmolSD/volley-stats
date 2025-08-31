@@ -320,45 +320,20 @@ export default function PlotModal({ title, src, onClose }) {
 
     // Prevent body scrolling when modal is open
     useEffect(() => {
-        // Save original styles
         const originalOverflow = document.body.style.overflow;
-        const originalHeight = document.documentElement.style.height;
-        const originalOverflowHtml = document.documentElement.style.overflow;
-
-        // Method 1: Just use overflow hidden (simplest, usually works)
         document.body.style.overflow = 'hidden';
-        document.documentElement.style.overflow = 'hidden';
-        document.documentElement.style.height = '100%';
 
-        // Prevent wheel events from scrolling the page
         const preventWheel = (e) => {
-            e.preventDefault();
+            if (e.target.closest('.pm-backdrop')) {
+                e.preventDefault();
+            }
         };
 
-        // // Prevent touch scrolling on mobile
-        // const preventTouch = (e) => {
-        //     if (e.target.closest('.pm-backdrop')) {
-        //         e.preventDefault();
-        //     }
-        // };
+        document.addEventListener('wheel', preventWheel, { passive: false });
 
-        // Add listeners to the modal backdrop
-        const backdrop = document.querySelector('.pm-backdrop');
-        if (backdrop) {
-            backdrop.addEventListener('wheel', preventWheel, { passive: false });
-            backdrop.addEventListener('touchmove', preventTouch, { passive: false });
-        }
-
-        // Cleanup
         return () => {
             document.body.style.overflow = originalOverflow;
-            document.documentElement.style.overflow = originalOverflowHtml;
-            document.documentElement.style.height = originalHeight;
-
-            if (backdrop) {
-                backdrop.removeEventListener('wheel', preventWheel);
-                backdrop.removeEventListener('touchmove', preventTouch);
-            }
+            document.removeEventListener('wheel', preventWheel);
         };
     }, []);
 
