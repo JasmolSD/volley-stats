@@ -1,5 +1,5 @@
 // components/ImageGallery.jsx
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { getPlot } from "../api.js";
 import SmallSpinner from "./SmallSpinner.jsx";
 import PlotModal from "./PlotModal.jsx"; // NEW

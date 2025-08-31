@@ -335,12 +335,12 @@ export default function PlotModal({ title, src, onClose }) {
             e.preventDefault();
         };
 
-        // Prevent touch scrolling on mobile
-        const preventTouch = (e) => {
-            if (e.target.closest('.pm-backdrop')) {
-                e.preventDefault();
-            }
-        };
+        // // Prevent touch scrolling on mobile
+        // const preventTouch = (e) => {
+        //     if (e.target.closest('.pm-backdrop')) {
+        //         e.preventDefault();
+        //     }
+        // };
 
         // Add listeners to the modal backdrop
         const backdrop = document.querySelector('.pm-backdrop');

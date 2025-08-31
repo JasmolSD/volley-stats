@@ -320,10 +320,7 @@
     }
 }
 
-/* Responsive */
 /* Mobile-specific overrides */
-/* Mobile-specific overrides for better space usage */
-/* Ultra-minimal mobile mode */
 @media (max-width: 768px) {
 
     .pm-backdrop {
@@ -399,7 +396,6 @@
         justify-content: center;
         position: relative;
         overflow: hidden;
-        touch-action: pinch-zoom;
     }
 
     .pm-statusbar {
