@@ -401,6 +401,7 @@
         justify-content: center;
         position: relative;
         overflow: hidden;
+        touch-action: pinch-zoom;
     }
 
     .pm-statusbar {
