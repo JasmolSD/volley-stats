@@ -226,7 +226,7 @@
     pointer-events: none;
     will-change: transform;
     filter: drop-shadow(0 8px 32px rgba(0, 0, 0, 0.3));
-    transition: transform 0.1s linear;
+    /* transition: transform 0.1s linear; */
 }
 
 /* Status Bar */
@@ -327,6 +327,7 @@
         padding: 0;
         align-items: center;
         justify-content: center;
+        touch-action: pan-x pan-y;
     }
 
     /* Combine title and controls into single row */
@@ -396,6 +397,7 @@
         justify-content: center;
         position: relative;
         overflow: hidden;
+        touch-action: manipulation;
     }
 
     .pm-statusbar {
