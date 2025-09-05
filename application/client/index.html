@@ -5,6 +5,49 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Volley Stats - Performance Analytics Reimagined</title>
+
+    <!-- Force dark background immediately to prevent white flash -->
+    <style>
+        /* Critical dark mode styles - load before anything else */
+        html {
+            background-color: #0a0f1c !important;
+            color-scheme: dark !important;
+        }
+
+        body {
+            background: linear-gradient(135deg, #0a0f1c 0%, #0f2942 50%, #0a0f1c 100%) !important;
+            color: #f8fafc !important;
+            margin: 0;
+            min-height: 100vh;
+        }
+
+        /* Prevent light mode flash during load */
+        #root {
+            background-color: transparent !important;
+            min-height: 100vh;
+        }
+
+        /* Force all inputs and form elements to dark mode */
+        input,
+        select,
+        textarea,
+        button {
+            color-scheme: dark !important;
+        }
+
+        /* Override any system light mode preferences */
+        @media (prefers-color-scheme: light) {
+            html {
+                background-color: #0a0f1c !important;
+                color-scheme: dark !important;
+            }
+
+            body {
+                background: linear-gradient(135deg, #0a0f1c 0%, #0f2942 50%, #0a0f1c 100%) !important;
+                color: #f8fafc !important;
+            }
+        }
+    </style>
     <!-- Volleyball Favicon using Emoji -->
     <link rel="icon"
         href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🏐</text></svg>">

@@ -3,6 +3,29 @@
    app/client/src/app.css
    ========================================================================== */
 
+/* Force dark mode regardless of system preferences */
+html {
+    color-scheme: dark !important;
+    background-color: #0a0f1c !important;
+}
+
+/* Override light mode if system tries to apply it */
+@media (prefers-color-scheme: light) {
+    :root {
+        color-scheme: dark !important;
+    }
+
+    html,
+    body {
+        background: linear-gradient(135deg, #0a0f1c 0%, #0f2942 50%, #0a0f1c 100%) !important;
+        color: #f8fafc !important;
+    }
+
+    * {
+        color-scheme: dark !important;
+    }
+}
+
 /* Design Tokens - Sophisticated Color System */
 :root {
     /* Ethereal Blues & Neutrals */
