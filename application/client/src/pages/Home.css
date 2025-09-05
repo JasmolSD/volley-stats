@@ -1,6 +1,5 @@
-/* src/pages/Home.css */
+/* pages/Home.css */
 
-/* CSS Variables */
 :root {
     --primary-blue: #0ea5e9;
     --secondary-purple: #8b5cf6;
@@ -17,10 +16,90 @@
     --text-lg: 1.125rem;
 }
 
-/* Sample Data Container - NEW STYLES */
+/* Base styles */
+* {
+    box-sizing: border-box;
+}
+
+.container {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 1rem;
+}
+
+/* Hero Section */
+.hero {
+    text-align: center;
+    padding: 2rem 0;
+}
+
+.hero-title {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+    color: white;
+}
+
+.hero-subtitle {
+    font-size: 1.125rem;
+    color: var(--text-muted);
+    margin-bottom: 2rem;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* Upload Zone */
+.upload-zone {
+    max-width: 500px;
+    margin: 2rem auto;
+    padding: 3rem 2rem;
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 2px dashed rgba(255, 255, 255, 0.3);
+    border-radius: 1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.upload-zone:hover {
+    border-color: var(--primary-blue);
+    background: rgba(14, 165, 233, 0.05);
+    transform: translateY(-2px);
+}
+
+.upload-zone.dragging {
+    border-color: var(--primary-blue);
+    background: rgba(14, 165, 233, 0.1);
+}
+
+.upload-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+}
+
+.upload-title {
+    font-size: 1.25rem;
+    margin-bottom: 0.5rem;
+    color: white;
+}
+
+.upload-subtitle {
+    color: var(--text-muted);
+    margin: 0.25rem 0;
+}
+
+.upload-hint {
+    color: var(--text-muted);
+    font-size: var(--text-xs);
+    margin-top: var(--space-sm);
+    opacity: 0.7;
+}
+
+/* Sample Data */
 .sample-data-container {
     margin-top: 2rem;
-    animation: fadeIn 0.8s ease-out 0.3s both;
 }
 
 .sample-divider {
@@ -49,11 +128,9 @@
     display: inline-block;
     padding: 0 1.5rem;
     background: #0f172a;
-    /* Match your app's background */
     color: rgba(255, 255, 255, 0.5);
     font-size: 0.875rem;
     letter-spacing: 0.1em;
-    font-weight: 500;
 }
 
 .sample-buttons {
@@ -71,7 +148,6 @@
     cursor: pointer;
     transition: all 0.3s ease;
     border: none;
-    outline: none;
     display: inline-flex;
     align-items: center;
     gap: 0.5rem;
@@ -92,16 +168,164 @@
     background: transparent;
     color: #0ea5e9;
     border: 2px solid #0ea5e9;
-    box-shadow: 0 0 20px rgba(14, 165, 233, 0.1);
 }
 
 .sample-btn-outline:hover {
     background: rgba(14, 165, 233, 0.1);
     transform: translateY(-2px);
-    box-shadow: 0 4px 20px rgba(14, 165, 233, 0.2);
 }
 
-/* Button (for CTA button) */
+/* Carousel Section */
+.carousel-section {
+    margin: 4rem auto;
+    padding: 0 1rem;
+}
+
+.section-title {
+    text-align: center;
+    margin-bottom: 2rem;
+    color: white;
+    font-size: 2rem;
+}
+
+.carousel-container {
+    position: relative;
+    max-width: 400px;
+    margin: 0 auto;
+}
+
+.carousel-track {
+    display: flex;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scroll-behavior: smooth;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    -webkit-overflow-scrolling: touch;
+    gap: 1rem;
+}
+
+.carousel-track::-webkit-scrollbar {
+    display: none;
+}
+
+.carousel-card {
+    flex: 0 0 100%;
+    scroll-snap-align: center;
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 1rem;
+    padding: 2rem;
+    text-align: center;
+}
+
+.stat-icon {
+    width: 80px;
+    height: 80px;
+    margin: 0 auto 1rem;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.5rem;
+}
+
+.stat-label {
+    font-weight: 600;
+    color: white;
+}
+
+.feature-card h3 {
+    font-size: 1.25rem;
+    margin-bottom: 1rem;
+    color: white;
+}
+
+.feature-card p {
+    color: var(--text-muted);
+    margin: 0;
+}
+
+/* Carousel Navigation */
+.carousel-nav {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: white;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 1.5rem;
+    transition: all 0.3s ease;
+    z-index: 2;
+}
+
+.carousel-nav:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transform: translateY(-50%) scale(1.1);
+}
+
+.carousel-nav.prev {
+    left: -50px;
+}
+
+.carousel-nav.next {
+    right: -50px;
+}
+
+/* Carousel Dots */
+.carousel-dots {
+    display: flex;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-top: 1rem;
+}
+
+.dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.3);
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.dot.active {
+    background: var(--primary-blue);
+    transform: scale(1.2);
+}
+
+.dot:hover:not(.active) {
+    background: rgba(255, 255, 255, 0.5);
+}
+
+/* CTA Section */
+.cta-section {
+    text-align: center;
+    padding: 4rem 0;
+}
+
+.cta-section h2 {
+    margin-bottom: 1rem;
+    color: white;
+}
+
+.cta-section p {
+    color: var(--text-muted);
+    max-width: 600px;
+    margin: 0 auto 2rem;
+}
+
 .btn {
     padding: 0.75rem 1.5rem;
     border-radius: 0.5rem;
@@ -109,7 +333,6 @@
     cursor: pointer;
     transition: all 0.3s ease;
     border: none;
-    outline: none;
 }
 
 .btn-primary {
@@ -138,8 +361,8 @@
 
 .scroll-reveal {
     opacity: 0;
-    transform: translateY(30px);
-    transition: opacity 0.6s ease, transform 0.6s ease;
+    transform: translateY(20px);
+    transition: all 0.6s ease;
 }
 
 .scroll-reveal.revealed {
@@ -147,42 +370,26 @@
     transform: translateY(0);
 }
 
-/* Upload Zone Hover/Drag States */
-.upload-zone {
-    transition: all 0.3s ease;
-}
-
-.upload-zone:hover {
-    border-color: #0ea5e9 !important;
-    box-shadow: 0 12px 40px rgba(14, 165, 233, 0.2) !important;
-    transform: translateY(-2px);
-}
-
-.upload-zone.dragging {
-    border-color: #0ea5e9 !important;
-    background: rgba(14, 165, 233, 0.1) !important;
-    box-shadow: 0 12px 48px rgba(14, 165, 233, 0.3) !important;
-}
-
-/* Grid System */
-.grid {
-    display: grid;
-    gap: 2rem;
-}
-
-.grid-cols-3 {
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-}
-
-.grid-cols-4 {
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-}
-
-/* Responsive Design */
+/* Mobile Responsive */
 @media (max-width: 768px) {
+    .hero-title {
+        font-size: 2rem;
+    }
+
+    .carousel-container {
+        max-width: 90%;
+    }
+
+    .carousel-nav.prev {
+        left: -30px;
+    }
+
+    .carousel-nav.next {
+        right: -30px;
+    }
+
     .sample-buttons {
         flex-direction: column;
-        width: 100%;
         max-width: 300px;
         margin: 0 auto;
     }
@@ -191,20 +398,59 @@
         width: 100%;
         justify-content: center;
     }
-
-    .grid-cols-3,
-    .grid-cols-4 {
-        grid-template-columns: 1fr;
-    }
 }
 
 @media (max-width: 480px) {
-    .sample-data-container {
-        margin-top: 1.5rem;
+    .hero-title {
+        font-size: 1.75rem;
     }
 
-    .sample-btn {
-        font-size: 0.875rem;
-        padding: 0.625rem 1.25rem;
+    .hero-subtitle {
+        font-size: 1rem;
+    }
+
+    .upload-zone {
+        padding: 2rem 1.5rem;
+    }
+
+    .upload-icon {
+        font-size: 2.5rem;
+    }
+
+    .carousel-container {
+        max-width: calc(100% - 80px);
+    }
+
+    .carousel-nav {
+        width: 36px;
+        height: 36px;
+        font-size: 1.2rem;
+    }
+
+    .carousel-nav.prev {
+        left: -40px;
+    }
+
+    .carousel-nav.next {
+        right: -40px;
+    }
+
+    /* On very small screens, move nav buttons inside */
+    @media (max-width: 360px) {
+        .carousel-container {
+            max-width: 100%;
+        }
+
+        .carousel-nav {
+            background: rgba(0, 0, 0, 0.8);
+        }
+
+        .carousel-nav.prev {
+            left: 10px;
+        }
+
+        .carousel-nav.next {
+            right: 10px;
+        }
     }
 }
