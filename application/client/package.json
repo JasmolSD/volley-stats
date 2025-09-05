@@ -1,0 +1,22 @@
+{
+    "name": "volley-stats-client",
+    "private": true,
+    "version": "0.0.2",
+    "type": "module",
+    "scripts": {
+        "dev": "vite",
+        "build": "vite build",
+        "preview": "vite preview",
+        "clean": "node -e \"try{require('fs').rmSync('node_modules',{recursive:true,force:true})}catch{};try{require('fs').rmSync('package-lock.json',{force:true})}catch{}\""
+    },
+    "dependencies": {
+        "react": "^18.2.0",
+        "react-dom": "^18.2.0",
+        "react-router-dom": "^6.24.0",
+        "vite": "^5.0.0",
+        "@vitejs/plugin-react": "^4.3.0"
+    },
+    "devDependencies": {
+        "esbuild": "0.23.1"
+    }
+}

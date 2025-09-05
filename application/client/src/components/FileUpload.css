@@ -1,0 +1,118 @@
+/* src/components/FileUpload.css */
+
+.file-upload-wrapper {
+    width: 100%;
+}
+
+.file-upload-zone {
+    border: 2px dashed #d1d5db;
+    border-radius: 0.75rem;
+    padding: 2rem;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    background: rgba(255, 255, 255, 0.02);
+    position: relative;
+}
+
+.file-upload-zone:hover {
+    border-color: #3b82f6;
+    background: rgba(59, 130, 246, 0.02);
+    transform: translateY(-2px);
+}
+
+.file-upload-zone:focus {
+    outline: none;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.file-upload-zone.dragging {
+    border-color: #3b82f6;
+    background: rgba(59, 130, 246, 0.05);
+}
+
+.file-upload-zone.error {
+    border-color: #ef4444;
+    background: rgba(239, 68, 68, 0.02);
+}
+
+.file-upload-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.file-upload-icon {
+    width: 3rem;
+    height: 3rem;
+    color: #9ca3af;
+    margin-bottom: 0.5rem;
+}
+
+.file-upload-zone.dragging .file-upload-icon {
+    color: #3b82f6;
+}
+
+.file-upload-text {
+    font-size: 1rem;
+    color: #374151;
+    margin: 0;
+    font-weight: 500;
+}
+
+.file-upload-hint {
+    font-size: 0.875rem;
+    color: #9ca3af;
+    margin: 0;
+}
+
+.file-upload-error {
+    margin-top: 0.5rem;
+    padding: 0.5rem 0.75rem;
+    background: #fee2e2;
+    border-radius: 0.375rem;
+    color: #dc2626;
+    font-size: 0.875rem;
+    animation: slideDown 0.3s ease;
+}
+
+/* Animations */
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .file-upload-zone {
+        padding: 1.5rem;
+    }
+
+    .file-upload-icon {
+        width: 2.5rem;
+        height: 2.5rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .file-upload-zone {
+        padding: 1.25rem;
+    }
+
+    .file-upload-text {
+        font-size: 0.875rem;
+    }
+
+    .file-upload-hint {
+        font-size: 0.75rem;
+    }
+}
