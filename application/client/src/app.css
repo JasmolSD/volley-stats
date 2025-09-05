@@ -1,5 +1,5 @@
 /* =============================================================================
-   VOLLEY STATS — Artistic Excellence Edition for React
+   VOLLEY STATS – Artistic Excellence Edition for React
    app/client/src/app.css
    ========================================================================== */
 
@@ -80,18 +80,14 @@
     --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
     --ease-out-quart: cubic-bezier(0.25, 1, 0.5, 1);
     --ease-in-out-quart: cubic-bezier(0.76, 0, 0.24, 1);
-}
 
-/* Dark Theme - Default */
-@media (prefers-color-scheme: dark) {
-    :root {
-        --bg-primary: linear-gradient(135deg, #0a0f1c 0%, #0f2942 50%, #0a0f1c 100%);
-        --bg-secondary: var(--ocean-800);
-        --text-primary: #f8fafc;
-        --text-secondary: #e2e8f0;
-        --text-muted: #94a3b8;
-        --border-color: rgba(255, 255, 255, 0.08);
-    }
+    /* Dark Theme Colors - Now Default */
+    --bg-primary: linear-gradient(135deg, #0a0f1c 0%, #0f2942 50%, #0a0f1c 100%);
+    --bg-secondary: var(--ocean-800);
+    --text-primary: #f8fafc;
+    --text-secondary: #e2e8f0;
+    --text-muted: #94a3b8;
+    --border-color: rgba(255, 255, 255, 0.08);
 }
 
 /* Global Reset & Base Styles */

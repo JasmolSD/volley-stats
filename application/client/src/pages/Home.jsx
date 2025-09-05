@@ -1,21 +1,116 @@
 // pages/Home.jsx
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { uploadFile } from "../api.js";
-import "./Home.css"; // Import the CSS file
+import "./Home.css";
 
-const SAMPLE_FILE_PATH = '/data/sample_data.csv'; // Path to sample file in public folder
+const SAMPLE_FILE_PATH = '/data/sample_data.csv';
 const SAMPLE_FILE_NAME = 'sample_data.csv';
+const VALID_FILE_TYPES = ['.csv', '.xlsx', '.xls'];
+
+// Static data
+const STATS_DATA = [
+    {
+        icon: "📈",
+        label: "Performance Trends",
+        gradient: "linear-gradient(135deg, rgba(56, 189, 248, 0.1), rgba(14, 165, 233, 0.2))",
+        borderColor: "rgba(14, 165, 233, 0.2)",
+        shadowColor: "rgba(14, 165, 233, 0.15)"
+    },
+    {
+        icon: "👥",
+        label: "Player Analytics",
+        gradient: "linear-gradient(135deg, rgba(168, 85, 247, 0.1), rgba(139, 92, 246, 0.2))",
+        borderColor: "rgba(139, 92, 246, 0.2)",
+        shadowColor: "rgba(139, 92, 246, 0.15)"
+    },
+    {
+        icon: "🎯",
+        label: "Win Predictors",
+        gradient: "linear-gradient(135deg, rgba(251, 146, 60, 0.1), rgba(251, 113, 133, 0.2))",
+        borderColor: "rgba(251, 113, 133, 0.2)",
+        shadowColor: "rgba(251, 113, 133, 0.15)"
+    },
+    {
+        icon: "💡",
+        label: "AI Insights",
+        gradient: "linear-gradient(135deg, rgba(34, 197, 94, 0.1), rgba(16, 185, 129, 0.2))",
+        borderColor: "rgba(16, 185, 129, 0.2)",
+        shadowColor: "rgba(16, 185, 129, 0.15)"
+    }
+];
+
+const FEATURES_DATA = [
+    {
+        title: "Temporal Analysis",
+        description: "Track performance evolution over time with weekly and monthly breakdowns."
+    },
+    {
+        title: "Player Comparison",
+        description: "Compare individual player statistics and identify team strengths."
+    },
+    {
+        title: "Smart Recommendations",
+        description: "Get AI-powered coaching suggestions based on performance patterns."
+    }
+];
 
 export default function Home({ setToken, setSummary, setLoading }) {
     const navigate = useNavigate();
     const [isDragging, setIsDragging] = useState(false);
-    const fileInputRef = useRef(null);
-    const uploadZoneRef = useRef(null);
+    const [statsCurrentCard, setStatsCurrentCard] = useState(0);
+    const [featuresCurrentCard, setFeaturesCurrentCard] = useState(0);
 
+    const fileInputRef = useRef(null);
+    const statsScrollRef = useRef(null);
+    const featuresScrollRef = useRef(null);
+
+    // Simple scroll to card function
+    const scrollToCard = (ref, index) => {
+        if (!ref.current) return;
+        const cardWidth = ref.current.offsetWidth;
+        ref.current.scrollTo({
+            left: cardWidth * index,
+            behavior: 'smooth'
+        });
+    };
+
+    // Navigate carousel
+    const navigateCarousel = (direction, type) => {
+        const isStats = type === 'stats';
+        const currentCard = isStats ? statsCurrentCard : featuresCurrentCard;
+        const setCard = isStats ? setStatsCurrentCard : setFeaturesCurrentCard;
+        const data = isStats ? STATS_DATA : FEATURES_DATA;
+        const ref = isStats ? statsScrollRef : featuresScrollRef;
+
+        let newIndex;
+        if (direction === 'prev') {
+            newIndex = currentCard > 0 ? currentCard - 1 : data.length - 1;
+        } else {
+            newIndex = currentCard < data.length - 1 ? currentCard + 1 : 0;
+        }
+
+        setCard(newIndex);
+        scrollToCard(ref, newIndex);
+    };
+
+    // Handle manual scroll (for touch/swipe)
+    const handleScroll = (e, type) => {
+        const container = e.target;
+        const scrollLeft = container.scrollLeft;
+        const cardWidth = container.offsetWidth;
+        const newIndex = Math.round(scrollLeft / cardWidth);
+
+        if (type === 'stats' && newIndex !== statsCurrentCard) {
+            setStatsCurrentCard(newIndex);
+        } else if (type === 'features' && newIndex !== featuresCurrentCard) {
+            setFeaturesCurrentCard(newIndex);
+        }
+    };
+
+    // Animation on mount
     useEffect(() => {
-        // Trigger animations on mount
-        const elements = document.querySelectorAll('.fade-in, .scroll-reveal');
+        const elements = document.querySelectorAll('.scroll-reveal');
         elements.forEach((el, index) => {
             setTimeout(() => {
                 el.classList.add('revealed');
@@ -23,53 +118,44 @@ export default function Home({ setToken, setSummary, setLoading }) {
         });
     }, []);
 
-    async function handleFileUpload(file) {
-        // Validate file type
-        const validTypes = ['.csv', '.xlsx', '.xls'];
-        const fileExtension = file.name.substring(file.name.lastIndexOf('.')).toLowerCase();
-
-        if (!validTypes.includes(fileExtension)) {
+    // File handling
+    const handleFileUpload = async (file) => {
+        const ext = file.name.substring(file.name.lastIndexOf('.')).toLowerCase();
+        if (!VALID_FILE_TYPES.includes(ext)) {
             alert('Please upload a valid CSV or Excel file');
             return;
         }
 
         setLoading(true);
-
         try {
             const res = await uploadFile(file);
             const token = res.run_id ?? res.token;
             setToken(token);
             setSummary(res.summary);
-
-            // Add a small delay for smooth transition
             setTimeout(() => {
                 setLoading(false);
-                navigate("/analysis");
+                navigate("/results");
             }, 500);
         } catch (err) {
-            console.error(err);
+            console.error('Upload failed:', err);
             setLoading(false);
-            alert("Upload or analysis failed. Please try again with a valid CSV/XLSX file.");
+            alert("Upload or analysis failed. Please try again.");
         }
-    }
+    };
 
-    // Handle using sample data
     const handleUseSampleData = async () => {
         try {
             const response = await fetch(SAMPLE_FILE_PATH);
-            if (!response.ok) {
-                throw new Error('Sample file not found');
-            }
+            if (!response.ok) throw new Error('Sample file not found');
             const blob = await response.blob();
             const file = new File([blob], SAMPLE_FILE_NAME, { type: 'text/csv' });
             await handleFileUpload(file);
         } catch (err) {
             console.error('Failed to load sample data:', err);
-            alert('Failed to load sample data. Please ensure sample_data.csv is in the public directory.');
+            alert('Failed to load sample data.');
         }
     };
 
-    // Handle downloading sample CSV
     const handleDownloadSample = () => {
         const link = document.createElement('a');
         link.href = SAMPLE_FILE_PATH;
@@ -79,6 +165,7 @@ export default function Home({ setToken, setSummary, setLoading }) {
         document.body.removeChild(link);
     };
 
+    // Drag handlers
     const handleDragOver = (e) => {
         e.preventDefault();
         setIsDragging(true);
@@ -92,7 +179,6 @@ export default function Home({ setToken, setSummary, setLoading }) {
     const handleDrop = (e) => {
         e.preventDefault();
         setIsDragging(false);
-
         const files = e.dataTransfer.files;
         if (files.length > 0) {
             handleFileUpload(files[0]);
@@ -110,7 +196,6 @@ export default function Home({ setToken, setSummary, setLoading }) {
 
                 {/* Upload Zone */}
                 <div
-                    ref={uploadZoneRef}
                     className={`upload-zone ${isDragging ? 'dragging' : ''}`}
                     onDragOver={handleDragOver}
                     onDragLeave={handleDragLeave}
@@ -123,14 +208,6 @@ export default function Home({ setToken, setSummary, setLoading }) {
                             fileInputRef.current?.click();
                         }
                     }}
-                    aria-label="Upload file zone"
-                    style={{
-                        background: 'rgba(255, 255, 255, 0.17)',
-                        backdropFilter: 'blur(12px)',
-                        WebkitBackdropFilter: 'blur(12px)',
-                        border: '2px dashed rgba(255, 255, 255, 0.82)',
-                        boxShadow: '0 8px 32px rgba(14, 165, 233, 0.1)'
-                    }}
                 >
                     <input
                         ref={fileInputRef}
@@ -142,22 +219,14 @@ export default function Home({ setToken, setSummary, setLoading }) {
                         }}
                         style={{ display: 'none' }}
                     />
-
                     <div className="upload-icon">📊</div>
                     <h3 className="upload-title">Drop Your Data Here</h3>
                     <p className="upload-subtitle">Support for CSV, XLSX, and XLS files</p>
                     <p className="upload-subtitle">Input data should be structured like the sample csv!</p>
-                    <p style={{
-                        color: 'var(--text-muted)',
-                        fontSize: 'var(--text-xs)',
-                        marginTop: 'var(--space-sm)',
-                        opacity: 0.7
-                    }}>
-                        or click to browse
-                    </p>
+                    <p className="upload-hint">or click to browse</p>
                 </div>
 
-                {/* Sample Data Options - NEW SECTION */}
+                {/* Sample Data Options */}
                 <div className="sample-data-container">
                     <div className="sample-divider">
                         <span>OR</span>
@@ -167,7 +236,7 @@ export default function Home({ setToken, setSummary, setLoading }) {
                             className="sample-btn sample-btn-primary"
                             onClick={handleUseSampleData}
                         >
-                            📁 Use Sample Data
+                            📄 Use Sample Data
                         </button>
                         <button
                             className="sample-btn sample-btn-outline"
@@ -179,140 +248,114 @@ export default function Home({ setToken, setSummary, setLoading }) {
                 </div>
             </section>
 
-            {/* Sample Stats Preview */}
-            <section className="stats-section scroll-reveal">
-                <h2 style={{ textAlign: 'center', marginBottom: 'var(--space-2xl)' }}>
-                    What You'll Discover
-                </h2>
-                <div className="grid grid-cols-4">
-                    <div className="stat-card">
-                        <div style={{
-                            width: '80px',
-                            height: '80px',
-                            margin: '0 auto var(--space-md)',
-                            background: 'linear-gradient(135deg, rgba(56, 189, 248, 0.1), rgba(14, 165, 233, 0.2))',
-                            borderRadius: '50%',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            fontSize: '2.5rem',
-                            border: '2px solid rgba(14, 165, 233, 0.2)',
-                            boxShadow: '0 8px 24px rgba(14, 165, 233, 0.15)'
-                        }}>
-                            📈
-                        </div>
-                        <div className="stat-label">Performance Trends</div>
+            {/* What You'll Discover - Carousel */}
+            <section className="carousel-section scroll-reveal">
+                <h2 className="section-title">What You'll Discover</h2>
+                <div className="carousel-container">
+                    <button
+                        className="carousel-nav prev"
+                        onClick={() => navigateCarousel('prev', 'stats')}
+                        aria-label="Previous card"
+                    >
+                        ‹
+                    </button>
+                    <div
+                        className="carousel-track"
+                        ref={statsScrollRef}
+                        onScroll={(e) => handleScroll(e, 'stats')}
+                    >
+                        {STATS_DATA.map((stat, index) => (
+                            <div key={index} className="carousel-card">
+                                <div
+                                    className="stat-icon"
+                                    style={{
+                                        background: stat.gradient,
+                                        border: `2px solid ${stat.borderColor}`,
+                                        boxShadow: `0 8px 24px ${stat.shadowColor}`
+                                    }}
+                                >
+                                    {stat.icon}
+                                </div>
+                                <div className="stat-label">{stat.label}</div>
+                            </div>
+                        ))}
                     </div>
-                    <div className="stat-card">
-                        <div style={{
-                            width: '80px',
-                            height: '80px',
-                            margin: '0 auto var(--space-md)',
-                            background: 'linear-gradient(135deg, rgba(168, 85, 247, 0.1), rgba(139, 92, 246, 0.2))',
-                            borderRadius: '50%',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            fontSize: '2.5rem',
-                            border: '2px solid rgba(139, 92, 246, 0.2)',
-                            boxShadow: '0 8px 24px rgba(139, 92, 246, 0.15)'
-                        }}>
-                            👥
-                        </div>
-                        <div className="stat-label">Player Analytics</div>
-                    </div>
-                    <div className="stat-card">
-                        <div style={{
-                            width: '80px',
-                            height: '80px',
-                            margin: '0 auto var(--space-md)',
-                            background: 'linear-gradient(135deg, rgba(251, 146, 60, 0.1), rgba(251, 113, 133, 0.2))',
-                            borderRadius: '50%',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            fontSize: '2.5rem',
-                            border: '2px solid rgba(251, 113, 133, 0.2)',
-                            boxShadow: '0 8px 24px rgba(251, 113, 133, 0.15)'
-                        }}>
-                            🎯
-                        </div>
-                        <div className="stat-label">Win Predictors</div>
-                    </div>
-                    <div className="stat-card">
-                        <div style={{
-                            width: '80px',
-                            height: '80px',
-                            margin: '0 auto var(--space-md)',
-                            background: 'linear-gradient(135deg, rgba(34, 197, 94, 0.1), rgba(16, 185, 129, 0.2))',
-                            borderRadius: '50%',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            fontSize: '2.5rem',
-                            border: '2px solid rgba(16, 185, 129, 0.2)',
-                            boxShadow: '0 8px 24px rgba(16, 185, 129, 0.15)'
-                        }}>
-                            💡
-                        </div>
-                        <div className="stat-label">AI Insights</div>
-                    </div>
+                    <button
+                        className="carousel-nav next"
+                        onClick={() => navigateCarousel('next', 'stats')}
+                        aria-label="Next card"
+                    >
+                        ›
+                    </button>
+                </div>
+                <div className="carousel-dots">
+                    {STATS_DATA.map((_, index) => (
+                        <button
+                            key={index}
+                            className={`dot ${index === statsCurrentCard ? 'active' : ''}`}
+                            onClick={() => {
+                                setStatsCurrentCard(index);
+                                scrollToCard(statsScrollRef, index);
+                            }}
+                            aria-label={`Go to slide ${index + 1}`}
+                        />
+                    ))}
                 </div>
             </section>
 
-            {/* Features Section */}
-            <section className="scroll-reveal" style={{ marginTop: 'var(--space-3xl)' }}>
-                <h2 style={{ textAlign: 'center', marginBottom: 'var(--space-2xl)' }}>
-                    Advanced Analytics Features
-                </h2>
-                <div className="grid grid-cols-3">
-                    <div className="card">
-                        <h3 style={{ fontSize: 'var(--text-lg)', marginBottom: 'var(--space-md)' }}>
-                            Temporal Analysis
-                        </h3>
-                        <p style={{ color: 'var(--text-muted)', margin: 0 }}>
-                            Track performance evolution over time with weekly and monthly breakdowns.
-                        </p>
+            {/* Advanced Analytics Features - Carousel */}
+            <section className="carousel-section scroll-reveal">
+                <h2 className="section-title">Advanced Analytics Features</h2>
+                <div className="carousel-container">
+                    <button
+                        className="carousel-nav prev"
+                        onClick={() => navigateCarousel('prev', 'features')}
+                        aria-label="Previous card"
+                    >
+                        ‹
+                    </button>
+                    <div
+                        className="carousel-track"
+                        ref={featuresScrollRef}
+                        onScroll={(e) => handleScroll(e, 'features')}
+                    >
+                        {FEATURES_DATA.map((feature, index) => (
+                            <div key={index} className="carousel-card feature-card">
+                                <h3>{feature.title}</h3>
+                                <p>{feature.description}</p>
+                            </div>
+                        ))}
                     </div>
-                    <div className="card">
-                        <h3 style={{ fontSize: 'var(--text-lg)', marginBottom: 'var(--space-md)' }}>
-                            Player Comparison
-                        </h3>
-                        <p style={{ color: 'var(--text-muted)', margin: 0 }}>
-                            Compare individual player statistics and identify team strengths.
-                        </p>
-                    </div>
-                    <div className="card">
-                        <h3 style={{ fontSize: 'var(--text-lg)', marginBottom: 'var(--space-md)' }}>
-                            Smart Recommendations
-                        </h3>
-                        <p style={{ color: 'var(--text-muted)', margin: 0 }}>
-                            Get AI-powered coaching suggestions based on performance patterns.
-                        </p>
-                    </div>
+                    <button
+                        className="carousel-nav next"
+                        onClick={() => navigateCarousel('next', 'features')}
+                        aria-label="Next card"
+                    >
+                        ›
+                    </button>
+                </div>
+                <div className="carousel-dots">
+                    {FEATURES_DATA.map((_, index) => (
+                        <button
+                            key={index}
+                            className={`dot ${index === featuresCurrentCard ? 'active' : ''}`}
+                            onClick={() => {
+                                setFeaturesCurrentCard(index);
+                                scrollToCard(featuresScrollRef, index);
+                            }}
+                            aria-label={`Go to slide ${index + 1}`}
+                        />
+                    ))}
                 </div>
             </section>
 
             {/* Call to Action */}
-            <section className="scroll-reveal" style={{
-                textAlign: 'center',
-                marginTop: 'var(--space-3xl)',
-                padding: 'var(--space-3xl) 0'
-            }}>
-                <h2 style={{ marginBottom: 'var(--space-lg)' }}>
-                    Ready to Transform Your Game?
-                </h2>
-                <p style={{
-                    color: 'var(--text-muted)',
-                    maxWidth: '600px',
-                    margin: '0 auto var(--space-xl)'
-                }}>
-                    Upload your volleyball statistics now and discover insights that will elevate your team's performance to the next level.
-                </p>
+            <section className="cta-section scroll-reveal">
+                <h2>Ready to Transform Your Game?</h2>
+                <p>Upload your volleyball statistics now and discover insights that will elevate your team's performance.</p>
                 <button
                     className="btn btn-primary"
                     onClick={() => fileInputRef.current?.click()}
-                    style={{ fontSize: 'var(--text-base)' }}
                 >
                     Get Started Now
                 </button>

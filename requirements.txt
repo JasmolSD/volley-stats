@@ -1,0 +1,53 @@
+# --- Update pip ---
+pip
+
+# --- Jupyter notebook ---
+jupyterlab>=3.0
+ipykernel
+ipywidgets
+
+# --- Core web server ---
+Flask>=3.0
+Flask-Cors>=4.0
+gunicorn>=21.2
+
+# --- Data handling ---
+pandas>=2.2
+numpy>=1.26
+pyarrow>=16.0  # parquet/feather & fast IO
+fuzzywuzzy>=0.18
+python-Levenshtein>=0.12
+
+# --- LLMs ---
+# openai
+transformers
+sentence-transformers
+kernels
+torch
+torchaudio
+torchvision
+accelerate
+hf_xet
+
+# --- RAG ---
+faiss-cpu
+llama-index
+llama-index-llms-huggingface 
+llama-index-embeddings-huggingface
+llama-index-llms-huggingface-api
+
+# --- Excel support ---
+openpyxl>=3.1  # .xlsx
+xlrd>=2.0.1    # .xls (legacy)
+
+# --- Plots & images ---
+matplotlib>=3.8
+seaborn>=0.11
+Pillow>=10.3   # png saving backend for matplotlib
+
+# --- Validation / config helpers ---
+pydantic>=2.6
+python-dotenv>=1.0
+
+# --- API Calls ---
+requests

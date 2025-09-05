@@ -1,0 +1,469 @@
+Strength and Conditioning for Volleyball: A Review
+Rebelo, André1,2; Valente-dos-Santos, João1,2,3; Pires, Inês G.1; Arrais, Inês1,2; Pereira, João R.1,2,3; Turner, Anthony N.4
+Author Information
+Strength and Conditioning Journal ():10.1519/SSC.0000000000000895, March 13, 2025. | DOI: 10.1519/SSC.0000000000000895
+Open
+SDC
+PAP
+Associated Video
+Abstract
+Volleyball, with its global popularity and rigorous competition schedules, presents unique challenges in athlete conditioning and injury risk reduction. This narrative review synthesizes the current understanding of the physical demands and injury risks associated with elite volleyball play, offering a detailed analysis of match play dynamics and prevalent injury mechanisms. It emphasizes the important role of strength and conditioning (S&C) coaches in developing training programs to enhance performance and mitigate injury risks through strategic exercise selection and periodization. The review provides a thorough needs analysis, highlighting specific conditioning requirements for different player positions and detailing effective physical testing protocols. Recommendations are made for implementing structured S&C programs, which are vital for preparing athletes for the physical challenges of competitive volleyball. Practical guidelines are outlined for S&C coaches to optimize training outcomes, including suggestions for drill sequences and conditioning routines that reflect the sport-specific demands of volleyball. Thus, this review aims to equip coaches, trainers, and athletes with the knowledge and tools necessary to elevate their performance and safeguard against injuries, thereby contributing to the advancement and sustainability of volleyball as a high-intensity competitive sport.
+
+INTRODUCTION
+With more than 500 million players worldwide and representation in over 220 countries, volleyball has firmly established itself as a global sport (7). Notably, volleyball ranks among the top 5 most popular sports globally, particularly resonating in Brazil, Italy, Russia, and the United States. In the United States alone, the sport boasts over 6 million participants annually (18). This popularity is not limited to professional players, as volleyball's younger generations are also rising. A prime example of this can be seen at the high school level, where volleyball is the second-highest sport for female participation (4).
+
+In volleyball, the central goal is to win points by skillfully maneuvering the ball over the net into the opponent's court, making it unreturnable or inducing faults. This objective is pursued through tactical skills, strategic play, and cohesive team effort, where roles like passing, setting, spiking, blocking, and serving are decisive (108) (Table 1). Five primary positions, each with specific functions, are central to the sport. The setter, akin to a quarterback in other sports, is the strategic heart of the team. Tasked with setting up the ball for attackers, they require excellent ball-handling and decision-making abilities (64). The opposite hitter, positioned on the right side, is the primary attacker. They play an important role in both offensive spikes and defensive blocks, especially against the opponent's outside hitters (93). The outside hitter, often stationed on the left side, is another key attacker known for taking numerous swings at the ball. This position demands versatility, as they must excel in attacking and defensive skills like blocking and digging (19). Middle blockers, positioned centrally, form the core of the team's defense. Their job is to block opponent attacks, especially rapid middle strikes, while executing quick offensive moves (59). The libero, a defensive specialist, is unique in being restricted from serving, spiking, or rotating into the front row. Their primary role is to bolster the team's defense through exceptional passing and digging skills (27).
+
+Table 1 - Definitions of key volleyball terms
+Term	Definition
+Digging	A defensive action where a player prevents the ball from hitting the court by using their forearms to deflect an opponent's attack or spike
+Setting	A strategic pass where a player uses their fingertips to position the ball for an attacker, enabling a teammate to perform an offensive play, such as a spike
+Spiking	An aggressive, downward hit of the ball into the opponent's court, typically executed at the net with high force to score a point or force an error
+Blocking	A defensive action performed at the net to intercept or deflect the opponent's attack by using the hands and arms to prevent the ball from crossing into one's court
+Serving	The act of initiating play by hitting the ball from behind the end line over the net to the opponent's side, starting each point
+
+Elite volleyball athletes face demanding schedules, particularly those competing for club and national teams. For example, in the 2022/2023 season—an intense year because of the upcoming 2024 Olympic Games—top European men's national teams, like Italy, Poland, and France, faced an extended calendar of competitions. These included friendly matches in May and June, the FIVB Volleyball Nations League until the end of July, the CEV European Volleyball Championship until mid-September, and finally, the FIVB Men's Road to Paris Olympic Volleyball Qualifier in October. Although this schedule is unique to Olympic participation, even in non-Olympic years, national team-level competitive seasons span until August-September. Female elite athletes, such as those on the U.S. Women's National Team, experience similar demands. For players not involved in national teams, a typical off-season of approximately 3 months (from May to August) is relatively long compared with other team sports, reflecting the unique scheduling structure of professional volleyball.
+
+Despite the relatively longer off-season for some players, the continuous cycle of training and competition—especially for those balancing club and national team commitments—places significant physical demands on elite volleyball athletes, driving an increasing focus on physical development (80,88,89) and injury risk reduction (6,95,97). The continuous cycle of training and competition, with minimal rest, can significantly tax an athlete's body (43). The strength and conditioning (S&C) coach is tasked with enhancing athletic performance and implementing strategies to mitigate injury risks (3). Their work involves developing tailored training programs that address the specific physical demands of volleyball, considering the unique needs of players in different positions (30). This nuanced understanding of position-specific requirements is vital for S&C coaches, as it allows them to effectively prepare players for the physical challenges of their roles.
+
+POSITIONAL LOAD ANALYSIS IN MATCH PLAY
+For male volleyball players, research examining external load during matches is sparse, predominantly focusing on metrics associated with jumping (78,79). Analysis reveals that male setters tend to execute the highest number of vertical jumps compared with other positions (49,91,92). Notably, most of these jumps are executed during setting actions and are typically of lower intensity than those performed during blocking and attacking (49). In contrast, male middle blockers are recorded to have the highest number of block jumps, followed closely by outside hitters (49). When considering jump height, it is observed that jumps performed during attacks, especially by outside hitters, generally approach their maximum jump height more closely than those performed during blocks (49).
+
+Research on the external load of female volleyball players during match play is even more limited than that for their male counterparts, with only a handful of studies focusing on jump-related metrics (36,95). The available data show that female setters experience the highest number of jumps per game, followed by middle blockers and outside hitters (36,95). The data also show that the average jump height for outside hitters is substantially higher than for other positions (36). The disparity in jump heights can be attributed to the different jump types involved; blocking primarily requires a concentric-only squat jump, whereas attacking spikes typically involve an approach jump with multiple rapid steps. This biomechanical distinction is responsible for the higher jump heights seen in attacking actions, underscoring the importance of conditioning programs that target both concentric power and impulse and approach-based power and impulse to meet the varied demands of each position.
+
+The external load for male and female players is presented in Table 2. It should be acknowledged, however, that limited studies have investigated this, with the variability in league and team strategies influencing results. This underscores the need for more extensive research to comprehensively analyze jump-related metrics with greater certainty and applicability across different competitive environments. The dominant technology used across studies to measure jump metrics was an inertial measurement unit (IMU), which consists of 3-axis gyroscopes, magnetometers, and accelerometers. IMUs were generally placed on a belt secured to the athlete's hip, transmitting data via Bluetooth. A validation study has shown high correlations between IMUs and laboratory-standard 3-dimensional motion analysis systems, although there is a minor bias, with IMUs slightly overestimating vertical displacement by approximately 3.5–4.3 cm (14).
+
+Table 2 - Analysis of position-specific jump metrics in male and female volleyball players during official matches
+Male players (49, 91, 92)
+Position	Number of jumps (per set)	Number of spike jumps (per set)	Number of block jumps (per set)	Average jump height (m, per set)	Average spike jump height (m, per set)	Average block jump height (m, per set)
+Outside hitter	13.3–17.6	8.9	10.3	0.58 ± 0.12	0.68 ± 0.12	0.58 ± 0.12
+Opposite	23	No data	No data	No data	No data	No data
+Middle blocker	20.7–24.3	4.3	11.0	0.55 ± 0.15	0.65 ± 0.12	0.53 ± 0.12
+Setter	11.9–31.7	0.6	6.8	0.45 ± 0.14	0.55 ± 0.07	0.58 ± 0.01
+Female players (36, 95)
+Position	Number of jumps (per game)	Average jump height (m, per game)
+Outside hitter	72.8 ± 22.8	0.52 ± 0.2
+Opposite	50.3 ± 22.1	0.45 ± 0.11
+Middle blocker	89.2 ± 30.7	0.47 ± 0.5
+Setter	136.7 ± 36.8	0.27 ± 0.3
+
+Although jumping remains an important component of volleyball, accelerations, decelerations, and changes of direction also play an essential role, particularly for certain positions. In a 4-set Women's CEV Champions League match, data showed that outside hitters and opposite hitters engage most frequently in forward or backward linear transitions, with approximately 40% of their movements involving a run-up jump (34). The remaining 60% of their acceleration and deceleration movements are split between lateral and backward directions over short distances of 1–2 meters. Liberos, in contrast, tend to focus 65% of their movements on forward and left directions, with only 35% allocated to backward and right transitions (34). Findings from a separate study on elite female players in the Turkish League highlighted that setters cover greater total distances than other positions, whereas outside and opposite hitters exhibit the highest acceleration and deceleration values, reinforcing the importance of agility and direction change for these roles (2). Interestingly, explosive player load data (acceleration counts >3.5 m/s2) reveal that liberos, who perform extensive lateral movements, record the highest counts, whereas opposite hitters show the lowest, underscoring the necessity of rapid changes of direction throughout court transitions for the liberos (33).
+
+From a load management perspective, differences in playing time also impact physical demands. Liberos and middle blockers do not participate in all rallies, with liberos involved in approximately 80% of rallies and middle blockers in about 60%, leading to rest periods over 20% longer than other players (33). These findings indicate that the dynamic physical requirements of volleyball extend well beyond vertical jumps, emphasizing accelerative and decelerative movements as significant to gameplay. The limitations of current IMU-based data collection further underscore the need for technologies like local positioning systems, which could offer more comprehensive tracking of volleyball's multidirectional demands, especially for positions like liberos who rely less on jumping and more on agility and court coverage.
+
+INJURIES: PREVALENCE, RISK FACTORS, AND MITIGATION STRATEGIES
+In volleyball, injuries are a significant concern, affecting players' performance and career longevity. A detailed analysis highlights the prevalence and severity of injuries in different anatomical locations (Table 3). To reduce the occurrence of injuries, this section aligns with a 3-phase cycle previously proposed in the literature: assessing the current injury situation, identifying risk factors and mechanisms, and informing preventative strategies (65).
+
+Table 3 - Common injuries sustained during volleyball
+Location	Incidence	Type	Most common injury	Most common cause
+Match	Training	Total	Contact	Noncontact
+Ankle	Men	2.6	0.8	1.0	47.7–59%	25.4–35%	Ankle sprains	Landing from blocking
+Women	0.7	0.9	0.8
+Knee	0.0–0.25	0.0–2.54	0.3	19.4%	23.9%	Patellar tendonitis	High frequency of jumping
+Shoulder	0.0	0.16–0.32	0.2	No data	Rotator cuff or biceps tendons tendonitis	High frequency of spiking actions
+Overall	Men	2.3–3.9	1.5–3.8	1.7–11.2	
+Women	1.5–3.0	1.6–4.2	1.7–10.3
+Injury incidence is defined as the equivalent to injuries incurred by each player every 1,000 h played by them.
+
+Among the most frequent acute injuries encountered are ankle sprains, constituting up to 60% of all reported injuries (99,105). Such injuries predominantly occur during landing phases, either from blocking attempts or, less frequently, from spiking. The typical scenario involves a player landing on another player's foot, leading to an inversion sprain affecting the lateral collateral ligaments (8,99). The dynamics of blocking, with its abrupt landings, particularly predispose front-row players (e.g., middle blockers and opposites) to such injuries. A risk factor for ankle injuries in volleyball often reported is gender, with previous results showing that adult men have a higher risk for ankle injuries compared with adult women (risk ratio of 3.2) (7). The same authors also found a higher risk during matches for ankle injuries (risk ratio of 2.1) (7). Preventing ankle sprains involves a combination of equipment use and training techniques. Employing ankle taping or wearing high-top shoes can limit unwanted inversion movements that lead to sprains (100). Semi-rigid ankle supports effectively reduce the active inversion range of motion and are preferable to taping as they maintain their supportive properties even after repeated jumping (100). Neuromuscular and proprioceptive training programs are safe and effective components of ankle rehabilitation that should be introduced as soon as an athlete can tolerate them postinjury. After an ankle injury, altered neuromuscular activation patterns often lead to functional instability and gait alterations, increasing the likelihood of recurrent injuries (75). Neuromuscular retraining programs have been shown to reduce the prevalence of recurrent injuries and issues related to functional instability (74). In addition, coaching strategies to correct players' approach, particularly for those who tend to jump forward during spikes, can significantly reduce the risk of landing injuries (9). Encouraging players to adjust their jumping technique to minimize forward motion can help avoid scenarios where the foot lands under the net.
+
+Patellar tendonitis, often termed “jumper's knee,” emerges as one of the predominant overuse injuries because of the sport's repetitive jumping actions (23,99). Its prevalence among players, particularly those engaging in the sport more frequently and between 20 and 25 years old, underscores the importance of conditioning the leg extensors (21). In examining the impact of volleyball on knee health, studies have found that athletes with jumper's knee often achieve greater jump heights compared with asymptomatic athletes, particularly in male players (48). This phenomenon, often referred to as the “jumper's knee paradox,” suggests that athletes with superior jumping ability place higher mechanical demands on the patellar tendon, increasing the risk of overuse injuries (101). Knee joint dynamics studies highlight that rapid force development, significant tibial external torsion at spike jump take-off, and deep knee flexion angles predict developing symptoms (83). Players most at risk are those in positions demanding frequent and powerful jumps, such as middle blockers and outside hitters, who rely heavily on these movements for effective play. To mitigate the risk of patellar tendonitis, careful management of training volume is important, especially during the transition to senior levels (102). Gradual adaptation to increased training demands can help young athletes avoid sudden overuse. In addition, diverse exercise regimens that promote tendon health, including metabolic activity enhancement, collagen synthesis, and improvements in tendon mechanical properties, are beneficial (70). Implementing a combination of these exercises—from isometric strength exercises to plyometrics and eccentric load exercises—within regular training sessions has shown promise in reducing knee pain (16).
+
+Accounting for a notable fraction of injuries (i.e., total incidence of 0.2 per 1,000 hours of play), shoulder issues primarily manifest as tendonitis of the rotator cuff or biceps tendons, driven by the repeated overhead motions inherent in spiking and serving (23,99). Studies have indicated that top-level volleyball players often exhibit a disproportionately high strength ratio between the internal and external rotators of the shoulder, coupled with a diminished range of motion for internal shoulder rotation (known as glenohumeral internal rotation deficiency) on their dominant side (20,104). This condition is accompanied by an increased capacity for external rotation (20,104). An interesting finding among elite players is the occurrence of suprascapular neuropathy, a condition often asymptomatic yet characterized by a significant reduction in external rotation strength (107). To prevent shoulder injuries, incorporating stretching and strengthening exercises is essential. Focusing on elongating shortened dorsal muscles and bolstering scapular stabilizers can aid in prevention and symptom alleviation (46). Addressing the imbalance between internal and external rotator strength and improving the flexibility of internal rotation is important (104). Training programs should aim to maintain an optimal strength balance and enhance internal rotation flexibility (104). In addition, refining techniques to reduce shoulder stress, such as adjusting the backswing in spikes, can mitigate injury risks while potentially improving performance (87).
+
+Although less common and seldom leading to prolonged absences from play, hand injuries, including sprains, fractures, and contusions, predominantly affect the fingers. Injuries to the fingers predominantly occur because of the ball's impact, representing approximately three-quarters of such incidents (12). In contrast, collisions with other players are relatively less common, contributing to about one-seventh of finger injuries (12).
+
+PHYSICAL TRAINING ROADMAP
+ATHLETE ASSESSMENT
+Jump height is an important performance indicator in volleyball, significantly influencing match outcomes (68). In men's volleyball, winning teams have been shown to demonstrate significantly higher jump values during serves, attacks, and blocks compared with losing teams. Notably, jump height during both the serve and block phases was found to be statistically significant (p < 0.05) in influencing match outcomes (68). Research has demonstrated significant relationships between the force-time characteristics from isometric tests and various jumping tasks, highlighting their relevance in volleyball. The isometric midthigh pull (IMTP) and the isometric squat test, conducted at different knee angles, show varied correlations with jump performance. Based on the data presented in Table 4, we recommend the isometric squat performed at a 90° knee angle as a more suitable method for testing maximal strength in volleyball athletes. Research has shown that variables obtained from the 90° isometric squat demonstrate stronger correlations with jump height in the countermovement jump (CMJ) compared with those from the IMTP or isometric squats performed at different knee angles (51). The isometric squat at 90° can be reliably performed for multiple maximal attempts (typically 2–3) without compromising the accuracy of results, as evidenced by strong intrasession reliability in peak force measures (10). This test thus provides a consistent and effective indicator of strength and rapid force production, making it well-suited to monitor training adaptations in volleyball athletes.
+
+Table 4 - Correlation coefficients between isometric midthigh pull and isometric squat test, and countermovement jump and squat jump heights
+Isometric test	Knee angle	Countermovement jump height	Squat jump height
+Midthigh pull	140°	Peak force, r = 0.276	
+Relative peak force, r = 0.588
+120°–135°	Peak force, r = 0.36	Peak force, r = 0.40
+Relative peak force, r = 0.45	Relative peak force, r = 0.47
+Peak RFD, r = 0.39	Peak RFD, r = 0.48
+Squat	90°	Peak force, r = 0.79	Peak force, r = 0.79
+120°	Relative peak force, r = 0.33	
+140°	Relative peak force, r = 0.276	
+RFD = rate of force development.
+
+The spike and the block are 2 of the most important actions in volleyball, responsible for generating most points during a game (66). In line with the principle of specificity in sports training, previous research has already suggested some specific movements be tested, such as the spike jump and block jump, and measured using devices like the Vertec (109). The effectiveness of a spike relies heavily on factors such as contact height, which was already discussed in relation to jump height, ball direction, and ball speed. Ball speed is important as it affects the opponent's ability to react and defend. Monitoring spike speed typically involves assessing upper-body strength and throwing ability through general tests. Commonly, this includes measuring the 3 repetition maximum for exercises like the pullover or bench press (25,73). Although these tests are fundamental in evaluating upper-body strength, they fail to determine how effectively volleyball players can translate their strength into game-like situations. For instance, 1 study observed that despite significant increases in bench press and pullover 1 repetition maximum (1RM), there was no corresponding improvement in spike ball speed among female players over an entire season (98). Therefore, although these data may be tracked as part of their S&C program, it may be wise to omit it when physically profiling the athlete as part of a fitness testing battery.
+
+To bridge this gap, Palao and Valades (67) developed a spike and serve speed protocol consisting of 6 tests that ranged from general to specific in terms of strength/power application. The protocol starts with a standing spike where players hit the ball from a self-toss without any restrictions related to time or space, which assesses the players' capacity to exert power in a nongame-specific action. The second test introduces a spatial constraint by requiring players to spike while standing at the net at a height equivalent to their typical jumping spike position. In the third test, players execute a spike from a ball tossed by a coach or teammate at the net, tossed to a height between 2 and 3 meters, a scenario more reflective of a game situation. The fourth and fifth tests are variations of the third, with the only difference being the direction of the spike—diagonally across the court in the fourth and directly down the line in the fifth. The sixth and final test in the protocol evaluates the players' serving technique. Although the comprehensiveness of this protocol allows for a detailed assessment of skills directly relevant to volleyball performance, it is important to consider the time and resources required to implement such extensive testing. Moreover, the skill-based nature of this protocol means that the results may reflect technical proficiency as much as physical capacity, posing challenges in isolating constraints in physical capacity. Given these considerations, integrating the spike and serve protocol may be more effective during technical training sessions conducted in collaboration with volleyball coaches.
+
+As an alternative to the skill-intensive spike and serve speed protocol, the bench press throw—performed on the Smith machine—emerges as a valuable in-gym exercise for assessing upper-body ballistic performance, important for the high arm acceleration required during the spike (81). Research indicates that the peak force from the force-velocity profile of the bench press throw correlates with both spike and serve speeds (r ≥ 0.53) (5). This correlation underscores the significance of evaluating and enhancing upper-body ballistic performance through exercises like the bench press throw. This exercise provides a reliable measure of the physical attributes essential for elite volleyball players. It directly impacts their ability to effectively transmit force to the ball during spikes and serves, making it a practical choice for integration into regular S&C assessment routines. This test is also a direct measure of physical capacity, thus making it actionable by S&C coaches.
+
+Counterattack skills such as blocking, digging, and attacking are essential for team success in volleyball (66). Although attacking and blocking have already been discussed, it is equally important to focus on digging, as this skill is important for effective defense and transitioning to offense. The digging agility test (DAT), which includes visual stimuli, specifically assesses a volleyball player's digging agility (37). This test replicates the lateral digs performed in actual games, requiring athletes to respond to visual cues and move quickly from a stationary position to designated targets. However, considering the complexity of setting up the DAT and the current lack of widespread validation within the S&C community, we recommend a cautious approach to its use. Although the DAT could offer insights into sport-specific agility under game-like conditions, its practical application is currently limited by uncertainties regarding its reliability and the scarcity of implementation in routine training assessments. Equally, separating skill from physical capacity is hard, meaning actionable constraints are harder to decipher. Therefore, until further research can establish its efficacy and reliability, it may be prudent to prioritize more established agility tests that have been proven effective and are easier to administer, like the T Test or the Illinois agility test (15,69).
+
+Sheppard et al. (90) developed the repeated-effort test that accurately simulates volleyball's front-row demands. This test uses a vertical jump and reach testing device (e.g., Vertec), an adjustable block jump apparatus set to sport-specific heights, and timing gates (90). Athletes perform 4 repeated efforts encompassing jumping movements, including spike jumps and block jumps, combined with lateral movements typical of front-row offensive and defensive play (90). Structured on a fixed 20-second interval with brief rests tailored to the speed of each repetition, this test measures jump and movement times, block jump task errors, and a performance decrement percentage, indicating the difference between ideal and actual performance times (90). This provides a detailed measure of fatigue resistance and jumping reserve, aligning well with the sport-specific conditioning needs of volleyball players.
+
+PERIODIZATION
+Periodization has been a cornerstone in athletic training, designed to enhance fitness and performance over a structured timeline. Traditional long-term periodization models, such as classic or linear periodization, typically start with high-volume, low-intensity training, gradually shifting toward lower-volume, high-intensity sessions over several months (82). This approach, which cycles back to high-volume, low-intensity phases at the end of each cycle, organizes training blocks around distinct goals (e.g., hypertrophy, strength, strength/power, and power), usually lasting 4–6 weeks each. The overarching aim in these linear programs is often to reach peak strength or power by the end of the final phase, frequently called the power phase (42).
+
+However, in volleyball, where club seasons run almost uninterrupted from September through April, and national team duties occupy April to August, this tapering approach proves less suitable. A traditional linear model would significantly reduce training intensity during competition, hindering performance levels for elite and professional volleyball players (26). Although classic periodization may still have limited application during certain phases, such as the extended off-season for players not engaged in national team activities (which can span up to 3 months), a more adaptable model is often preferred for volleyball. Nonlinear periodization, specifically a flexible nonlinear approach, offers a practical solution. This method adheres to the principles of nonlinear training but allows adjustments to session intensity based on an athlete's readiness (22). For example, assessing readiness through presession tests, like a CMJ, or monitoring the early sets velocity in a workout can guide coaches in tailoring the day's focus to the athlete's current physical state, ensuring optimal training effectiveness.
+
+Training zones
+Building on the principles of flexible nonlinear periodization, each athlete's training load can be adjusted daily based on their current readiness, placing them in an appropriate training zone to maximize effectiveness and minimize unnecessary strain (Figure 1).
+
+• Training Zone 1: This zone focuses on low-intensity, low-volume recovery sessions. These lighter workouts aim to accelerate recovery, especially after intense match days classified as Training Zone 4. Typical activities include low-intensity aerobic exercises or mobility circuits, often scheduled for the day after a match (MD + 1) to aid athletes in quickly recovering from high exertion.
+• Training Zone 2: Characterized by high volume and low intensity, this zone emphasizes exercises that increase time under tension, supporting goals like muscle hypertrophy or tendon resilience (45). It is especially beneficial for athletes requiring enhanced tendon health because of volleyball-specific injury risks discussed previously. Training here typically takes place during the off-season or early in the competitive week, away from match days, as these methods can induce fatigue and muscle soreness (52). Alongside high-repetition isotonic exercises, holding isometric muscle actions (HIMA) are also effective in this zone, with recommended durations of 30–45 seconds at sport-specific joint angles (84). For example, front-row players can perform single-leg ankle HIMA to strengthen the Achilles tendon.
+• Training Zone 3: This zone is intended for low-volume, high-intensity days, commonly scheduled right before matches (MD-1). Volleyball coaches often use this time for brief, game-like training drills that mirror competitive scenarios, such as 6 versus 6 scrimmages starting at a score of 19-19, so only a few points and rallies are played. From an S&C perspective, this zone focuses on training rate of force development (RFD), power, and reactive strength. Recommended methods include high-intensity power lifts at low volumes (>75% 1RM), isotonic high-load and moderate-velocity repetitions for strength-speed and speed-strength, brief pushing isometric muscle actions (PIMA), Olympic lifts and derivatives, and sprinting and plyometric exercises that stimulate the central nervous system without inducing fatigue. These training methods will be discussed in the following section.
+• Training Zone 4: Representing the highest volume and intensity, this zone aligns with match days, preseason training camps, or scrimmage days with high-intensity 6 versus 6 play. Athletes typically report high perceived exertion in this zone, often monitored using session rating of perceived exertion (RPE) (60). With increased intensity (higher %1RM), there's a corresponding rise in RPE during resistance training, making this zone ideal for focusing on maximal strength development. Common methods include isotonic high-load, low-velocity repetitions (absolute and accelerative strength, <0.75 m/s) (106) and PIMA at joint angles specific to volleyball movements. For instance, a middle blocker might perform a single-leg knee PIMA at an angle similar to their position during a block jump.
+F1
+Figure 1.: Flexible training zones for volleyball athletes: intensity, volume, and methods. HIMA = holding isometric muscle actions; RFD = rate of force development; PIMA = pushing isometric muscle actions.
+Preparatory phase
+The preseason, or preparatory phase, begins with a period focused on building physical readiness before any competitive matches take place. During the initial weeks (general preparatory phase), athletes are expected to experience fatigue as training volume remains high. This period allows S&C coaches to build on the accumulated work established during the off-season, to maintain training volume while progressively increasing intensity. For instance, athletes may lift heavier loads for the same number of repetitions or perform movements with greater speed using the same weight, thus enhancing both strength and power output.
+
+As the preseason progresses, friendly matches begin to be incorporated, marking the shift to the specific preparatory phase. At this point, reducing the physical training volume becomes necessary to accommodate the added workload from these matches. Training in this phase increasingly resembles the competitive season, gradually conditioning athletes to manage training and match demands. This phase may even conclude with a taper, especially for elite clubs that start their season with a domestic Supercup or similar competitive event, ensuring athletes are physically primed for peak performance (discussed afterward).
+
+Competitive phase
+When planning microcycles and mesocycles, professional volleyball schedules can vary depending on competition frequency. At the club level, official games are often spaced 7 days apart for teams competing only in domestic leagues, whereas clubs engaged in domestic and international competitions may face a more condensed schedule, with games separated by 3 days. In addition, many leagues feature a “final 4” tournament format for domestic cup semi-finals and finals, where games occur within 24 hours of each other. Each of these formats demands specific adjustments to training, with the S&C coach using flexible nonlinear periodization principles to adapt intensity and volume based on athlete readiness assessments conducted before each session. Figure 2 provides an overview of the tailored microcycle structures for each schedule type, outlining optimal training zones and methods based on athlete readiness and competition demands.
+
+F2
+Figure 2.: Flexible periodization for competitive phases in volleyball: microcycle strategies by match frequency. MD = match day; S&C = strength and conditioning.
+During the competitive phase, careful mesocycle planning is essential for ensuring athletes peak at decisive points in the season. Collaboration between S&C and volleyball coaches is necessary to identify the most important matches, whether for playoff qualification or title contention. With these key games or periods highlighted, a structured approach to tapering and peaking can be established. Tapering, defined as “a progressive, nonlinear reduction of training load over a variable period to reduce the physiological and psychological strain of training while enhancing performance” (62), can be effectively applied to volleyball, although much of the tapering research traditionally focuses on individual sports (76). In professional and elite volleyball, once priority matches are identified, S&C coaches can create short, intensive training blocks lasting 1–3 weeks (i.e., shock microcycle or mesocycle) to build the necessary performance stimulus, followed by a taper. In these targeted blocks, a strategy of microdosing—distributing total training volume across a microcycle in frequent, short, repeated bouts—can optimize performance gains without overloading the athletes (17). Table 5 shows an example of a tapering phase with a duration of 3 weeks for 2 types of exercises used for Training Zone 3 (power clean) and Training Zone 4 (trap bar deadlift).
+
+Table 5 - Example of a 3-week taper period for volleyball players
+Training zone	Week 1	Week 2	Week 3
+3	Power clean 5 × 3 @80% (>2.40 m/s)	Power clean 4 × 3 @80% (>2.40 m/s)	Power clean 3 × 3 @80% (>2.40 m/s)
+4	Trap bar deadlift 5 × 3 @80–85% (<0.75 m/s)	Trap bar deadlift 4 × 3 @80–85% (<0.75 m/s)	Trap bar deadlift 3 × 3 @80–85% (<0.75 m/s)
+Peak velocity values should be used for power exercises like the power clean, whereas mean velocity values should be used for the trap bar deadlift.
+
+Transition phase
+The transition phase, often called the off-season, offers volleyball athletes a unique period to focus exclusively on physical development without the immediate demands of match play. For players not involved in national team activities, this phase can extend up to 3 months, providing an ideal opportunity to address specific physical attributes with minimal concern for fatigue management. With no competitive games on the horizon, athletes can engage in up to 5 training sessions per week focusing on Training Zones 2, 3, or 4, complemented by 2 lower-intensity days employing methods from Training Zone 1 for recovery.
+
+As previously discussed, the off-season's extended timeframe allows for applying linear periodization models, as athletes can progress through structured training blocks without interruptions from matches (26). For example, an opposite hitter working to increase maximal strength might start with a block that prioritizes methods from Training Zone 4. Furthermore, because of the limited or nonexistent volleyball practices during this period, athletes can increase plyometric volume in the gym, which is essential for developing reactive strength. This concentrated plyometric work in the off-season prepares athletes for the high jumping demands of the upcoming preseason and competitive phases, where practice and game loads will limit the room for intense plyometric training. In addition, the off-season is an ideal time to incorporate change of direction and acceleration drills, particularly for liberos, who rely heavily on these skills. Training Zone 3 methods, focusing on these agility and speed elements, can be implemented consistently to enhance movement efficiency and agility on the court. Finally, if the training goal is to build foundational strength to handle the demands of later phases and to lessen injury risk as training becomes more intense, S&C coaches might incorporate HIMA (and the remaining Training Zone 2 methods). This approach enhances activation of synergist muscles, which plays a key role in preserving joint stability during high-intensity movements, thereby reducing the likelihood of injuries (85).
+
+The off-season may conclude with a 3- to 4-week accumulation block to establish a robust foundation for the season ahead (41). Unlike most team sports, which incorporate this block into the preseason, volleyball's relatively long off-season allows S&C coaches to introduce this phase earlier. By increasing the number of sets while maintaining intensity, athletes can gradually adapt to the increased workload, ensuring they enter the preseason well-prepared for the demands of competitive play.
+
+TRAINING PHYSICAL FITNESS ATTRIBUTES
+The subsequent sections explore essential physical fitness attributes for volleyball athletes, including maximal strength, RFD, muscular power, reactive strength, agility, and conditioning. This guidance is supplemented with a selection of exercises designed to cultivate the necessary physical capacities and refine athletic prowess, ensuring athletes are fully equipped to thrive in high-performance volleyball settings.
+
+Maximal strength
+Maximal strength is important for athletes, reflecting the highest force muscles can produce during concentric, eccentric, or isometric contractions or within a specific movement (56). This attribute is particularly valued for its direct impact on a player's capacity to execute specific physical tasks demanding high power outputs and RFD. For instance, in volleyball, maximal strength is essential, as it underpins the ability to perform powerful actions such as spikes and blocks (89). Moreover, it supports landing mechanics, mitigating injury risks (47).
+
+Training for maximal strength typically involves high loads (≥80% of 1RM) and, thus, low repetitions (1–6 reps per set) to stimulate significant strength gains (71,77). The training frequency for maximal strength sessions ranges from 2 to 4 times per week, depending on the athlete's recovery and the training cycle's phase (71,77). The off-season, which can last up to 3 months for players not involved in national team duties, provides a valuable window for more frequent maximal strength development training. For athletes involved with national teams, the off-season can be significantly shorter or even nonexistent, making a nonlinear periodization approach more suitable for in-season strength training. Nonlinear periodization offers flexibility, allowing for varying training intensities and loads within shorter cycles, which can help athletes continue to make strength gains without accumulating excessive fatigue (22). For instance, the initial in-season mesocycle could still emphasize maximal strength development through high-intensity, low-volume sessions, but these efforts could be strategically alternated with moderate- and lower-intensity sessions to facilitate recovery and adaptation. Opportunities for more intensive strength training may arise during scheduled breaks, such as the Christmas and New Year periods, which can provide up to 2 weeks without matches. During these times, mini (1–2 weeks) shock microcycles can be implemented to boost strength gains (26). This approach ensures that athletes can improve strength without compromising their recovery or risking injury during the busy competitive season.
+
+In addition to the traditional maximal strength training methods discussed earlier, alternative approaches can further support maximal strength development in volleyball players. These methods provide unique benefits and can be tailored to meet the specific needs and competitive demands of the sport. Examples of such training methods include the following:
+
+• Accentuated eccentric loading: This training technique involves using additional weight during the eccentric phase of a movement, which is then reduced for the concentric phase (103). One practical application for volleyball players is using weight-release devices, which attach extra resistance to a barbell or machine during the eccentric portion of the lift. For example, to enhance maximal strength in knee and hip extension, S&C coaches can implement back squats with an eccentric load of 120% of the athlete's 1RM, followed by a concentric phase performed with 80% of their 1RM. This approach effectively targets the muscles involved in vertical force production.
+• Isometric strength training: Isometric strength training offers a unique advantage for athletes because of its lower energy demands compared with dynamic muscle contractions (11). This characteristic is particularly valuable as it helps players start games without high levels of fatigue. Research suggests that isometric training performed at intensities ranging from 80 to 100% of an athlete's maximum voluntary contraction, with each contraction sustained for 1–5 seconds and totaling 30–90 seconds per session, is optimal for developing maximal strength (50). For volleyball players, specific exercises such as the knee isometric push or ankle isometric push can be particularly beneficial. These exercises not only enhance the strength of key muscle groups but also allow players to maintain performance levels without adding excessive fatigue, making them ideal for integration into in-season training programs.
+Rate of force development, muscular power, and reactive strength
+RFD is pivotal in defining an athlete's capability to rapidly generate force, commonly referred to as explosive strength (1). In volleyball, for example, this includes jumping for a spike or block and quick directional changes (35,63). Muscular power in sports science is defined by the quantity of work performed per unit of time and is a product of both force and velocity. Reactive strength, often encapsulated under the umbrella term “plyometrics,” is integral for volleyball players because of the plyometric nature of many actions, such as rebound jumping and executing rapid accelerations (35). Plyometric training exploits the stretch-shortening cycle (SSC) properties, categorizing exercises into those with fast SSC (e.g., sprinting, drop jumps, bounding) and slow SSC (e.g., changes of direction, depth jumps) movement times (86).
+
+In analyzing the mechanics of the CMJ, researchers have identified 5 primary phases that occur before landing: unweighting, braking, transfer, propulsive, and flight (57). These phases can be translated to the approach jump used in volleyball, particularly for the spike, where each phase of the CMJ corresponds to a specific action within the spike jump's mechanics (Figure 3). By identifying and training these distinct phases, S&C coaches can help athletes optimize each part of the jump for improved performance on the court.
+
+F3
+Figure 3.: Volleyball approach jump (A) represents the unweighting phase, (B) shows the braking phase, (C) captures the propulsive phase, and (D) depicts the flight phase.
+Similarly to the lower body phases, the spike and jump serve can also be analyzed through distinct phases of upper body mechanics, which impact performance. In volleyball, both actions—spiking and serving—follow a 5-phase motor pattern that includes approach, takeoff, arm cocking, arm acceleration, and follow-through (81). Therefore, as with the lower body's SSC use in the approach jump phases, each phase of the upper body movement can be trained and optimized to enhance RFD, power, and reactive strength during important game actions like spiking and serving.
+
+To enhance performance in the unweighting and braking phases, training methods can focus on increasing the momentum (i.e., mass × velocity) at the end of the unweighting phase and improving the force generated during braking. These methods are key for optimizing the SSC in the subsequent phases. Effective training techniques for these initial phases include the following:
+
+• Accentuated eccentric loading: Using loads up to 130% of concentric maximum for controlled eccentric contractions develops braking force (32). Only 1–3 reps per set are needed, with concentric loads adjusted to 80–90% or 50–60% of 1RM.
+• Weighted jumps and upper body throws: To maximize power, athletes can perform throws and jumps that project the body or a weighted object into the air, minimizing deceleration (39).
+• Inertial flywheel training: This method, which offers variable resistance and eccentric overload, enhances power, especially in trained athletes (72). It also improves horizontal displacement (72), which is valuable for liberos who perform more lateral movements. High-speed, maximum-intensity reps (3–5 per set) are recommended for optimal adaptation.
+Once athletes reach the lowest point in the countermovement, their velocity is momentarily zero (57). As they begin the upward movement, velocity increases, typically while force decreases. Right before takeoff, velocity reaches its peak (44). The takeoff velocity (a crucial determinant of jump height) depends on the total impulse generated during the propulsive phase in proportion to the athlete's body mass (44). Therefore, achieving a high takeoff velocity requires the athlete to produce substantial vertical power, maintaining force application throughout the ascent from the point of zero velocity onward. Training for power and RFD during this phase is thus focused on maximizing the force an athlete can exert starting from the bottom position.
+
+• Box squat and seated box squat jump: The box squat, in which athletes sit back onto a box before driving upward, is commonly used to strengthen the squat pattern and develop power (55) and RFD (94). When performed with a brief pause at the bottom position (replicating the zero-velocity point in a countermovement), the exercise minimizes elastic energy contributions, requiring the muscle groups involved in the propulsive phase to generate force independently (55). The concentric phase should be executed as explosively as possible, using a load where the athlete's power output is maximized. Similarly, the seated box squat jump closely simulates the block jump seen in volleyball and can be performed with body weight or light dumbbells, emphasizing rapid concentric force production without relying on stored elastic energy.
+• Accommodating resistance (bands and chains): This method adjusts the force-velocity curve by adding resistance (through rubber bands or chains) during the concentric phase (58). As the athlete pushes through the movement, additional resistance increases, particularly in biomechanically challenging positions known as “sticking points.” This increases acceleration and velocity during the lift's concentric phase, optimizing power output (58). For peak power gains, total loads of 60–90% of 1RM are ideal, with approximately 80–85% of resistance from free weights and 15–20% from chains (58). For band resistance, the setup should comprise 20–35% band tension with 65–80% free weight, depending on the athlete's needs (58).
+• Pneumatic resistance training: Pneumatic resistance, which uses air resistance to create external loads with minimal inertia, is another effective method for boosting power and velocity (24). Unlike traditional weights, pneumatic resistance systems generate less momentum, allowing athletes to focus on maintaining high speeds throughout the movement. Research suggests that using lighter loads (30–45% of 1RM) with pneumatic resistance training can enhance velocity and power in trained athletes (24).
+• Olympic-style weightlifting movements: Olympic lifts generate some of the highest power outputs in resistance training (31). Exercises such as the clean and jerk or snatch should be programmed at around 80% of an athlete's 1RM to optimize power output (28). For best results, S&C coaches should tailor loads based on each athlete's power output profile, assessing individual responses to the loading to ensure maximal adaptation.
+Agility
+Agility encompasses an athlete's ability to swiftly decelerate, change direction, and accelerate again, reacting adeptly to situational cues (38). Agility training should be characterized by its emphasis on high-intensity drills that mimic the pace and energy demands of volleyball, incorporating game-like scenarios to foster athletes' ability to anticipate and react to opponents' actions. To effectively train agility in volleyball athletes, it is important for S&C coaches to identify the movement patterns characteristic of the sport. Volleyball requires a combination of retreating and forward patterns during play. For instance, retreating patterns are often observed when back-row players track and dig balls traveling toward the rear court, whereas forward patterns are prevalent when athletes move quickly to intercept or defend balls dropping between front and back rows. These patterns frequently occur in combination, forming the basis of agility drills tailored to volleyball's specific demands.
+
+One essential movement pattern in volleyball agility training is the drop step. This involves transitioning from a parallel stance to a rapid forward movement. Back-row players commonly execute this movement when defending balls that bypass the block and fall between the front and back rows. For optimal performance, players must take a step backward to generate the necessary push-off force for an explosive forward movement.
+
+• Tennis ball drill: The S&C coach tosses a tennis ball onto the ground. As soon as the ball touches the ground, the athlete performs a drop step, moving quickly forward to catch it before it touches the ground again.
+• Reactive cone drill: Set up 2 cones, 1 on each side of the athlete. On the coach's command, the player executes a drop step toward the designated cone, simulating a reactive defensive scenario. Another fundamental movement pattern in volleyball agility training is the lateral shuffle, a side-to-side motion that enables players to quickly cover ground without crossing their legs. This pattern is frequently observed in back-row players when defending opposition spikes directed toward the backcourt. Defensive players often execute a lateral shuffle to position themselves to dig the ball using 1 or both arms.
+• Multi-repetition lateral shuffle: Athletes perform 3 continuous lateral shuffles in 1 direction and then repeat the same movement to the opposite side. This drill emphasizes repeated, explosive push-offs from the outside leg combined with efficient pulling from the inside leg.
+• Tennis ball lateral shuffle drill: Incorporate a tennis ball into the drill by having the S&C coach toss the ball onto the ground. Athletes must execute the prescribed number of lateral shuffles and catch the ball before it touches the ground again.
+• Reactive agility lateral shuffle drill: Introduce a reactive component by using visual cues. For instance, the S&C coach raises 1 arm to indicate the direction in which the athlete should shuffle.
+The hip turn is an essential movement pattern for volleyball players, particularly when retreating to defend balls redirected behind their initial position. This commonly occurs when back-row players, initially positioned to defend an opposition spike, must quickly retreat after the spike is deflected by the block and redirected over their heads. For an efficient hip turn, the movement should begin with a strong push from the front foot, avoiding simultaneous pivoting of both feet. This ensures a quick and efficient transition into the retreat.
+
+• 90-degree hip turn to sprint drill: Athletes begin facing forward, perform a 90-degree hip turn, and sprint directly in a straight line. The goal is to avoid curvilinear initial steps, which indicates insufficient hip opening during the turn. Drills should emphasize practicing the movement in both directions to build symmetry in movement proficiency.
+• 45-degree hip turn to lateral shuffle drill: Athletes initiate a 45-degree hip turn followed by a short sprint and transition seamlessly into a lateral shuffle. This drill simulates game situations where a teammate's defensive touch redirects the ball unexpectedly, requiring immediate directional changes.
+• Reactive hip turn drill: Introduce reactive elements where the S&C coach provides auditory or visual cues to dictate the direction of the hip turn. For instance, a whistle can signal the athlete to execute a hip turn to the left or right before running toward a specific marker.
+Conditioning
+Conditioning for volleyball players is tailored to meet the sport's unique demands, blending the development of explosive power and speed with the stamina to sustain these efforts throughout the match. The sport's energetic demands predominantly hinge on the ATP-CP and aerobic pathways, with a lesser but still significant reliance on the anaerobic glycolytic system (54). This energetic profile underscores the necessity for volleyball players to cultivate a multifaceted conditioning approach that enhances their ability to repeatedly execute high-intensity actions interspersed with periods of lower-intensity activity and rest.
+
+Volleyball matches, typically lasting about 100 minutes, are characterized by intense activity bursts followed by shorter rest or low-intensity periods (90). An average rally lasts about 12 seconds, during which front-row players might execute up to 3 approach jumps and 4 block jumps, along with extensive lateral movements across the court (90,109). Occasionally, rallies can extend up to 40 seconds, with players covering distances that vary significantly based on their role—middle blockers often move about 788 m, whereas setters can cover up to 1,630 m throughout a match (61,90).
+
+To target these specific needs, conditioning programs incorporate high-intensity interval training to engage both the anaerobic and aerobic systems, along with sport-specific drills that replicate the rhythm and intensity of actual match play. For instance, drills tailored for outside hitters may involve a sequence of a block jump, retreating 4 meters, a swift approach to a spike, and a concluding spike jump (13). Defensive specialists like liberos might engage in drills involving lateral moves over 3 meters, a forward sprint of the same distance, followed by a dive and roll, and a backpedal to the initial position. Setters' drills could include sprinting from the backline to the net for a jump set, followed by a block jump and a return sprint to the starting position (13). Small-sided games can also help improve volleyball-specific conditioning. Various studies have shown that skill-based conditioning training in formats like 3 versus 3 and 4 versus 4 players can lead to such improvements in elite female volleyball players (29,40).
+
+In addition to the sport-specific conditioning drills previously described, it might be prudent to incorporate off-feet conditioning methods to target energy systems without the high musculoskeletal load associated with typical volleyball movements (53). Off-feet conditioning modalities, such as cycling, rowing, and using battle ropes, provide valuable aerobic and anaerobic stimuli. These activities are particularly beneficial during periods requiring careful load management, such as postmatch recovery or during rehabilitation from injury (96).
+
+Figure 4 provides a visual summary of the topics discussed in this paper, serving as a quick reference tool for S&C practitioners to design training programs tailored to volleyball's unique demands.
+
+F4
+Figure 4.: Volleyball strength and conditioning program needs.
+PRACTICAL APPLICATIONS
+In designing effective S&C programs for volleyball, it is essential to adapt training plans to the unique demands of each phase of the season. Tables 6–8 provide structured examples for each phase—transition, preparatory, and competitive—demonstrating how training zones can be adjusted across the weekly schedule. These sample programs illustrate how volume and intensity are managed using Training Zones 1–4, allowing S&C coaches to tailor sessions based on the timing within the season and the proximity to matches. By providing a clear framework for each phase, the tables offer practical insights for S&C practitioners looking to maximize athletic performance and readiness across the volleyball season.
+
+Table 6 - Example programming across the transition phase for volleyball
+Transition phase
+Day of the week	Monday	Tuesday	Wednesday	Thursday	Friday	Saturday	Sunday
+Training zone	3	2	3	2	4	1	1
+Lower body option	N/A	Week 1: calf isometric hold 2 × 45 s	N/A	Week 1: leg curl 3 × 12 @65%	Week 1: trap bar deadlift 3 × 5 @80%	Rest	Rest
+Week 2: calf isometric hold 3 × 45 s	Week 2: leg curl 4 × 12 @65%	Week 2: trap bar deadlift 4 × 5 @80%
+Week 3: calf isometric hold 4 × 45 s	Week 3: leg curl 5 × 12 @65%	Week 3: trap bar deadlift 5 × 5 @80%
+Upper body option	N/A	Week 1: lat pull-down 3 × 12 @65%	N/A	Week 1: bench press 3 × 12 @65%	Week 1: seal row 3 × 5 @80%	Rest	Rest
+Week 2: lat pull-down 4 × 12 @65%	Week 2: bench press 4 × 12 @65%	Week 2: seal row 4 × 5 @80%
+Week 3: lat pull-down 5 × 12 @65%	Week 3: bench press 5 × 12 @65%	Week 3: seal row 5 × 5 @80%
+Power option	Week 1: spike jump to a target 4 × 2	N/A	Week 1: jammer arm throw 3 × 3 @40–60%	N/A	N/A	Rest	Rest
+Week 2: spike jump to a target 5 × 2	Week 2: jammer arm throw 4 × 3 @40–60%
+Week 3: spike jump to a target 6 × 2	Week 3: jammer arm throw 5 × 3 @40–60%
+
+Table 7 - Example programming across the preparatory phase for volleyball
+Preparatory phase
+Day of the week	Monday	Tuesday	Wednesday	Thursday	Friday	Saturday	Sunday
+Training zone	3	2	1	3	4	1	1
+Lower body option	N/A	Week 1: Romanian deadlift 3 × 12 @65%	Rest	N/A	Week 1: back squat 3 × 5 @80%	Rest	Rest
+Week 2: Romanian deadlift 3 × 13 @65%	Week 2: back squat 4 × 5 @80%
+Week 3: Romanian deadlift 3 × 14 @65%	Week 3: back squat 5 × 5 @80%
+Upper body option	N/A	Week 1: pullover 3 × 10 @70%	Rest	N/A	Week 1: bench press 3 × 5 @80%	Rest	Rest
+Week 2: pullover 3 × 11 @70%	Week 2: bench press 4 × 5 @80%
+Week 3: pullover 3 × 12 @70%	Week 3: bench press 5 × 5 @80%
+Power option	Week 1: clean high pull 3 × 2 @85%	N/A	Rest	Week 1: push jerk 3 × 3 @60–80%	N/A	Rest	Rest
+Week 2: clean high pull 4 × 2 @85%	Week 2: push jerk 4 × 3 @60–80%
+Week 3: clean high pull 5 × 2 @85%	Week 3: push jerk 5 × 3 @60–80%
+
+Table 8 - Example programming across the competitive phase for volleyball
+Competitive phase (7-d cycle with a match on Saturday)
+Day of the week	Monday	Tuesday	Wednesday	Thursday	Friday	Saturday	Sunday
+Training zone	3	4	1	2	3	4	1/2
+Lower body option	N/A	Week 1: knee isometric push 3× (3 × 2 sec) @95%	Rest	Week 1: standing calf raise 3 × 10 @70%	N/A	Match day: consider training zone 4 methods for players that did not play	Rest or mobility circuit for players that play on the day before. Consider training zone 2 methods for players that did not play
+Week 2: knee isometric push 4× (3 × 2 sec) @95%	Week 2: standing calf raise 3 × 11 @70%
+Week 3: knee isometric push 5× (3 × 2 sec) @95%	Week 3: standing calf raise 3 × 12 @70%
+Upper body option	N/A	Week 1: pull-up 3 × 5 @80%	Rest	Week 1: shoulder press 3 × 10 @70%	N/A
+Week 2: pull-up 4 × 5 @80%	Week 2: shoulder press 3 × 11 @70%
+Week 3: pull-up 5 × 5 @80%	Week 3: shoulder press 3 × 12 @70%
+Power option	Week 1: bench press throw 3 × 3 @40–60%	N/A	Rest	N/A	Week 1: power clean 2 × 3 @60–80%
+Week 2: bench press throw 4 × 3 @40–60%	Week 2: power clean 3 × 3 @60–80%
+Week 3: bench press throw 5 × 3 @40–60%	Week 3: power clean 4 × 3 @60–80%
+
+REFERENCES
+1. Aagaard P. Training-induced changes in neural function. Exerc Sport Sci Rev 31: 61–67, 2003.
+Cited Here
+2. Akyildiz Z, de Oliveira Castro H, Çene E, et al. Within-week differences in external training load demands in elite volleyball players. BMC Sports Sci Med Rehabil 14: 188, 2022.
+Cited Here
+3. Altiner BML, Dixon MA, Nite C, Stock MS. Toward professionalization of the strength and conditioning field. Strength Cond J 45: 733–744, 2023.
+Cited Here
+4. 2022-23 High School Athletics Participation Survey. National Federation of State High School Associations. Available at: https://www.nfhs.org/. Accessed January 25, 2024.
+Cited Here
+5. Baena-Raya A, Soriano-Maldonado A, Rodríguez-Pérez MA, et al. The force-velocity profile as determinant of spike and serve ball speed in top-level male volleyball players. PLoS One 16: e0249612, 2021.
+Cited Here
+6. Bahr MA, Bahr R. Jump frequency may contribute to risk of jumper's knee: A study of interindividual and sex differences in a total of 11,943 jumps video recorded during training and matches in young elite volleyball players. Br J Sports Med 48: 1322–1326, 2014.
+Cited Here
+7. Bahr R, Bahr IA. Incidence of acute volleyball injuries: A prospective cohort study of injury mechanisms and risk factors. Scand J Med Sci Sports 7: 166–171, 1997.
+Cited Here
+8. Bahr R, Karlsen R, Lian O, Ovrebø RV. Incidence and mechanisms of acute ankle inversion injuries in volleyball. A retrospective cohort study. Am J Sports Med 22: 595–600, 1994.
+Cited Here
+9. Bahr R, Lian O, Bahr IA. A twofold reduction in the incidence of acute ankle sprains in volleyball after the introduction of an injury prevention program: A prospective cohort study. Scand J Med Sci Sports 7: 172–177, 1997.
+Cited Here
+10. Bazyler CD, Beckham GK, Sato K. The use of the isometric squat as a measure of strength and explosiveness. J Strength Cond Res 29: 1386–1392, 2015.
+Cited Here
+11. Beltman JG, van der Vliet MR, Sargeant AJ, de Haan A. Metabolic cost of lengthening, isometric and shortening contractions in maximally stimulated rat skeletal muscle. Acta Physiol Scand 182: 179–187, 2004.
+Cited Here
+12. Bere T, Kruczynski J, Veintimilla N, Hamu Y, Bahr R. Injury risk is low among world-class volleyball players: 4-year data from the FIVB injury surveillance system. Br J Sports Med 49: 1132–1137, 2015.
+Cited Here
+13. Black B. Conditioning for volleyball. Strength Cond J 17: 53–55, 1995.
+Cited Here
+14. Charlton PC, Kenneally-Dabrowski C, Sheppard J, Spratford W. A simple method for quantifying jump loads in volleyball athletes. J Sci Med Sport 20: 241–245, 2017.
+Cited Here
+15. Chuang C-H, Hung M-H, Chang C-Y, Wang Y-Y, Lin K-C. Effects of agility training on skill-related physical capabilities in young volleyball players. Appl Sci 12: 1904, 2022.
+Cited Here
+16. Cumps E, Verhagen EA, Duerinck S, Devillé A, Duchene L, Meeusen R. Effect of a preventive intervention programme on the prevalence of anterior knee pain in volleyball players. Eur J Sport Sci 8: 183–192, 2008.
+Cited Here
+17. Cuthbert M, Haff GG, McMahon JJ, Evans M, Comfort P. Microdosing: A conceptual framework for use as programming strategy for resistance training in team sports. Strength Cond J 46: 180–201, 2024.
+Cited Here
+18. Participants in volleyball in the United States 2017–2022. Statista Research Department. Available at: https://www.statista.com/. Accessed January 25, 2024.
+Cited Here
+19. Drikos S, Sotiropoulos K, Gkreka S, Tsakiri M, Barzouka K. Variations in attack patterns between female and male outside hitters in top-level volleyball. Int J Sports Sci Coaching 18: 245–256, 2022.
+Cited Here
+20. Ellenbecker TS, Cools A. Rehabilitation of shoulder impingement syndrome and rotator cuff injuries: An evidence-based review. Br J Sports Med 44: 319–327, 2010.
+Cited Here
+21. Ferretti A, Puddu G, Mariani PP, Neri M. Jumper's knee: An epidemiological study of volleyball players. Physician and Sportsmedicine 12: 97–106, 1984.
+Cited Here
+22. Fleck SJ. Non-linear periodization for general fitness & athletes. J Hum Kinet 29A: 41–45, 2011.
+Cited Here
+23. Barber Foss KD, Myer GD, Hewett TE. Epidemiology of basketball, soccer, and volleyball injuries in middle-school female athletes. Phys Sportsmed 42: 146–153, 2014.
+Cited Here
+24. Frost DM, Bronson S, Cronin JB, Newton RU. Changes in maximal strength, velocity, and power after 8 Weeks of training with pneumatic or free weight resistance. J Strength Cond Res 30: 934–944, 2016.
+Cited Here
+25. Gadeken SB. Off-season strength, power, and plyometric training for Kansas state volleyball. Strength Cond J 21: 49, 1999.
+Cited Here
+26. Gamble P. Periodization of training for team sports athletes. Strength Cond J 28: 56–66, 2006.
+Cited Here
+27. García-de-Alcaraz A, Usero L. Influence of contextual variables on performance of the libero player in top-level Women's volleyball. J Hum Kinet 70: 199–207, 2019.
+Cited Here
+28. Garhammer J. A review of power output studies of olympic and powerlifting: Methodology, performance prediction, and evaluation tests. J Strength Cond Res 7: 76–89, 1993.
+Cited Here
+29. Gjinovci B, Idrizovic K, Uljevic O, Sekulic D. Plyometric training improves sprinting, jumping and throwing capacities of high level female volleyball players better than skill-based conditioning. J Sports Sci Med 16: 527–535, 2017.
+Cited Here
+30. Gleason BH, Suchomel TJ, Brewer C, McMahon E, Lis RP, Stone MH. Applying sport scientist roles within organizations. Strength Cond J 46: 43–54, 2023.
+Cited Here
+31. Haff GG, Whitley A, Potteiger JA. A brief review: Explosive exercises and sports performance. Strength Cond J 23: 13, 2001.
+Cited Here
+32. Handford MJ, Bright TE, Mundy P, Lake J, Theis N, Hughes JD. A conceptual framework of different eccentric training methods. Strength Cond J 46: 148–158, 2024.
+Cited Here
+33. Hank M, Cabell L, Zahalka F, et al. Differences in external load among indoor and beach volleyball players during elite matches. PeerJ 12: e16736, 2024.
+Cited Here
+34. Hank M, Maly T, Zahálka F, Novotny D, Gryc T, Hrásky P. Movement direction analysis in elite indoor Volleyball match. Acta Kinesiol 13: 22–28, 2019.
+Cited Here
+35. Hedrick A. Training for high level performance in Women's collegiate volleyball: Part I training requirements. Strength Cond J 29: 50–53, 2007.
+Cited Here
+36. Herring CH, Fukuda DH. Monitoring competition jump load in division I female collegiate volleyball athletes. Med Sci Sports Exerc 53, 2022.
+Cited Here
+37. Ho C-S, Lin K-C, Hung M-H, Chang C-Y, Chen K-C. System design and application for evaluation of digging agility in college male volleyball players. J Sports Eng Technol 233: 424–431, 2019.
+Cited Here
+38. Holmberg PM. Agility training for experienced athletes: A dynamical systems approach. Strength Cond J 31: 73–78, 2009.
+Cited Here
+39. Hori N, Newton RU, Kawamori N, et al. Comparison of weighted jump squat training with and without eccentric braking. J Strength Cond Res 22: 54–65, 2008.
+Cited Here
+40. Idrizovic K, Gjinovci B, Sekulic D, et al. The effects of 3-month skill-based and plyometric conditioning on fitness parameters in junior female volleyball players. Pediatr Exerc Sci 30: 353–363, 2018.
+Cited Here
+41. Issurin V. Block periodization versus traditional training theory: A review. J Sports Med Phys Fitness 48: 65–75, 2008.
+Cited Here
+42. Issurin VB. New horizons for the methodology and physiology of training periodization. Sports Med 40: 189–206, 2010.
+Cited Here
+43. Kellmann M. Preventing overtraining in athletes in high-intensity sports and stress/recovery monitoring. Scand J Med Sci Sports 20: 95–102, 2010.
+Cited Here
+44. Kirby TJ, McBride JM, Haines TL, Dayne AM. Relative net vertical impulse determines jumping performance. J Appl Biomech 27: 207–214, 2011.
+Cited Here
+45. Krzysztofik M, Wilk M, Wojdała G, Gołaś A. Maximizing muscle hypertrophy: A systematic review of advanced resistance training techniques and methods. Int J Environ Res Public Health 16: 4897, 2019.
+Cited Here
+46. Kugler A, Krüger-Franke M, Reininger S, Trouillier HH, Rosemeyer B. Muscular imbalance and shoulder pain in volleyball attackers. Br J Sports Med 30: 256–259, 1996.
+Cited Here
+47. Lauersen JB, Andersen TE, Andersen LB. Strength training as superior, dose-dependent and safe prevention of acute and overuse sports injuries: A systematic review, qualitative analysis and meta-analysis. Br J Sports Med 52: 1557–1563, 2018.
+Cited Here
+48. Lian O, Engebretsen L, Ovrebø RV, Bahr R. Characteristics of the leg extensors in male volleyball players with jumper's knee. Am J Sports Med 24: 380–385, 1996.
+Cited Here
+49. Lima RF, Palao JM, Clemente FM. Jump performance during official matches in elite volleyball players: A pilot study. J Hum Kinet 67: 259–269, 2019.
+Cited Here
+50. Lum D, Barbosa TM. Brief review: Effects of isometric strength training on strength and dynamic performance. Int J Sports Med 40: 363–375, 2019.
+Cited Here
+51. Lum D, Haff GG, Barbosa TM. The relationship between isometric force-time characteristics and dynamic performance: A systematic review. Sports (Basel) 8: 63, 2020.
+Cited Here
+52. MacIntyre DL, Sorichter S, Mair J, Berg A, McKenzie DC. Markers of inflammation and myofibrillar proteins following eccentric exercise in humans. Eur J Appl Physiol 84: 180–186, 2001.
+Cited Here
+53. Mallol M, Norton L, Bentley DJ, Mejuto G, Norton K, Yanci J. Physiological response differences between run and cycle high intensity interval training program in recreational middle age female runners. J Sports Sci Med 19: 508–516, 2020.
+Cited Here
+54. Maughan RJ, Shirreffs SM. Energy demands of volleyball. In: Handbook of Sports Medicine and Science. Reeser JC, Bahr R, eds. Massachusetts: Blackwell Science Ltd, 2017. pp. 1–14.
+Cited Here
+55. McBride JM, Skinner JW, Schafer PC, Haines TL, Kirby TJ. Comparison of kinetic variables and muscle activity during a squat vs. a box squat. J Strength Cond Res 24: 3195–3199, 2010.
+Cited Here
+56. McGuigan MR, Cormack SJ, Gill ND. Strength and power profiling of athletes: Selecting tests and how to use the information for program design. Strength Cond J 35: 7–14, 2013.
+Cited Here
+57. McMahon JJ, Suchomel TJ, Lake JP, Comfort P. Understanding the key phases of the countermovement jump force-time curve. Strength Cond J 40: 96–106, 2018.
+Cited Here
+58. McMaster DT, Cronin J, McGuigan M. Forms of variable resistance training. Strength Cond J 31: 50–64, 2009.
+Cited Here
+59. Millán-Sánchez A, Morante Rábago JC, Ureña Espa A. The middle blocker in volleyball: A systematic review. J Hum Sport Exerc 14: 24–46, 2019.
+Cited Here
+60. Morishita S, Tsubaki A, Takabayashi T, Fu JB. Relationship between the rating of perceived exertion scale and the load intensity of resistance training. Strength Cond J 40: 94–109, 2018.
+Cited Here
+61. Mroczek D, Januszkiewicz A, KawczyNski AS, Borysiuk Z, Chmura J. Analysis of male volleyball players' motor activities during a top level match. J Strength Cond Res 28: 2297–2305, 2014.
+Cited Here
+62. Mujika I, Padilla S. Scientific bases for precompetition tapering strategies. Med Sci Sports Exerc 35: 1182–1187, 2003.
+Cited Here
+63. Newton RU, Kraemer WJ, Häkkinen K. Effects of ballistic training on preseason preparation of elite volleyball players. Med Sci Sports Exerc 31: 323–330, 1999.
+Cited Here
+64. Nikos B, Karolina B, Elissavet NM. Performance of male and female setters and attackers on Olympic-level volleyball teams. Int J Perform Anal Sport 9: 141–148, 2009.
+Cited Here
+65. O'Brien J, Finch CF, Pruna R, McCall A. A new model for injury prevention in team sports: The team-sport injury prevention (TIP) cycle. Sci Med Football 3: 77–80, 2019.
+Cited Here
+66. Palao JM, Santos JA, Ureña A. Effect of team level on skill performance in volleyball. Int J Perform Anal Sport 4: 50–60, 2004.
+Cited Here
+67. Palao JM, Valades D. Testing protocol for monitoring spike and serve speed in volleyball. Strength Cond J 31: 47–51, 2009.
+Cited Here
+68. Pawlik D, Mroczek D. Influence of jump height on the game efficiency in elite volleyball players. Sci Rep 13: 8931, 2023.
+Cited Here
+69. Paz GA, Gabbett TJ, Maia MF, Santana H, Miranda H, Lima V. Physical performance and positional differences among young female volleyball players. J Sports Med Phys Fitness 57: 1282–1289, 2017.
+Cited Here
+70. Peña J, Moreno-Doutres D, Borràs X, et al. Patellar tendinopathy in team sports: Preventive exercises. Strength Cond J 39: 20–30, 2017.
+Cited Here
+71. Peterson MD, Rhea MR, Alvar BA. Maximizing strength development in athletes: A meta-analysis to determine the dose-response relationship. J Strength Cond Res 18: 377–382, 2004.
+Cited Here
+72. Petré H, Wernstål F, Mattsson CM. Effects of flywheel training on strength-related variables: A meta-analysis. Sports Med Open 4: 55, 2018.
+Cited Here
+73. Piper TJ. In-season strength sol;Power mesocycle for women 's collegiate volleyball. Strength Cond J 19: 21–25, 1997.
+Cited Here
+74. Postle K, Pak D, Smith TO. Effectiveness of proprioceptive exercises for ankle ligament injury in adults: A systematic literature and meta-analysis. Man Ther 17: 285–291, 2012.
+Cited Here
+75. Punt IM, Ziltener JL, Laidet M, Armand S, Allet L. Gait and physical impairments in patients with acute ankle sprains who did not receive physical therapy. Pm r 7: 34–41, 2015.
+Cited Here
+76. Pyne DB, Mujika I, Reilly T. Peaking for optimal performance: Research limitations and future directions. J Sports Sci 27: 195–202, 2009.
+Cited Here
+77. Ralston GW, Kilgore L, Wyatt FB, Baker JS. The effect of weekly set volume on strength gain: A meta-analysis. Sports Med 47: 2585–2601, 2017.
+Cited Here
+78. Rebelo A, Pereira JR, Cunha P, Coelho-e-Silva MJ, Valente-Dos-Santos J. Training stress, neuromuscular fatigue and well-being in volleyball: A systematic review. BMC Sports Sci Med Rehabil 16: 17, 2024.
+Cited Here
+79. Rebelo A, Pereira JR, Nakamura FY, Valente-Dos-Santos J. Beyond the jump: A scoping review of external training load metrics in volleyball. Sports Health 17: 111–125, 2025.
+Cited Here
+80. Rebelo A, Pereira JR, Valente-dos-Santos J. Effects of a preseason triphasic resistance training program on athletic performance in elite volleyball players—an observational study. Ger J Exerc Sport Res 53: 163–170, 2023.
+Cited Here
+81. Reeser JC, Fleisig GS, Bolt B, Ruan M. Upper limb biomechanics during the volleyball serve and spike. Sports Health 2: 368–374, 2010.
+Cited Here
+82. Rhea MR, Ball SD, Phillips WT, Burkett LN. A comparison of linear and daily undulating periodized programs with equated volume and intensity for strength. J Strength Cond Res 16: 250–255, 2002.
+Cited Here
+83. Richards DP, Ajemian SV, Wiley JP, Zernicke RF. Knee joint dynamics predict patellar tendinitis in elite volleyball players. Am J Sports Med 24: 676–683, 1996.
+Cited Here
+84. Schaefer LV, Bittmann FN. Are there two forms of isometric muscle action? Results of the experimental study support a distinction between a holding and a pushing isometric muscle function. BMC Sports Sci Med Rehabil 9: 11, 2017.
+Cited Here
+85. Schaefer LV, Carnarius F, Dech S, Bittmann FN. Repeated measurements of Adaptive Force: Maximal holding capacity differs from other maximal strength parameters and preliminary characteristics for non-professional strength vs. endurance athletes. Front Physiol 14: 1020954, 2023.
+Cited Here
+86. Schmidtbleicher D. Training for power events. In: Strength and Power in Sport. Komi PV, ed. Oxford, United Kingdom: Blackwell Scientific Publications, 1992. pp. 381–395.
+Cited Here
+87. Seminati E, Marzari A, Vacondio O, Minetti A. The shoulder range of motion of alternative spike/serve techniques as a potential injury predictor in volleyball. 17th Annual Main Meeting European College of Sport Science (ECSS). Belgium: Bruges; 2012.
+Cited Here
+88. Sheppard J, Hobson S, Barker M, et al. The effect of training with accentuated eccentric load counter-movement jumps on strength and power characteristics of high-performance volleyball players. Int J Sports Sci Coaching 3: 355–363, 2008.
+Cited Here
+89. Sheppard JM, Cronin JB, Gabbett TJ, McGuigan MR, Etxebarria N, Newton RU. Relative importance of strength, power, and anthropometric measures to jump performance of elite volleyball players. J Strength Cond Res 22: 758–765, 2008.
+Cited Here
+90. Sheppard JM, Gabbett T, Taylor KL, Dorman J, Lebedew AJ, Borgeaud R. Development of a repeated-effort test for elite men's volleyball. Int J Sports Physiol Perform 2: 292–304, 2007.
+Cited Here
+91. Sheppard JM, Gabbett TJ, Stanganelli LC. An analysis of playing positions in elite men's volleyball: Considerations for competition demands and physiologic characteristics. J Strength Cond Res 23: 1858–1866, 2009.
+Cited Here
+92. Skazalski C, Whiteley R, Bahr R. High jump demands in professional volleyball-large variability exists between players and player positions. Scand J Med Sci Sports 28: 2293–2298, 2018.
+Cited Here
+93. Sotiropoulos K, Drikos S, Barzouka K. Variations in attack patterns between female and male opposite players in top-level volleyball. Int J Sports Sci Coaching 17: 400–411, 2022.
+Cited Here
+94. Swinton PA, Lloyd R, Keogh JWL, Agouris I, Stewart AD. A biomechanical comparison of the traditional squat, powerlifting squat, and box squat. J Strength Cond Res 26: 1805–1816, 2012.
+Cited Here
+95. Taylor JB, Barnes HC, Gombatto SP, Greenwood D, Ford KR. Quantifying external load and injury occurrence in Women's collegiate volleyball players across a competitive season. J Strength Cond Res 36: 805–812, 2022.
+Cited Here
+96. Thom G, Kavaliauskas M, Babraj J. Changes in lactate kinetics underpin soccer performance adaptations to cycling-based sprint interval training. Eur J Sport Sci 20: 486–494, 2020.
+Cited Here
+97. Timoteo T, Debien PB, Miloski B, Werneck FZ, Gabbett T, Bara Filho MG. Influence of workload and recovery on injuries in elite male volleyball players. J Strength Cond Res 35: 791–796, 2021.
+Cited Here
+98. Valadés Cerrato D, Palao JM, Femia P, Ureña A. Effect of eight weeks of upper-body plyometric training during the competitive season on professional female volleyball players. J Sports Med Phys Fitness 58: 1423–1431, 2018.
+Cited Here
+99. Verhagen EA, Van der Beek AJ, Bouter LM, Bahr RM, Van Mechelen W. A one season prospective cohort study of volleyball injuries. Br J Sports Med 38: 477–481, 2004.
+Cited Here
+100. Verhagen EA, van der Beek AJ, van Mechelen W. The effect of tape, braces and shoes on ankle range of motion. Sports Med 31: 667–677, 2001.
+Cited Here
+101. Visnes H, Aandahl HÅ, Bahr R. Jumper's knee paradox—jumping ability is a risk factor for developing jumper's knee: A 5-year prospective study. Br J Sports Med 47: 503–507, 2013.
+Cited Here
+102. Visnes H, Bahr R. Training volume and body composition as risk factors for developing jumper's knee among young elite volleyball players. Scand J Med Sci Sports 23: 607–613, 2013.
+Cited Here
+103. Wagle JP, Taber CB, Cunanan AJ, et al. Accentuated eccentric loading for training and performance: A review. Sports Med 47: 2473–2495, 2017.
+Cited Here
+104. Wang HK, Cochrane T. Mobility impairment, muscle imbalance, muscle weakness, scapular asymmetry and shoulder injury in elite volleyball athletes. J Sports Med Phys Fitness 41: 403–410, 2001.
+Cited Here
+105. Watkins J, Green BN. Volleyball injuries: A survey of injuries of scottish national league male players. Br J Sports Med 26: 135–137, 1992.
+Cited Here
+106. Weakley J, Mann B, Banyard H, McLaren S, Scott T, Garcia-Ramos A. Velocity-based training: From theory to application. Strength Cond J 43: 31–49, 2021.
+Cited Here
+107. Witvrouw E, Cools A, Lysens R, et al. Suprascapular neuropathy in volleyball players. Br J Sports Med 34: 174–180, 2000.
+Cited Here
+108. Yiannis L, Panagiotis K. Evolution in men's volleyball skills and tactics as evidenced in the Athens 2004 Olympic Games. Int J Perform Anal Sport 5: 1–8, 2005.
+Cited Here
+109. Ziv G, Lidor R. Vertical jump in female and male volleyball players: A review of observational and experimental studies. Scand J Med Sci Sports 20: 556–567, 2010.
+Cited Here
+
+Keywords:
+injury prevention; program design; resistance training; speed; power; team sports
+
+Copyright © 2025 The Author(s). Published by Wolters Kluwer Health, Inc. on behalf of the National Strength and Conditioning Association.
