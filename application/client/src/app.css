@@ -82,18 +82,6 @@
     --ease-in-out-quart: cubic-bezier(0.76, 0, 0.24, 1);
 }
 
-/* Light Theme Overrides */
-@media (prefers-color-scheme: light) {
-    :root {
-        --bg-primary: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 50%, #f0f9ff 100%);
-        --bg-secondary: #ffffff;
-        --text-primary: var(--ink);
-        --text-secondary: var(--ink-light);
-        --text-muted: var(--ink-muted);
-        --border-color: rgba(10, 15, 28, 0.08);
-    }
-}
-
 /* Dark Theme - Default */
 @media (prefers-color-scheme: dark) {
     :root {
