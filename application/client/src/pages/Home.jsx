@@ -132,10 +132,15 @@ export default function Home({ setToken, setSummary, setLoading }) {
             const token = res.run_id ?? res.token;
             setToken(token);
             setSummary(res.summary);
-            setTimeout(() => {
-                setLoading(false);
-                navigate("/results");
-            }, 500);
+            // Also pass data through navigation to guarantee it's available
+            navigate("/analysis", {
+                state: {
+                    token: token,
+                    summary: res.summary
+                }
+            });
+
+            setTimeout(() => setLoading(false), 500);
         } catch (err) {
             console.error('Upload failed:', err);
             setLoading(false);
