@@ -130,10 +130,11 @@ function PlayerPerformanceCard({
         flexDirection: 'column',
         justifyContent: 'space-between',
         minHeight: '200px',
-        width: '280px',
+        width: '100%',  // Changed from fixed 280px to 100%
+        maxWidth: '260px', // Reduced from 280px to fit better with arrows
         flexShrink: 0,
         padding: '24px',
-        paddingTop: '32px', // Extra padding to compensate for the absolute positioned header
+        paddingTop: '32px',
         transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
         cursor: 'default',
         position: 'relative',
@@ -315,7 +316,7 @@ export default function PlayerPerformance({ playerSummary, teamSummary, playerNa
     // Create performance cards data
     const performanceCards = [
         {
-            key: "errors",
+            id: "errors",  // Changed from 'key' to 'id' to avoid React warning
             value: formatDecimal(playerSummary?.avg_errors_per_set),
             label: "Avg Errors per Set",
             playerValue: playerSummary?.avg_errors_per_set,
@@ -324,7 +325,7 @@ export default function PlayerPerformance({ playerSummary, teamSummary, playerNa
             cardType: "errors"
         },
         {
-            key: "attack",
+            id: "attack",
             value: formatPercentage(playerSummary?.atk_accuracy),
             label: "Attack Efficiency",
             playerValue: playerSummary?.atk_accuracy,
@@ -333,7 +334,7 @@ export default function PlayerPerformance({ playerSummary, teamSummary, playerNa
             cardType: "attack"
         },
         {
-            key: "receive",
+            id: "receive",
             value: formatPercentage(playerSummary?.rcv_accuracy),
             label: "Receiving Accuracy",
             playerValue: playerSummary?.rcv_accuracy,
@@ -342,7 +343,7 @@ export default function PlayerPerformance({ playerSummary, teamSummary, playerNa
             cardType: "receive"
         },
         {
-            key: "serve",
+            id: "serve",
             value: formatPercentage(playerSummary?.srv_accuracy),
             label: "Serving Accuracy",
             playerValue: playerSummary?.srv_accuracy,
@@ -407,9 +408,15 @@ export default function PlayerPerformance({ playerSummary, teamSummary, playerNa
                 showDots={true}
                 showNav={true}
             >
-                {performanceCards.map(card => (
-                    <PlayerPerformanceCard {...card} />
-                ))}
+                {performanceCards.map(card => {
+                    const { id, ...cardProps } = card; // Extract id to use as key
+                    return (
+                        <PlayerPerformanceCard
+                            key={id}
+                            {...cardProps}
+                        />
+                    );
+                })}
             </MobileCarousel>
 
             {/* Desktop-only flex container */}
@@ -417,7 +424,7 @@ export default function PlayerPerformance({ playerSummary, teamSummary, playerNa
                 @media (min-width: 769px) {
                     .performance-cards-grid {
                         display: grid;
-                        grid-template-columns: repeat(auto-fit, 280px);
+                        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
                         gap: 24px;
                         width: 100%;
                         justify-content: center;
@@ -429,7 +436,7 @@ export default function PlayerPerformance({ playerSummary, teamSummary, playerNa
                 /* Force single row only when there's enough space */
                 @media (min-width: 1200px) {
                     .performance-cards-grid {
-                        grid-template-columns: repeat(4, 280px);
+                        grid-template-columns: repeat(4, 260px);
                     }
                 }
             `}</style>
