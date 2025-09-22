@@ -2,6 +2,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { getPlayers, getPlot, getCommentary, getSummary } from "../api.js";
+import "../components/MobileCarousel.css"; // Import the CSS file for carousel styles
 
 // Import components
 import PlotModal from "../components/PlotModal.jsx";
@@ -176,6 +177,14 @@ export default function Analysis({ token: propToken, summary: propSummary, setLo
     const handleGenerateCommentary = async () => {
         if (!token) return;
 
+        // Clear previous commentary if regenerating
+        if (commentaryGenerated) {
+            setCommentary("");
+            setModelsUsed(null);
+            setCommentarySummary(null);
+            setCommentaryGenerated(false);
+        }
+
         setLoadingCommentary(true);
         try {
             const res = await getCommentary(token, selectedPlayer || undefined, mode);
@@ -205,6 +214,7 @@ export default function Analysis({ token: propToken, summary: propSummary, setLo
             console.error('Failed to load commentary:', err);
             setCommentary("Failed to generate commentary. Please try again.");
             setModelsUsed(null);
+            setCommentaryGenerated(true);
         } finally {
             setLoadingCommentary(false);
         }

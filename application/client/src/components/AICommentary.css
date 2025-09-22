@@ -417,19 +417,111 @@
     line-height: 1.6;
 }
 
-/* Commentary Stats Grid */
+/* Commentary Stats Grid - UPDATED SECTION */
+.commentary-stats {
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: var(--radius-md);
+    padding: var(--space-lg);
+    margin: 0 auto;
+    text-align: center;
+}
+
 .commentary-stats h4 {
-    font-size: var(--text-xl);
+    font-size: var(--text-lg);
     color: white;
     margin-bottom: var(--space-md);
     text-transform: uppercase;
     letter-spacing: 0.05em;
+    display: block;
+    text-align: center;
 }
 
+.stats-header {
+    display: inline-block !important;
+    white-space: nowrap;
+    line-height: 1;
+}
+
+/* Stat icon styling */
+.stat-icon {
+    font-size: 1.5rem;
+    display: inline;
+    vertical-align: top;
+    margin-right: var(--space-xs);
+    /* Small gap between icon and text */
+}
+
+/* Default stats grid */
 .stats-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
     gap: var(--space-md);
+}
+
+/* Context grid - constrained for desktop, flexible for mobile */
+.stats-grid.context-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-xl);
+    justify-content: center;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.stats-grid.context-grid .stat-item {
+    flex: 0 1 auto;
+    min-width: 120px;
+    text-align: center;
+}
+
+/* Desktop: Horizontal layout with controlled spacing */
+@media (min-width: 769px) {
+    .stats-grid.context-grid {
+        flex-wrap: nowrap;
+        justify-content: center;
+        gap: var(--space-3xl);
+    }
+
+    .stats-grid.context-grid .stat-item {
+        flex: 0 0 auto;
+        min-width: 150px;
+    }
+
+    /* Make header larger on desktop */
+    .stats-header {
+        font-size: var(--text-2xl) !important;
+    }
+
+    .stat-icon {
+        font-size: 2rem !important;
+    }
+}
+
+/* Tablet: 2 columns */
+@media (min-width: 481px) and (max-width: 768px) {
+    .stats-grid.context-grid {
+        justify-content: space-around;
+        max-width: 400px;
+    }
+
+    .stats-grid.context-grid .stat-item {
+        flex: 0 1 45%;
+        min-width: 140px;
+    }
+}
+
+/* Mobile: Stack vertically or 2 columns based on space */
+@media (max-width: 480px) {
+    .stats-grid.context-grid {
+        gap: var(--space-lg);
+        max-width: 300px;
+    }
+
+    .stats-grid.context-grid .stat-item {
+        flex: 1 1 40%;
+        min-width: 100px;
+    }
 }
 
 .stat-item {
@@ -449,6 +541,41 @@
 .stat-value {
     font-weight: 600;
     color: var(--text-primary);
+    font-size: var(--text-base);
+    background: linear-gradient(135deg, var(--aurora-400), var(--aurora-600));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+/* Add new stats header */
+.stats-header {
+    font-family: var(--font-display);
+    font-size: var(--text-xl);
+    font-weight: 600;
+    color: var(--aurora-400);
+    margin: 0 auto var(--space-lg);
+    text-align: center;
+    display: block;
+    width: 100%;
+}
+
+/* Desktop specific adjustments */
+@media (min-width: 769px) {
+    .stats-header {
+        font-size: var(--text-2xl) !important;
+    }
+
+    /* Make stat labels and values bigger on desktop */
+    .stats-grid.context-grid .stat-label {
+        font-size: var(--text-sm) !important;
+        font-weight: 600;
+    }
+
+    .stats-grid.context-grid .stat-value {
+        font-size: var(--text-xl) !important;
+        font-weight: 700;
+    }
 }
 
 /* Commentary Actions */
@@ -698,49 +825,6 @@ div.commentary-item-text {
     font-weight: 600;
 }
 
-.commentary-stats {
-    background: rgba(255, 255, 255, 0.02);
-    border: 1px solid rgba(255, 255, 255, 0.05);
-    border-radius: var(--radius-md);
-    padding: var(--space-lg);
-    margin: 0;
-    /* Remove margin since we handle it with divider */
-}
-
-/* Add new stats header */
-.stats-header {
-    font-family: var(--font-display);
-    font-size: var(--text-lg);
-    font-weight: 600;
-    color: var(--aurora-400);
-    margin-bottom: var(--space-lg);
-    display: flex;
-    align-items: center;
-    gap: var(--space-sm);
-}
-
-.stat-icon {
-    font-size: var(--text-xl);
-}
-
-/* Update existing .stats-grid */
-.stats-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: var(--space-lg);
-}
-
-/* Update existing .stat-value */
-.stat-value {
-    font-size: var(--text-lg);
-    color: var(--text-primary);
-    font-weight: 600;
-    background: linear-gradient(135deg, var(--aurora-400), var(--aurora-600));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-}
-
 /* Update .commentary-actions */
 .commentary-actions {
     display: flex;
@@ -828,48 +912,3 @@ div.commentary-item-text {
     background: linear-gradient(135deg, rgba(16, 185, 129, 0.2), rgba(5, 150, 105, 0.2));
     transform: translateY(-1px);
 }
-
-/* Option 1: Green color for player names */
-/* .commentary-player-name {
-    color: #10b981;
-    font-weight: 600;
-    background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(5, 150, 105, 0.1));
-    padding: 0 4px;
-    border-radius: 3px;
-    display: inline-block;
-    transition: all 0.2s ease;
-} */
-
-
-/* Option 2: Purple highlight
-.commentary-player-name {
-    color: #a855f7;
-    font-weight: 600;
-    background: linear-gradient(135deg, rgba(168, 85, 247, 0.1), rgba(147, 51, 234, 0.1));
-    padding: 0 4px;
-    border-radius: 3px;
-    display: inline-block;
-}
-*/
-
-/* Option 3: Coral/Pink highlight
-.commentary-player-name {
-    color: #f472b6;
-    font-weight: 600;
-    background: linear-gradient(135deg, rgba(244, 114, 182, 0.1), rgba(236, 72, 153, 0.1));
-    padding: 0 4px;
-    border-radius: 3px;
-    display: inline-block;
-}
-*/
-
-/* Option 4: Gold/Yellow highlight
-.commentary-player-name {
-    color: #eab308;
-    font-weight: 600;
-    background: linear-gradient(135deg, rgba(234, 179, 8, 0.1), rgba(202, 138, 4, 0.1));
-    padding: 0 4px;
-    border-radius: 3px;
-    display: inline-block;
-}
-*/

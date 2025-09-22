@@ -175,8 +175,9 @@
     transform: translateY(-2px);
 }
 
-/* Carousel Section */
-.carousel-section {
+/* Carousel Section - Now only for structure */
+.stats-section,
+.features-section {
     margin: 4rem auto;
     padding: 0 1rem;
 }
@@ -188,30 +189,25 @@
     font-size: 2rem;
 }
 
-.carousel-container {
-    position: relative;
-    max-width: 400px;
+/* Desktop Grid Layouts */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+    max-width: 1200px;
     margin: 0 auto;
 }
 
-.carousel-track {
-    display: flex;
-    overflow-x: auto;
-    scroll-snap-type: x mandatory;
-    scroll-behavior: smooth;
-    scrollbar-width: none;
-    -ms-overflow-style: none;
-    -webkit-overflow-scrolling: touch;
-    gap: 1rem;
+.features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 1.5rem;
+    max-width: 1200px;
+    margin: 0 auto;
 }
 
-.carousel-track::-webkit-scrollbar {
-    display: none;
-}
-
-.carousel-card {
-    flex: 0 0 100%;
-    scroll-snap-align: center;
+/* Updated card styles for grid layout */
+.stat-card-home {
     background: rgba(255, 255, 255, 0.05);
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
@@ -219,6 +215,42 @@
     border-radius: 1rem;
     padding: 2rem;
     text-align: center;
+    transition: all 0.3s ease;
+}
+
+.stat-card-home:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 32px rgba(14, 165, 233, 0.2);
+    border-color: rgba(14, 165, 233, 0.3);
+}
+
+.feature-card-home {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 1rem;
+    padding: 2rem;
+    text-align: center;
+    transition: all 0.3s ease;
+}
+
+.feature-card-home:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 32px rgba(139, 92, 246, 0.2);
+    border-color: rgba(139, 92, 246, 0.3);
+}
+
+.feature-card-home h3 {
+    font-size: 1.25rem;
+    margin-bottom: 1rem;
+    color: white;
+}
+
+.feature-card-home p {
+    color: var(--text-muted);
+    margin: 0;
+    line-height: 1.6;
 }
 
 .stat-icon {
@@ -235,78 +267,6 @@
 .stat-label {
     font-weight: 600;
     color: white;
-}
-
-.feature-card h3 {
-    font-size: 1.25rem;
-    margin-bottom: 1rem;
-    color: white;
-}
-
-.feature-card p {
-    color: var(--text-muted);
-    margin: 0;
-}
-
-/* Carousel Navigation */
-.carousel-nav {
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-    background: rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    color: white;
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    font-size: 1.5rem;
-    transition: all 0.3s ease;
-    z-index: 2;
-}
-
-.carousel-nav:hover {
-    background: rgba(255, 255, 255, 0.2);
-    transform: translateY(-50%) scale(1.1);
-}
-
-.carousel-nav.prev {
-    left: -50px;
-}
-
-.carousel-nav.next {
-    right: -50px;
-}
-
-/* Carousel Dots */
-.carousel-dots {
-    display: flex;
-    justify-content: center;
-    gap: 0.5rem;
-    margin-top: 1rem;
-}
-
-.dot {
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    background: rgba(255, 255, 255, 0.3);
-    border: none;
-    cursor: pointer;
-    transition: all 0.3s ease;
-}
-
-.dot.active {
-    background: var(--primary-blue);
-    transform: scale(1.2);
-}
-
-.dot:hover:not(.active) {
-    background: rgba(255, 255, 255, 0.5);
 }
 
 /* CTA Section */
@@ -376,16 +336,24 @@
         font-size: 2rem;
     }
 
-    .carousel-container {
-        max-width: 90%;
+    /* Grid layouts are handled by MobileCarousel on mobile */
+    .stats-grid,
+    .features-grid {
+        display: contents;
     }
 
-    .carousel-nav.prev {
-        left: -30px;
+    /* Ensure cards are properly sized in carousel */
+    .mobile-carousel-slide .stat-card-home,
+    .mobile-carousel-slide .feature-card-home {
+        width: 100%;
+        max-width: 300px;
+        margin: 0 auto;
     }
 
-    .carousel-nav.next {
-        right: -30px;
+    /* Disable hover effects on touch devices */
+    .stat-card-home:hover,
+    .feature-card-home:hover {
+        transform: none;
     }
 
     .sample-buttons {
@@ -397,6 +365,17 @@
     .sample-btn {
         width: 100%;
         justify-content: center;
+    }
+}
+
+/* Disable hover on touch devices specifically */
+@media (hover: none) and (pointer: coarse) {
+
+    .stat-card-home:hover,
+    .feature-card-home:hover {
+        transform: none;
+        box-shadow: none;
+        border-color: rgba(255, 255, 255, 0.1);
     }
 }
 
@@ -417,40 +396,8 @@
         font-size: 2.5rem;
     }
 
-    .carousel-container {
-        max-width: calc(100% - 80px);
-    }
-
-    .carousel-nav {
-        width: 36px;
-        height: 36px;
-        font-size: 1.2rem;
-    }
-
-    .carousel-nav.prev {
-        left: -40px;
-    }
-
-    .carousel-nav.next {
-        right: -40px;
-    }
-
-    /* On very small screens, move nav buttons inside */
-    @media (max-width: 360px) {
-        .carousel-container {
-            max-width: 100%;
-        }
-
-        .carousel-nav {
-            background: rgba(0, 0, 0, 0.8);
-        }
-
-        .carousel-nav.prev {
-            left: 10px;
-        }
-
-        .carousel-nav.next {
-            right: 10px;
-        }
+    .stats-grid,
+    .features-grid {
+        gap: 1rem;
     }
 }

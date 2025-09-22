@@ -1,4 +1,6 @@
 // components/DatasetOverview.jsx
+import MobileCarousel from './MobileCarousel';
+
 export default function DatasetOverview({ summary }) {
     const formatDateRange = () => {
         if (!summary?.date_min || !summary?.date_max) return '—';
@@ -32,7 +34,7 @@ export default function DatasetOverview({ summary }) {
     ];
 
     return (
-        <div className="grid grid-cols-3">
+        <MobileCarousel className="grid grid-cols-3" showDots={true} showNav={true}>
             {datasetStats.map((stat, index) => (
                 <div key={index} className="stat-card" style={{
                     textAlign: 'center',
@@ -50,6 +52,6 @@ export default function DatasetOverview({ summary }) {
                     <div className="stat-label">{stat.label}</div>
                 </div>
             ))}
-        </div>
+        </MobileCarousel>
     );
 }
