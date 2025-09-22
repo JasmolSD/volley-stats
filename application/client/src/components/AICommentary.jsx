@@ -1,6 +1,6 @@
 // components/AICommentary.jsx
 import React, { useState, useEffect } from 'react';
-import './AICommentary.css'; // Add this import
+import './AICommentary.css';
 
 export default function AICommentary({
     commentary,
@@ -12,7 +12,7 @@ export default function AICommentary({
     onGenerateCommentary,
     modelsUsed,
     commentarySummary,
-    availablePlayers = [] // Add this prop for player name highlighting
+    availablePlayers = []
 }) {
     // Loading text rotation state
     const [loadingTextIndex, setLoadingTextIndex] = useState(0);
@@ -60,6 +60,25 @@ export default function AICommentary({
             .split(' ')
             .map(word => word.charAt(0).toUpperCase() + word.slice(1))
             .join(' ');
+    };
+
+    // Function to clean unwanted tags from commentary
+    const cleanCommentary = (text) => {
+        if (!text) return '';
+
+        // Remove <think> and </think> tags and everything between them
+        text = text.replace(/<think>[\s\S]*?<\/think>/gi, '');
+
+        // Also handle cases where tags might be on separate lines
+        text = text.replace(/<think>[\s\S]*?<\/think>/gim, '');
+
+        // Clean up any remaining standalone tags
+        text = text.replace(/<\/?think>/gi, '');
+
+        // Remove any extra whitespace that might be left
+        text = text.replace(/\n\s*\n\s*\n/g, '\n\n');
+
+        return text.trim();
     };
 
     // Function to highlight both numbers and player names
@@ -127,6 +146,9 @@ export default function AICommentary({
             return highlightContent(part);
         });
     };
+
+    // Clean the commentary text before using it
+    const cleanedCommentary = cleanCommentary(commentary);
 
     return (
         <div className="ai-commentary">
@@ -206,7 +228,7 @@ export default function AICommentary({
                                             <h4 className="models-label">Models</h4>
                                             <div className="model-chips-container">
                                                 <span className="model-chip text-model">
-                                                    🔍 Language Model: {formatModelName(modelsUsed.text)}
+                                                    📝 Language Model: {formatModelName(modelsUsed.text)}
                                                 </span>
                                                 {modelsUsed.vision && modelsUsed.vision !== 'none' && (
                                                     <span className="model-chip vision-model">
@@ -232,8 +254,8 @@ export default function AICommentary({
                         {/* Divider bar between models and commentary */}
                         <div className="commentary-divider"></div>
 
-                        {typeof commentary === 'string' && commentary ? (
-                            commentary.split('\n').map((paragraph, idx, allParagraphs) => {
+                        {typeof cleanedCommentary === 'string' && cleanedCommentary ? (
+                            cleanedCommentary.split('\n').map((paragraph, idx, allParagraphs) => {
                                 if (paragraph.trim()) {
                                     const trimmed = paragraph.trim();
 
@@ -500,42 +522,40 @@ export default function AICommentary({
                         )}
                     </div>
 
-                    {/* Additional Stats from Summary (if available) */}
-                    {commentarySummary && commentarySummary.mode_specific_stats && (
-                        <>
-                            {/* Divider bar before Analysis Context */}
-                            <div className="commentary-divider"></div>
+                    {/* Additional Stats from Summary (if available) - Always show */}
+                    <>
+                        {/* Divider bar before Analysis Context */}
+                        <div className="commentary-divider"></div>
 
-                            <div className="commentary-stats">
-                                <h4 className="stats-header">
-                                    <span className="stat-icon">📊</span>
-                                    Analysis Context
-                                </h4>
-                                <div className="stats-grid">
-                                    <div className="stat-item">
-                                        <span className="stat-label">Mode</span>
-                                        <span className="stat-value">
-                                            {mode.charAt(0).toUpperCase() + mode.slice(1)}
-                                        </span>
-                                    </div>
-                                    <div className="stat-item">
-                                        <span className="stat-label">Player</span>
-                                        <span className="stat-value">
-                                            {selectedPlayer || 'All Players'}
-                                        </span>
-                                    </div>
-                                    {commentarySummary.mode_specific_stats.games_analyzed && (
-                                        <div className="stat-item">
-                                            <span className="stat-label">Games Analyzed</span>
-                                            <span className="stat-value">
-                                                {commentarySummary.mode_specific_stats.games_analyzed}
-                                            </span>
-                                        </div>
-                                    )}
+                        <div className="commentary-stats">
+                            <h4 className="stats-header">
+                                <span className="stat-icon">📊</span>
+                                Analysis Context
+                            </h4>
+                            <div className="stats-grid context-grid">
+                                <div className="stat-item">
+                                    <span className="stat-label">Mode</span>
+                                    <span className="stat-value">
+                                        {mode.charAt(0).toUpperCase() + mode.slice(1)}
+                                    </span>
                                 </div>
+                                <div className="stat-item">
+                                    <span className="stat-label">Player</span>
+                                    <span className="stat-value">
+                                        {selectedPlayer || 'All Players'}
+                                    </span>
+                                </div>
+                                {commentarySummary?.mode_specific_stats?.games_analyzed && (
+                                    <div className="stat-item">
+                                        <span className="stat-label">Games Analyzed</span>
+                                        <span className="stat-value">
+                                            {commentarySummary.mode_specific_stats.games_analyzed}
+                                        </span>
+                                    </div>
+                                )}
                             </div>
-                        </>
-                    )}
+                        </div>
+                    </>
 
                     {/* Regenerate Button */}
                     <div className="commentary-actions">

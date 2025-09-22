@@ -1,8 +1,10 @@
 // pages/Home.jsx
-import { useState, useRef, useEffect, useCallback } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { uploadFile } from "../api.js";
+import MobileCarousel from "../components/MobileCarousel.jsx";
 import "./Home.css";
+import "../components/MobileCarousel.css"; // Import MobileCarousel.css for carousel styles
 
 const SAMPLE_FILE_PATH = '/data/sample_data.csv';
 const SAMPLE_FILE_NAME = 'sample_data.csv';
@@ -58,55 +60,7 @@ const FEATURES_DATA = [
 export default function Home({ setToken, setSummary, setLoading }) {
     const navigate = useNavigate();
     const [isDragging, setIsDragging] = useState(false);
-    const [statsCurrentCard, setStatsCurrentCard] = useState(0);
-    const [featuresCurrentCard, setFeaturesCurrentCard] = useState(0);
-
     const fileInputRef = useRef(null);
-    const statsScrollRef = useRef(null);
-    const featuresScrollRef = useRef(null);
-
-    // Simple scroll to card function
-    const scrollToCard = (ref, index) => {
-        if (!ref.current) return;
-        const cardWidth = ref.current.offsetWidth;
-        ref.current.scrollTo({
-            left: cardWidth * index,
-            behavior: 'smooth'
-        });
-    };
-
-    // Navigate carousel
-    const navigateCarousel = (direction, type) => {
-        const isStats = type === 'stats';
-        const currentCard = isStats ? statsCurrentCard : featuresCurrentCard;
-        const setCard = isStats ? setStatsCurrentCard : setFeaturesCurrentCard;
-        const data = isStats ? STATS_DATA : FEATURES_DATA;
-        const ref = isStats ? statsScrollRef : featuresScrollRef;
-
-        let newIndex;
-        if (direction === 'prev') {
-            newIndex = currentCard > 0 ? currentCard - 1 : data.length - 1;
-        } else {
-            newIndex = currentCard < data.length - 1 ? currentCard + 1 : 0;
-        }
-
-        setCard(newIndex);
-        scrollToCard(ref, newIndex);
-    };
-
-    // Handle manual scroll (for touch/swipe)
-    const handleScroll = (e, type) => {
-        const container = e.target;
-        const scrollLeft = container.scrollLeft;
-        const cardWidth = container.offsetWidth;
-        const newIndex = Math.round(scrollLeft / cardWidth);
-
-        if (type === 'stats' && newIndex !== statsCurrentCard) {
-            setStatsCurrentCard(newIndex);
-        } else if (type === 'features' && newIndex !== featuresCurrentCard) {
-            setFeaturesCurrentCard(newIndex);
-        }
-    };
 
     // Animation on mount
     useEffect(() => {
@@ -253,105 +207,39 @@ export default function Home({ setToken, setSummary, setLoading }) {
                 </div>
             </section>
 
-            {/* What You'll Discover - Carousel */}
-            <section className="carousel-section scroll-reveal">
+            {/* What You'll Discover - Grid on Desktop, Carousel on Mobile */}
+            <section className="stats-section scroll-reveal">
                 <h2 className="section-title">What You'll Discover</h2>
-                <div className="carousel-container">
-                    <button
-                        className="carousel-nav prev"
-                        onClick={() => navigateCarousel('prev', 'stats')}
-                        aria-label="Previous card"
-                    >
-                        ‹
-                    </button>
-                    <div
-                        className="carousel-track"
-                        ref={statsScrollRef}
-                        onScroll={(e) => handleScroll(e, 'stats')}
-                    >
-                        {STATS_DATA.map((stat, index) => (
-                            <div key={index} className="carousel-card">
-                                <div
-                                    className="stat-icon"
-                                    style={{
-                                        background: stat.gradient,
-                                        border: `2px solid ${stat.borderColor}`,
-                                        boxShadow: `0 8px 24px ${stat.shadowColor}`
-                                    }}
-                                >
-                                    {stat.icon}
-                                </div>
-                                <div className="stat-label">{stat.label}</div>
+                <MobileCarousel className="stats-grid" showDots={true} showNav={true}>
+                    {STATS_DATA.map((stat, index) => (
+                        <div key={index} className="stat-card-home">
+                            <div
+                                className="stat-icon"
+                                style={{
+                                    background: stat.gradient,
+                                    border: `2px solid ${stat.borderColor}`,
+                                    boxShadow: `0 8px 24px ${stat.shadowColor}`
+                                }}
+                            >
+                                {stat.icon}
                             </div>
-                        ))}
-                    </div>
-                    <button
-                        className="carousel-nav next"
-                        onClick={() => navigateCarousel('next', 'stats')}
-                        aria-label="Next card"
-                    >
-                        ›
-                    </button>
-                </div>
-                <div className="carousel-dots">
-                    {STATS_DATA.map((_, index) => (
-                        <button
-                            key={index}
-                            className={`dot ${index === statsCurrentCard ? 'active' : ''}`}
-                            onClick={() => {
-                                setStatsCurrentCard(index);
-                                scrollToCard(statsScrollRef, index);
-                            }}
-                            aria-label={`Go to slide ${index + 1}`}
-                        />
+                            <div className="stat-label">{stat.label}</div>
+                        </div>
                     ))}
-                </div>
+                </MobileCarousel>
             </section>
 
-            {/* Advanced Analytics Features - Carousel */}
-            <section className="carousel-section scroll-reveal">
+            {/* Advanced Analytics Features - Grid on Desktop, Carousel on Mobile */}
+            <section className="features-section scroll-reveal">
                 <h2 className="section-title">Advanced Analytics Features</h2>
-                <div className="carousel-container">
-                    <button
-                        className="carousel-nav prev"
-                        onClick={() => navigateCarousel('prev', 'features')}
-                        aria-label="Previous card"
-                    >
-                        ‹
-                    </button>
-                    <div
-                        className="carousel-track"
-                        ref={featuresScrollRef}
-                        onScroll={(e) => handleScroll(e, 'features')}
-                    >
-                        {FEATURES_DATA.map((feature, index) => (
-                            <div key={index} className="carousel-card feature-card">
-                                <h3>{feature.title}</h3>
-                                <p>{feature.description}</p>
-                            </div>
-                        ))}
-                    </div>
-                    <button
-                        className="carousel-nav next"
-                        onClick={() => navigateCarousel('next', 'features')}
-                        aria-label="Next card"
-                    >
-                        ›
-                    </button>
-                </div>
-                <div className="carousel-dots">
-                    {FEATURES_DATA.map((_, index) => (
-                        <button
-                            key={index}
-                            className={`dot ${index === featuresCurrentCard ? 'active' : ''}`}
-                            onClick={() => {
-                                setFeaturesCurrentCard(index);
-                                scrollToCard(featuresScrollRef, index);
-                            }}
-                            aria-label={`Go to slide ${index + 1}`}
-                        />
+                <MobileCarousel className="features-grid" showDots={true} showNav={true}>
+                    {FEATURES_DATA.map((feature, index) => (
+                        <div key={index} className="feature-card-home">
+                            <h3>{feature.title}</h3>
+                            <p>{feature.description}</p>
+                        </div>
                     ))}
-                </div>
+                </MobileCarousel>
             </section>
 
             {/* Call to Action */}
