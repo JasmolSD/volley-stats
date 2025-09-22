@@ -243,11 +243,11 @@
     }
 
     .mobile-carousel-nav.prev {
-        left: -12px;
+        left: 0px;
     }
 
     .mobile-carousel-nav.next {
-        right: -12px;
+        right: 0px;
     }
 
     .mobile-carousel-slide {
