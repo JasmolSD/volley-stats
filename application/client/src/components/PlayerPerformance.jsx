@@ -384,7 +384,8 @@ export default function PlayerPerformance({ playerSummary, teamSummary, playerNa
                     Performance Metrics
                 </div>
                 <div style={{
-                    width: '500px',
+                    maxWidth: '500px',  // Changed from fixed width to maxWidth
+                    width: '90%',        // Responsive width
                     height: '4px',
                     background: 'linear-gradient(90deg, #3464f6, #673ab7)',
                     margin: '0 auto 8px auto',
@@ -403,21 +404,27 @@ export default function PlayerPerformance({ playerSummary, teamSummary, playerNa
             </div>
 
             {/* Performance Cards Grid with Mobile Carousel */}
-            <MobileCarousel
-                className="performance-cards-grid"
-                showDots={true}
-                showNav={true}
-            >
-                {performanceCards.map(card => {
-                    const { id, ...cardProps } = card; // Extract id to use as key
-                    return (
-                        <PlayerPerformanceCard
-                            key={id}
-                            {...cardProps}
-                        />
-                    );
-                })}
-            </MobileCarousel>
+            <div style={{
+                width: '100%',
+                overflow: 'hidden',  // Prevent horizontal overflow
+                position: 'relative'
+            }}>
+                <MobileCarousel
+                    className="performance-cards-grid"
+                    showDots={true}
+                    showNav={true}
+                >
+                    {performanceCards.map(card => {
+                        const { id, ...cardProps } = card; // Extract id to use as key
+                        return (
+                            <PlayerPerformanceCard
+                                key={id}
+                                {...cardProps}
+                            />
+                        );
+                    })}
+                </MobileCarousel>
+            </div>
 
             {/* Desktop-only flex container */}
             <style>{`
@@ -438,6 +445,11 @@ export default function PlayerPerformance({ playerSummary, teamSummary, playerNa
                     .performance-cards-grid {
                         grid-template-columns: repeat(4, 260px);
                     }
+                }
+                
+                /* Prevent layout shifts */
+                .performance-cards-grid {
+                    contain: layout;  /* CSS containment to prevent layout shifts */
                 }
             `}</style>
 
