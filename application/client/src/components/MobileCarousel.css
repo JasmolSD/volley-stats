@@ -1,126 +1,171 @@
-/* component/MobileCarousel.css */
+/* components/MobileCarousel.css */
 
-/* Mobile Carousel Styles */
+/* Mobile Carousel Container */
 .mobile-carousel-container {
     position: relative;
     width: 100%;
+    padding: 0;
+    margin: 0 auto;
 }
 
+/* Wrapper with padding for nav buttons */
 .mobile-carousel-wrapper {
     position: relative;
     width: 100%;
+    padding: 0 50px;
+    /* Space for nav buttons */
 }
 
+/* Carousel Track */
 .mobile-carousel-track {
     display: flex;
-    overflow-x: auto;
+    overflow-x: hidden;
+    /* Hide scrollbar, control via JS */
     scroll-snap-type: x mandatory;
     scroll-behavior: smooth;
     scrollbar-width: none;
     -ms-overflow-style: none;
     -webkit-overflow-scrolling: touch;
-    gap: 1rem;
-    padding: 0 10px;
+    gap: 0;
+    touch-action: pan-y pinch-zoom;
+    /* Allow vertical scroll but control horizontal */
 }
 
 .mobile-carousel-track::-webkit-scrollbar {
     display: none;
 }
 
+/* Carousel Slides */
 .mobile-carousel-slide {
     flex: 0 0 100%;
     scroll-snap-align: center;
     display: flex;
     justify-content: center;
     align-items: center;
-    padding: 0 10px;
+    padding: 0 15px;
+    user-select: none;
+    /* Prevent text selection during swipe */
+    -webkit-user-select: none;
 }
 
-/* Ensure stat cards take full width in carousel */
-.mobile-carousel-slide .stat-card {
+/* Ensure stat cards take proper width */
+.mobile-carousel-slide .stat-card,
+.mobile-carousel-slide>div {
     width: 100%;
-    max-width: 300px;
+    max-width: 320px;
+    margin: 0 auto;
 }
 
-/* Navigation Buttons */
+/* Navigation Buttons - Properly centered with card */
 .mobile-carousel-nav {
     position: absolute;
-    top: 50%;
+    top: calc(50% - 20px);
+    /* Center relative to card, accounting for dots below */
     transform: translateY(-50%);
-    background: rgba(255, 255, 255, 0.95);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    border: 1px solid rgba(0, 0, 0, 0.1);
+    background: rgba(255, 255, 255, 0.98);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(0, 0, 0, 0.08);
     color: #333;
-    width: 36px;
-    height: 36px;
+    width: 40px;
+    height: 40px;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    font-size: 1.5rem;
+    font-size: 24px;
     font-weight: 300;
-    transition: all 0.3s ease;
-    z-index: 2;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    line-height: 1;
+    transition: all 0.2s ease;
+    z-index: 10;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    padding: 0;
 }
 
-.mobile-carousel-nav:not(:disabled):hover {
-    background: rgba(255, 255, 255, 1);
-    transform: translateY(-50%) scale(1.1);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-}
-
-.mobile-carousel-nav:disabled,
-.mobile-carousel-nav.disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-}
-
+/* Position nav buttons outside the content area */
 .mobile-carousel-nav.prev {
-    left: 0;
+    left: -20px;
+    /* Negative positioning to move outside */
 }
 
 .mobile-carousel-nav.next {
-    right: 0;
+    right: -20px;
+    /* Negative positioning to move outside */
+}
+
+/* Wrapper uses full width minus small margin for button overflow */
+.mobile-carousel-wrapper {
+    position: relative;
+    width: calc(100% - 40px);
+    /* Small margin for button overflow */
+    margin: 0 auto;
+    padding: 0 20px;
+    /* Minimal padding just for button overlap */
+}
+
+/* Nav button hover/active states */
+.mobile-carousel-nav:not(:disabled):hover {
+    background: #fff;
+    transform: translateY(-50%) scale(1.05);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+}
+
+.mobile-carousel-nav:not(:disabled):active {
+    transform: translateY(-50%) scale(0.98);
+}
+
+.mobile-carousel-nav:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+}
+
+/* Ensure proper vertical centering of nav button content */
+.mobile-carousel-nav span {
+    display: block;
+    margin-top: -2px;
+    /* Fine-tune vertical alignment */
 }
 
 /* Dots Indicator */
 .mobile-carousel-dots {
     display: flex;
     justify-content: center;
-    gap: 0.5rem;
-    margin-top: 1rem;
-    padding: 0.5rem;
+    align-items: center;
+    gap: 8px;
+    margin-top: 20px;
+    padding: 10px;
+    min-height: 20px;
 }
 
 .mobile-carousel-dot {
     width: 8px;
     height: 8px;
     border-radius: 50%;
-    background: rgba(255, 255, 255, 0.3);
+    background: rgba(0, 0, 0, 0.2);
     border: none;
     cursor: pointer;
     transition: all 0.3s ease;
+    padding: 0;
 }
 
 .mobile-carousel-dot.active {
     background: #0ea5e9;
-    transform: scale(1.3);
+    transform: scale(1.4);
+    box-shadow: 0 0 0 2px rgba(14, 165, 233, 0.2);
 }
 
 .mobile-carousel-dot:not(:disabled):hover:not(.active) {
-    background: rgba(255, 255, 255, 0.5);
+    background: rgba(0, 0, 0, 0.4);
+    transform: scale(1.2);
 }
 
-.mobile-carousel-dot:disabled,
-.mobile-carousel-dot.disabled {
+.mobile-carousel-dot:disabled {
     cursor: not-allowed;
-    opacity: 0.7;
+    opacity: 0.5;
 }
 
-/* Grid layouts for desktop (default) */
+/* Desktop grid layouts */
 .grid {
     display: grid;
     gap: 1rem;
@@ -134,81 +179,149 @@
     grid-template-columns: repeat(4, 1fr);
 }
 
+/* Tablet adjustments */
+@media (max-width: 1024px) and (min-width: 769px) {
+    .mobile-carousel-wrapper {
+        padding: 0 45px;
+    }
+}
+
 /* Mobile responsive adjustments */
 @media (max-width: 768px) {
 
-    /* Hide desktop grid on mobile */
+    /* Hide desktop grid */
     .grid-cols-3,
     .grid-cols-4 {
         display: contents;
     }
 
-    /* Adjust carousel slide padding */
-    .mobile-carousel-slide {
-        padding: 0 5px;
+    /* Use minimal wrapper padding */
+    .mobile-carousel-wrapper {
+        width: calc(100% - 30px);
+        padding: 0 15px;
     }
 
-    /* Ensure cards are properly sized in carousel */
+    /* Adjust slide padding */
+    .mobile-carousel-slide {
+        padding: 0 10px;
+    }
+
+    /* Position buttons outside content with negative values */
+    .mobile-carousel-nav.prev {
+        left: -15px;
+    }
+
+    .mobile-carousel-nav.next {
+        right: -15px;
+    }
+
+    /* Ensure cards are properly sized */
     .mobile-carousel-slide>div {
         width: 100%;
-        max-width: 280px;
-        margin: 0 auto;
+        max-width: 300px;
     }
 
-    /* Adjust navigation buttons for small screens */
+    /* Slightly smaller nav buttons on mobile */
     .mobile-carousel-nav {
-        width: 32px;
-        height: 32px;
-        font-size: 1.2rem;
-    }
-
-    /* Ensure PlayerPerformance cards work in carousel */
-    .mobile-carousel-slide>div[style*="width: 280px"] {
-        width: 100% !important;
-        max-width: 280px;
+        width: 38px;
+        height: 38px;
+        font-size: 22px;
     }
 }
 
+/* Small mobile adjustments */
 @media (max-width: 480px) {
+    .mobile-carousel-wrapper {
+        width: calc(100% - 20px);
+        padding: 0 10px;
+    }
+
     .mobile-carousel-nav {
-        width: 30px;
-        height: 30px;
-        font-size: 1rem;
+        width: 36px;
+        height: 36px;
+        font-size: 20px;
     }
 
-    .mobile-carousel-track {
-        padding: 0 5px;
+    .mobile-carousel-nav.prev {
+        left: -12px;
     }
 
-    /* Smaller dot indicators on very small screens */
+    .mobile-carousel-nav.next {
+        right: -12px;
+    }
+
+    .mobile-carousel-slide {
+        padding: 0 25px;
+    }
+
+    /* Smaller dots on very small screens */
     .mobile-carousel-dot {
-        width: 6px;
-        height: 6px;
+        width: 7px;
+        height: 7px;
+    }
+
+    .mobile-carousel-dots {
+        gap: 6px;
+    }
+}
+
+/* Very small screens */
+@media (max-width: 360px) {
+    .mobile-carousel-wrapper {
+        width: calc(100% - 16px);
+        padding: 0 8px;
+    }
+
+    .mobile-carousel-nav {
+        width: 32px;
+        height: 32px;
+        font-size: 18px;
+    }
+
+    .mobile-carousel-nav.prev {
+        left: -10px;
+    }
+
+    .mobile-carousel-nav.next {
+        right: -10px;
     }
 }
 
 /* Disable hover effects on touch devices */
-@media (hover: none) and (pointer: coarse),
-(max-width: 768px) {
-    .mobile-carousel-slide .stat-card {
-        transform: none !important;
+@media (hover: none) and (pointer: coarse) {
+    .mobile-carousel-nav:not(:disabled):hover {
+        transform: translateY(-50%);
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
     }
 
-    .mobile-carousel-slide .stat-card:hover {
-        transform: none !important;
-    }
-
-    /* Disable any floating effects for cards in carousel */
+    /* Remove transform animations on touch */
+    .mobile-carousel-slide .stat-card,
     .mobile-carousel-slide>div {
         transform: none !important;
     }
 
+    .mobile-carousel-slide .stat-card:hover,
     .mobile-carousel-slide>div:hover {
         transform: none !important;
     }
+}
 
-    /* Keep other hover effects like border color but remove transform */
-    .mobile-carousel-slide [style*="transform"] {
-        transform: none !important;
+/* Smooth transitions for orientation changes */
+@media (orientation: landscape) and (max-width: 768px) {
+    .mobile-carousel-wrapper {
+        padding: 0 50px;
     }
+
+    .mobile-carousel-nav {
+        width: 36px;
+        height: 36px;
+    }
+}
+
+/* Prevent layout shift during transitions */
+.mobile-carousel-container * {
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+    -webkit-transform: translateZ(0);
+    transform: translateZ(0);
 }

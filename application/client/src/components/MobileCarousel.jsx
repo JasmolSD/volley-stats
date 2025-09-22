@@ -1,6 +1,6 @@
 // components/MobileCarousel.jsx
 import { useState, useRef, useEffect, useCallback } from 'react';
-import './MobileCarousel.css'
+import './MobileCarousel.css';
 
 export default function MobileCarousel({
     children,
@@ -8,62 +8,194 @@ export default function MobileCarousel({
     showDots = true,
     showNav = true,
     autoPlay = false,
-    autoPlayDelay = 3000
+    autoPlayDelay = 3000,
+    swipeThreshold = 50, // Minimum swipe distance in px
+    swipeVelocityThreshold = 0.5 // Minimum swipe velocity
 }) {
     const [currentIndex, setCurrentIndex] = useState(0);
     const [isMobile, setIsMobile] = useState(false);
-    const [isNavigating, setIsNavigating] = useState(false);
+    const [isTransitioning, setIsTransitioning] = useState(false);
+
     const scrollRef = useRef(null);
-    const touchStartX = useRef(0);
-    const touchEndX = useRef(0);
+    const touchStartRef = useRef({ x: 0, time: 0 });
+    const touchEndRef = useRef({ x: 0, time: 0 });
     const autoPlayRef = useRef(null);
-    const navigationTimeoutRef = useRef(null);
+    const scrollLockRef = useRef(false);
 
     const childrenArray = Array.isArray(children) ? children : [children];
     const totalCards = childrenArray.length;
 
     // Check if mobile
     useEffect(() => {
-        const checkMobile = () => {
-            setIsMobile(window.innerWidth <= 768);
-        };
-
+        const checkMobile = () => setIsMobile(window.innerWidth <= 768);
         checkMobile();
         window.addEventListener('resize', checkMobile);
         return () => window.removeEventListener('resize', checkMobile);
     }, []);
 
-    // Scroll to specific index with navigation lock
-    const scrollToIndex = useCallback((index) => {
-        if (!scrollRef.current || !isMobile) return;
+    // Scroll to specific index
+    const scrollToIndex = useCallback((index, immediate = false) => {
+        if (!scrollRef.current || !isMobile || scrollLockRef.current) return;
 
-        const cardWidth = scrollRef.current.offsetWidth;
-        scrollRef.current.scrollTo({
-            left: cardWidth * index,
-            behavior: 'smooth'
+        const container = scrollRef.current;
+        const cardWidth = container.offsetWidth;
+        const targetScroll = cardWidth * index;
+
+        scrollLockRef.current = true;
+        setIsTransitioning(true);
+
+        container.scrollTo({
+            left: targetScroll,
+            behavior: immediate ? 'auto' : 'smooth'
         });
+
+        setTimeout(() => {
+            scrollLockRef.current = false;
+            setIsTransitioning(false);
+        }, immediate ? 50 : 400);
     }, [isMobile]);
 
-    // Auto-scroll to current index when it changes
+    // Update scroll when index changes
     useEffect(() => {
-        if (currentIndex >= 0 && currentIndex < totalCards) {
-            scrollToIndex(currentIndex);
-        }
-    }, [currentIndex, scrollToIndex, totalCards]);
+        scrollToIndex(currentIndex);
+    }, [currentIndex, scrollToIndex]);
 
-    // Clean up timeouts on unmount
+    // Set up non-passive touch event listeners
     useEffect(() => {
-        return () => {
-            if (navigationTimeoutRef.current) {
-                clearTimeout(navigationTimeoutRef.current);
+        const track = scrollRef.current;
+        if (!track || !isMobile) return;
+
+        // Add non-passive touch move listener to allow preventDefault
+        const handleTouchMoveNonPassive = (e) => {
+            if (scrollLockRef.current) return;
+
+            const touch = e.touches[0];
+            const deltaX = Math.abs(touch.clientX - touchStartRef.current.x);
+            const deltaY = Math.abs(touch.clientY - (touchStartRef.current.y || touch.clientY));
+
+            // Store Y position if not already stored
+            if (!touchStartRef.current.y) {
+                touchStartRef.current.y = touch.clientY;
             }
-            if (autoPlayRef.current) {
-                clearInterval(autoPlayRef.current);
+
+            // If horizontal swipe is dominant, prevent vertical scrolling
+            if (deltaX > deltaY && deltaX > 10) {
+                e.preventDefault();
             }
+
+            // Store current position for swipe end calculation
+            touchEndRef.current = {
+                x: touch.clientX,
+                time: Date.now()
+            };
         };
+
+        // Add the event listener as non-passive
+        track.addEventListener('touchmove', handleTouchMoveNonPassive, { passive: false });
+
+        return () => {
+            track.removeEventListener('touchmove', handleTouchMoveNonPassive);
+        };
+    }, [isMobile]);
+
+    // Handle touch start
+    const handleTouchStart = useCallback((e) => {
+        if (scrollLockRef.current) return;
+
+        touchStartRef.current = {
+            x: e.touches[0].clientX,
+            time: Date.now()
+        };
+
+        // Pause autoplay during touch
+        if (autoPlayRef.current) {
+            clearInterval(autoPlayRef.current);
+            autoPlayRef.current = null;
+        }
     }, []);
 
-    // Auto-play functionality
+    // Handle touch end
+    const handleTouchEnd = useCallback((e) => {
+        if (scrollLockRef.current) return;
+
+        const touchEnd = {
+            x: e.changedTouches[0].clientX,
+            time: Date.now()
+        };
+
+        const deltaX = touchStartRef.current.x - touchEnd.x;
+        const deltaTime = touchEnd.time - touchStartRef.current.time;
+        const velocity = Math.abs(deltaX) / deltaTime;
+
+        // Determine if swipe is valid based on distance and velocity
+        const isValidSwipe = Math.abs(deltaX) > swipeThreshold ||
+            (Math.abs(deltaX) > 30 && velocity > swipeVelocityThreshold);
+
+        if (isValidSwipe) {
+            if (deltaX > 0) {
+                // Swiped left - next
+                setCurrentIndex(prev =>
+                    prev === totalCards - 1 ? 0 : prev + 1
+                );
+            } else {
+                // Swiped right - previous
+                setCurrentIndex(prev =>
+                    prev === 0 ? totalCards - 1 : prev - 1
+                );
+            }
+        } else {
+            // Snap back to current index if swipe wasn't strong enough
+            scrollToIndex(currentIndex, true);
+        }
+
+        // Reset touch start Y
+        delete touchStartRef.current.y;
+
+        // Restart autoplay after delay
+        if (autoPlay && !autoPlayRef.current) {
+            setTimeout(() => {
+                if (!autoPlayRef.current) {
+                    autoPlayRef.current = setInterval(() => {
+                        setCurrentIndex(prev =>
+                            prev === totalCards - 1 ? 0 : prev + 1
+                        );
+                    }, autoPlayDelay);
+                }
+            }, autoPlayDelay);
+        }
+    }, [currentIndex, totalCards, swipeThreshold, swipeVelocityThreshold,
+        scrollToIndex, autoPlay, autoPlayDelay]);
+
+    // Navigation functions
+    const navigate = useCallback((direction) => {
+        if (scrollLockRef.current || isTransitioning) return;
+
+        setCurrentIndex(prev => {
+            if (direction === 'prev') {
+                return prev === 0 ? totalCards - 1 : prev - 1;
+            }
+            return prev === totalCards - 1 ? 0 : prev + 1;
+        });
+
+        // Pause autoplay when manually navigating
+        if (autoPlayRef.current) {
+            clearInterval(autoPlayRef.current);
+            autoPlayRef.current = null;
+        }
+    }, [totalCards, isTransitioning]);
+
+    const goToSlide = useCallback((index) => {
+        if (scrollLockRef.current || index === currentIndex || isTransitioning) return;
+        setCurrentIndex(index);
+
+        // Pause autoplay when manually selecting
+        if (autoPlayRef.current) {
+            clearInterval(autoPlayRef.current);
+            autoPlayRef.current = null;
+        }
+    }, [currentIndex, isTransitioning]);
+
+    // Auto-play
     useEffect(() => {
         if (!autoPlay || !isMobile || totalCards <= 1) {
             if (autoPlayRef.current) {
@@ -73,220 +205,94 @@ export default function MobileCarousel({
             return;
         }
 
-        // Clear existing interval
-        if (autoPlayRef.current) {
-            clearInterval(autoPlayRef.current);
-        }
-
-        // Set new interval
         autoPlayRef.current = setInterval(() => {
-            if (!isNavigating) {
-                setCurrentIndex(prev => (prev === totalCards - 1 ? 0 : prev + 1));
+            if (!scrollLockRef.current && !isTransitioning) {
+                setCurrentIndex(prev =>
+                    prev === totalCards - 1 ? 0 : prev + 1
+                );
             }
         }, autoPlayDelay);
 
         return () => {
             if (autoPlayRef.current) {
                 clearInterval(autoPlayRef.current);
-                autoPlayRef.current = null;
             }
         };
-    }, [autoPlay, autoPlayDelay, isMobile, totalCards, isNavigating]);
+    }, [autoPlay, autoPlayDelay, isMobile, totalCards, isTransitioning]);
 
-    // Throttled navigation function
-    const navigateCarousel = useCallback((direction) => {
-        // Prevent navigation if already navigating
-        if (isNavigating) return;
-
-        // Set navigation lock
-        setIsNavigating(true);
-
-        // Stop auto-play when user manually navigates
-        if (autoPlayRef.current) {
-            clearInterval(autoPlayRef.current);
-            autoPlayRef.current = null;
-        }
-
-        // Update index
-        setCurrentIndex(prev => {
-            if (direction === 'prev') {
-                return prev === 0 ? totalCards - 1 : prev - 1;
-            } else {
-                return prev === totalCards - 1 ? 0 : prev + 1;
+    // Cleanup
+    useEffect(() => {
+        return () => {
+            if (autoPlayRef.current) {
+                clearInterval(autoPlayRef.current);
             }
-        });
-
-        // Clear any existing timeout
-        if (navigationTimeoutRef.current) {
-            clearTimeout(navigationTimeoutRef.current);
-        }
-
-        // Release navigation lock after animation completes
-        navigationTimeoutRef.current = setTimeout(() => {
-            setIsNavigating(false);
-
-            // Restart auto-play if enabled
-            if (autoPlay && isMobile && !autoPlayRef.current) {
-                autoPlayRef.current = setInterval(() => {
-                    setCurrentIndex(prev => (prev === totalCards - 1 ? 0 : prev + 1));
-                }, autoPlayDelay);
-            }
-        }, 600); // Match this with CSS transition duration
-    }, [isNavigating, totalCards, autoPlay, autoPlayDelay, isMobile]);
-
-    // Throttled slide selection
-    const goToSlide = useCallback((index) => {
-        // Prevent navigation if already navigating
-        if (isNavigating || index === currentIndex) return;
-
-        // Set navigation lock
-        setIsNavigating(true);
-
-        // Stop auto-play when user manually selects
-        if (autoPlayRef.current) {
-            clearInterval(autoPlayRef.current);
-            autoPlayRef.current = null;
-        }
-
-        setCurrentIndex(index);
-
-        // Clear any existing timeout
-        if (navigationTimeoutRef.current) {
-            clearTimeout(navigationTimeoutRef.current);
-        }
-
-        // Release navigation lock after animation
-        navigationTimeoutRef.current = setTimeout(() => {
-            setIsNavigating(false);
-
-            // Restart auto-play if enabled
-            if (autoPlay && isMobile && !autoPlayRef.current) {
-                autoPlayRef.current = setInterval(() => {
-                    setCurrentIndex(prev => (prev === totalCards - 1 ? 0 : prev + 1));
-                }, autoPlayDelay);
-            }
-        }, 600);
-    }, [isNavigating, currentIndex, totalCards, autoPlay, autoPlayDelay, isMobile]);
-
-    // Handle manual scroll (for touch/swipe) - debounced
-    const handleScroll = useCallback((e) => {
-        if (!isMobile || isNavigating) return;
-
-        const container = e.target;
-        const scrollLeft = container.scrollLeft;
-        const cardWidth = container.offsetWidth;
-        const newIndex = Math.round(scrollLeft / cardWidth);
-
-        if (newIndex !== currentIndex && newIndex >= 0 && newIndex < totalCards) {
-            setCurrentIndex(newIndex);
-        }
-    }, [isMobile, isNavigating, currentIndex, totalCards]);
-
-    // Touch handlers for swipe
-    const handleTouchStart = useCallback((e) => {
-        touchStartX.current = e.touches[0].clientX;
-        // Stop auto-play on touch
-        if (autoPlayRef.current) {
-            clearInterval(autoPlayRef.current);
-            autoPlayRef.current = null;
-        }
+        };
     }, []);
 
-    const handleTouchMove = useCallback((e) => {
-        touchEndX.current = e.touches[0].clientX;
-    }, []);
-
-    const handleTouchEnd = useCallback(() => {
-        const diff = touchStartX.current - touchEndX.current;
-        const threshold = 50; // Minimum swipe distance
-
-        if (Math.abs(diff) > threshold && !isNavigating) {
-            if (diff > 0) {
-                // Swiped left
-                navigateCarousel('next');
-            } else {
-                // Swiped right
-                navigateCarousel('prev');
-            }
-        }
-
-        // Restart auto-play after touch
-        if (autoPlay && isMobile && !autoPlayRef.current && !isNavigating) {
-            setTimeout(() => {
-                if (!autoPlayRef.current) {
-                    autoPlayRef.current = setInterval(() => {
-                        setCurrentIndex(prev => (prev === totalCards - 1 ? 0 : prev + 1));
-                    }, autoPlayDelay);
-                }
-            }, autoPlayDelay * 2);
-        }
-    }, [navigateCarousel, isNavigating, autoPlay, isMobile, autoPlayDelay, totalCards]);
-
-    // Return normal grid layout on desktop
+    // Desktop layout
     if (!isMobile) {
-        return (
-            <div className={className}>
-                {children}
-            </div>
-        );
+        return <div className={className}>{children}</div>;
     }
 
-    // Mobile carousel layout
+    // Mobile carousel
     return (
         <div className="mobile-carousel-container">
             <div className="mobile-carousel-wrapper">
-                {/* Navigation Button - Previous */}
+                {/* Previous button with proper spacing */}
                 {showNav && totalCards > 1 && (
                     <button
-                        className={`mobile-carousel-nav prev ${isNavigating ? 'disabled' : ''}`}
-                        onClick={() => navigateCarousel('prev')}
-                        disabled={isNavigating}
-                        aria-label="Previous card"
+                        className="mobile-carousel-nav prev"
+                        onClick={() => navigate('prev')}
+                        disabled={isTransitioning}
+                        aria-label="Previous"
                         type="button"
                     >
-                        ‹
+                        <span>‹</span>
                     </button>
                 )}
 
-                {/* Carousel Track */}
+                {/* Carousel track */}
                 <div
                     className="mobile-carousel-track"
                     ref={scrollRef}
-                    onScroll={handleScroll}
                     onTouchStart={handleTouchStart}
-                    onTouchMove={handleTouchMove}
                     onTouchEnd={handleTouchEnd}
                 >
                     {childrenArray.map((child, index) => (
-                        <div key={index} className="mobile-carousel-slide">
+                        <div
+                            key={index}
+                            className="mobile-carousel-slide"
+                            data-index={index}
+                        >
                             {child}
                         </div>
                     ))}
                 </div>
 
-                {/* Navigation Button - Next */}
+                {/* Next button with proper spacing */}
                 {showNav && totalCards > 1 && (
                     <button
-                        className={`mobile-carousel-nav next ${isNavigating ? 'disabled' : ''}`}
-                        onClick={() => navigateCarousel('next')}
-                        disabled={isNavigating}
-                        aria-label="Next card"
+                        className="mobile-carousel-nav next"
+                        onClick={() => navigate('next')}
+                        disabled={isTransitioning}
+                        aria-label="Next"
                         type="button"
                     >
-                        ›
+                        <span>›</span>
                     </button>
                 )}
             </div>
 
-            {/* Dots Indicator */}
+            {/* Dots indicator */}
             {showDots && totalCards > 1 && (
                 <div className="mobile-carousel-dots">
                     {childrenArray.map((_, index) => (
                         <button
                             key={index}
-                            className={`mobile-carousel-dot ${index === currentIndex ? 'active' : ''} ${isNavigating ? 'disabled' : ''}`}
+                            className={`mobile-carousel-dot ${index === currentIndex ? 'active' : ''
+                                }`}
                             onClick={() => goToSlide(index)}
-                            disabled={isNavigating}
+                            disabled={isTransitioning}
                             aria-label={`Go to slide ${index + 1}`}
                             type="button"
                         />
