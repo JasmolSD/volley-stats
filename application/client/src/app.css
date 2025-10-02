@@ -129,30 +129,72 @@ html {
     -moz-osx-font-smoothing: grayscale;
 }
 
+/* Remove gradient from body, keep it simple */
 body {
     font-family: var(--font-sans);
     font-weight: 400;
     line-height: 1.6;
     color: var(--text-primary);
-    background: var(--bg-primary);
+    background: #0a0f1c;
+    /* Solid dark background as base */
     min-height: 100vh;
     position: relative;
     overflow-x: hidden;
 }
 
-/* Animated Background Orbs */
-body::before,
+/* Layer 1: Volleyball net image */
+body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: url('/images/vball_net.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    opacity: 0.15;
+    z-index: 1;
+    pointer-events: none;
+}
+
+/* Layer 2: Gradient overlay for depth */
 body::after {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg,
+            rgba(10, 15, 28, 0.9) 0%,
+            rgba(15, 41, 66, 0.7) 50%,
+            rgba(10, 15, 28, 0.9) 100%);
+    z-index: 2;
+    pointer-events: none;
+}
+
+/* Layer 3: App wrapper with content */
+.app-wrapper {
+    position: relative;
+    min-height: 100vh;
+    z-index: 3;
+}
+
+/* Layer 4: Animated orbs (create as divs or separate pseudo-elements) */
+.app-wrapper::before,
+.app-wrapper::after {
     content: '';
     position: fixed;
     border-radius: 50%;
     filter: blur(120px);
     opacity: 0.3;
     pointer-events: none;
-    z-index: 0;
+    z-index: 4;
 }
 
-body::before {
+.app-wrapper::before {
     width: 600px;
     height: 600px;
     background: radial-gradient(circle, var(--aurora-400), transparent);
@@ -161,7 +203,7 @@ body::before {
     animation: float 20s ease-in-out infinite;
 }
 
-body::after {
+.app-wrapper::after {
     width: 800px;
     height: 800px;
     background: radial-gradient(circle, var(--aurora-600), transparent);
