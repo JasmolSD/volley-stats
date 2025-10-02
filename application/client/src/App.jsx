@@ -137,6 +137,23 @@ export default function App() {
             <ScrollToTop />
 
             <div className="app-wrapper">
+                <div
+                    className="background-image-layer"
+                    style={{
+                        position: 'fixed',
+                        top: 0,
+                        left: 0,
+                        right: 0,
+                        bottom: 0,
+                        backgroundImage: 'url(/images/vball_net.jpg)',
+                        backgroundSize: 'cover',
+                        backgroundPosition: 'center',
+                        backgroundRepeat: 'no-repeat',
+                        opacity: 0.05,
+                        zIndex: 1,
+                        pointerEvents: 'none'
+                    }}
+                />
                 <Header />
                 <LoadingOverlay show={loading} />
 
