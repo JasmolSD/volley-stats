@@ -8,17 +8,17 @@ import base64
 
 USE_API = True
 
-try:
-    # for local model deployment
-    from transformers import (
-        AutoTokenizer,
-        AutoModelForCausalLM,
-        AutoProcessor,
-        AutoModelForImageTextToText,
-    )
-    import torch
-except ImportError:
-    pass
+if not USE_API:
+    try:
+        from transformers import (
+            AutoTokenizer,
+            AutoModelForCausalLM,
+            AutoProcessor,
+            AutoModelForImageTextToText,
+        )
+        import torch
+    except ImportError:
+        pass
 
 # Singletons for model caching
 _MODEL: Optional[Any] = None
