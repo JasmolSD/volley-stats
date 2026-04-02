@@ -523,8 +523,8 @@ def generate_commentary_with_plots(
         images: Sequence[ImageRef],
         plot_data: Dict[str, Any] | List[Dict[str, Any]],
         hf_token: str,
-        vision_model_id: str = "HuggingFaceTB/SmolVLM-Instruct",
-        text_model_id: str = "meta-llama/Llama-3.2-3B-Instruct",
+        vision_model_id: str,
+        text_model_id: str,
         max_new_tokens: int = 512,
 ) -> tuple:
     """
@@ -890,14 +890,15 @@ def generate_commentary_with_api(
         images: Sequence[ImageRef],
         plot_data: Dict[str, Any] | List[Dict[str, Any]],
         hf_token: str,
-        model_id: str = "HuggingFaceTB/SmolLM3-3B:hf-inference",  # Use text model
+        model_id: str,  # Use text model
         max_new_tokens: int = 512,
 ) -> tuple:
     """
     Enhanced commentary using plot metadata + text model.
     """
+    vision_model = "No Vision Model Available"
     if not hf_token:
-        return None, model_id, model_id
+        return None, model_id, vision_model
     
     # Extract plot information programmatically (no vision needed)
     plot_descriptions = []
@@ -964,9 +965,9 @@ def generate_commentary_with_api(
     # Validate output
     if text and len(text.strip()) > 50:
         print(f"Generated Response using HF API\n\tModel Used: {model_id}")
-        return text.strip(), model_id, model_id
+        return text.strip(), model_id, vision_model
     else:
-        return None, model_id, model_id
+        return None, model_id, vision_model
 
 
 def generate_commentary(
@@ -975,8 +976,8 @@ def generate_commentary(
         hf_token: str,
         images: Sequence[ImageRef],
         plot_data: Dict[str, Any] | List[Dict[str, Any]],
-        vision_model_id: str = "HuggingFaceTB/SmolVLM-Instruct",
-        text_model_id: str = "HuggingFaceTB/SmolVLM-Instruct",
+        vision_model_id: str,
+        text_model_id: str,
         max_new_tokens: int = 512
 ) -> tuple:
     """
@@ -1014,7 +1015,7 @@ def generate_commentary(
                 images=images,
                 plot_data=plot_data,
                 hf_token=hf_token,
-                model_id="HuggingFaceTB/SmolLM3-3B:hf-inference",
+                model_id=text_model_id,
                 max_new_tokens=max_new_tokens
             )
     except Exception as e:
