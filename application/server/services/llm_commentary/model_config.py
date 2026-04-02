@@ -4,45 +4,20 @@ from types_common import UISummary, Meta
 from .agents import generate_commentary
 
 #  Default model configurations
-DEFAULT_TEXT_MODEL = "microsoft/phi-2"  # Open model, no license required
-DEFAULT_VISION_MODEL = "Qwen/Qwen2.5-VL-7B-Instruct"  # Better default for vision
+DEFAULT_TEXT_MODEL = "katanemo/Arch-Router-1.5B"  # Open model, no license required
+DEFAULT_VISION_MODEL = "None available on the HF API"  # Better default for vision
 
 # Fallback models if primary fails
 FALLBACK_TEXT_MODELS = [
-    "microsoft/phi-2",
-    "TinyLlama/TinyLlama-1.1B-Chat-v1.0",
-    "HuggingFaceH4/zephyr-7b-beta",
+    # "microsoft/phi-2",
+    # "TinyLlama/TinyLlama-1.1B-Chat-v1.0",
+    # "HuggingFaceH4/zephyr-7b-beta",
 ]
 
 FALLBACK_VISION_MODELS = [
-    "google/gemma-3-4b-it",
-    "microsoft/kosmos-2-patch14-224",  # Microsoft's open vision model
+    # "google/gemma-3-4b-it",
+    # "microsoft/kosmos-2-patch14-224",  # Microsoft's open vision model
 ]
-
-def get_model_configs():
-    """
-    Get model configurations with proper defaults and validation.
-    Returns: (text_model_id, vision_model_id)
-    """
-    # Get environment variables
-    text_model_id = os.getenv("TEXT_LLM", "").strip()
-    vision_model_id = os.getenv("VISION_LLM", "").strip()
-    
-    # Handle text model
-    if not text_model_id:
-        print(f"ℹ️ No text model specified. Using default: {DEFAULT_TEXT_MODEL}")
-        text_model_id = DEFAULT_TEXT_MODEL
-    else:
-        print(f"✓ Text model configured: {text_model_id}")
-    
-    # Handle vision model
-    if not vision_model_id:
-        print(f"ℹ️ No vision model specified. Using default: {DEFAULT_VISION_MODEL}")
-        vision_model_id = DEFAULT_VISION_MODEL
-    else:
-        print(f"✓ Vision model configured: {vision_model_id}")
-    
-    return text_model_id, vision_model_id
 
 
 def initialize_models():
@@ -50,7 +25,7 @@ def initialize_models():
     global _MODEL_TEXT, _MODEL_VISION
     
     # Get configurations
-    text_model_id, vision_model_id = get_model_configs()
+    text_model_id, vision_model_id = DEFAULT_TEXT_MODEL, DEFAULT_VISION_MODEL
     
     # Load HuggingFace token
     hf_token = os.getenv("HF_TOKEN", "").strip()
@@ -141,8 +116,6 @@ def generate_commentary_with_fallback(
     meta: Meta,
     images: List,
     all_plots: List[Dict],
-    text_model_id: str,
-    vision_model_id: str,
     hf_token: str,
     mode: str,
     used_player: str
@@ -152,8 +125,8 @@ def generate_commentary_with_fallback(
     Returns: (commentary_text, models_used)
     """
     print(f"\n🤖 Generating AI Commentary:")
-    print(f"  📝 Text Model: {text_model_id}")
-    print(f"  👁️ Vision Model: {vision_model_id}")
+    print(f"  📝 Text Model: {DEFAULT_TEXT_MODEL}")
+    print(f"  👁️ Vision Model: {DEFAULT_VISION_MODEL}")
     print(f"  👤 Analysis for: {used_player or 'Team'}")
     print(f"  📈 Mode: {mode}")
     print(f"  📊 Analyzing: {len(all_plots)} plots")
@@ -165,8 +138,8 @@ def generate_commentary_with_fallback(
             meta=meta,
             images=images,
             plot_data=all_plots,
-            vision_model_id=vision_model_id,
-            text_model_id=text_model_id,
+            vision_model_id=DEFAULT_VISION_MODEL,
+            text_model_id=DEFAULT_TEXT_MODEL,
             hf_token=hf_token,
             max_new_tokens=1024
         )
@@ -183,7 +156,7 @@ def generate_commentary_with_fallback(
         # Try fallback models
         for fallback_text in FALLBACK_TEXT_MODELS:
             for fallback_vision in FALLBACK_VISION_MODELS:
-                if fallback_text == text_model_id and fallback_vision == vision_model_id:
+                if fallback_text == DEFAULT_TEXT_MODEL and fallback_vision == DEFAULT_VISION_MODEL:
                     continue  # Skip if same as primary
                 
                 print(f"\n  🔄 Trying fallback: {fallback_text} + {fallback_vision}")

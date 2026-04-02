@@ -299,6 +299,7 @@ This project is licensed under the **GPL-3.0 License** - see the [LICENSE](LICEN
 
 ## 🎯 Roadmap
 
+- After HF API changes, many models are no longer accessible - No more vision LLMs.
 - [ ] Advanced data collection tool
 - [ ] Video analysis integration
 - [ ] Team collaboration features
