@@ -1,4 +1,5 @@
 // components/TeamStatistics.jsx
+import MobileCarousel from './MobileCarousel';
 
 export default function TeamStatistics({ summary }) {
     const formatPercentage = (value) => {
@@ -31,7 +32,7 @@ export default function TeamStatistics({ summary }) {
     ];
 
     return (
-        <div className="grid grid-cols-4">
+        <MobileCarousel className="grid grid-cols-4" showDots={true} showNav={true}>
             {performanceStats.map((stat, index) => (
                 <div key={index} className="stat-card" style={{
                     background: 'rgba(255, 255, 255, 0.85)',
@@ -73,6 +74,6 @@ export default function TeamStatistics({ summary }) {
                     </div>
                 </div>
             ))}
-        </div>
+        </MobileCarousel>
     );
 }

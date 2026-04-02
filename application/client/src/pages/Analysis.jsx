@@ -1,7 +1,8 @@
 // pages/Analysis.jsx
 import { useEffect, useMemo, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { getPlayers, getPlot, getCommentary, getSummary } from "../api.js";
+import "../components/MobileCarousel.css"; // Import the CSS file for carousel styles
 
 // Import components
 import PlotModal from "../components/PlotModal.jsx";
@@ -13,8 +14,14 @@ import DatasetOverview from "../components/DatasetOverview.jsx";
 import TeamStatistics from "../components/TeamStatistics.jsx";
 import AICommentary from "../components/AICommentary.jsx";
 
-export default function Analysis({ token, summary, setLoading }) {
+export default function Analysis({ token: propToken, summary: propSummary, setLoading }) {
     const navigate = useNavigate();
+    const location = useLocation();
+
+    // Get data from either props or navigation state (for race condition fix)
+    const [token, setToken] = useState(null);
+    const [summary, setSummary] = useState(null);
+
     const [players, setPlayers] = useState([]);
     const [selectedPlayer, setSelectedPlayer] = useState("");
     const [mode, setMode] = useState("cumulative");
@@ -23,19 +30,35 @@ export default function Analysis({ token, summary, setLoading }) {
     const [loadingPlots, setLoadingPlots] = useState(false);
     const [loadingPlayerSummary, setLoadingPlayerSummary] = useState(false);
     const [activePlot, setActivePlot] = useState(null);
-    const [commentary, setCommentary] = useState("");   // Must be empty string, not null/unk
+    const [commentary, setCommentary] = useState("");
     const [loadingCommentary, setLoadingCommentary] = useState(false);
     const [commentaryGenerated, setCommentaryGenerated] = useState(false);
-
-    // NEW: State for model information
     const [modelsUsed, setModelsUsed] = useState(null);
     const [commentarySummary, setCommentarySummary] = useState(null);
 
+    // Initialize data from props or navigation state
     useEffect(() => {
-        if (!token || !summary) {
-            navigate('/');  // Redirect to home if no data
-            return;
+        const dataFromProps = propToken && propSummary;
+        const dataFromNav = location.state?.token && location.state?.summary;
+
+        if (dataFromProps) {
+            setToken(propToken);
+            setSummary(propSummary);
+        } else if (dataFromNav) {
+            setToken(location.state.token);
+            setSummary(location.state.summary);
+        } else {
+            // No data available, redirect after a small delay
+            const timer = setTimeout(() => {
+                navigate('/');
+            }, 100);
+            return () => clearTimeout(timer);
         }
+    }, [propToken, propSummary, location.state, navigate]);
+
+    // Load players once token is available
+    useEffect(() => {
+        if (!token) return;
 
         const loadPlayers = async () => {
             try {
@@ -47,7 +70,7 @@ export default function Analysis({ token, summary, setLoading }) {
         };
 
         loadPlayers();
-    }, [token, navigate]);
+    }, [token]);
 
     // Load player summary when player is selected
     useEffect(() => {
@@ -150,9 +173,17 @@ export default function Analysis({ token, summary, setLoading }) {
         loadPlots();
     }, [token, selectedPlayer, mode, plotTypes]);
 
-    // UPDATED: Generate commentary and capture model information
+    // Generate commentary and capture model information
     const handleGenerateCommentary = async () => {
         if (!token) return;
+
+        // Clear previous commentary if regenerating
+        if (commentaryGenerated) {
+            setCommentary("");
+            setModelsUsed(null);
+            setCommentarySummary(null);
+            setCommentaryGenerated(false);
+        }
 
         setLoadingCommentary(true);
         try {
@@ -161,22 +192,18 @@ export default function Analysis({ token, summary, setLoading }) {
             console.log('Commentary field:', res.commentary);
             console.log('Type of commentary:', typeof res.commentary);
 
-            // Fallback to empty string
             setCommentary(res.commentary || "");
 
-            // NEW: Extract model information
             if (res.models_used) {
                 setModelsUsed(res.models_used);
                 console.log('Models used:', res.models_used);
             } else if (res.text_model && res.vision_model) {
-                // Fallback to direct model fields
                 setModelsUsed({
                     text: res.text_model,
                     vision: res.vision_model
                 });
             }
 
-            // NEW: Store enhanced summary if available
             if (res.summary) {
                 setCommentarySummary(res.summary);
                 console.log('Commentary summary with stats:', res.summary);
@@ -187,6 +214,7 @@ export default function Analysis({ token, summary, setLoading }) {
             console.error('Failed to load commentary:', err);
             setCommentary("Failed to generate commentary. Please try again.");
             setModelsUsed(null);
+            setCommentaryGenerated(true);
         } finally {
             setLoadingCommentary(false);
         }
@@ -202,24 +230,21 @@ export default function Analysis({ token, summary, setLoading }) {
 
     // Initialize scroll animations
     useEffect(() => {
+        if (!token || !summary) return;
         setTimeout(() => {
             document.querySelectorAll('.scroll-reveal').forEach(el => {
                 el.classList.add('revealed');
             });
         }, 100);
-    }, []);
+    }, [token, summary]);
 
-    if (!token) {
+    // Show loading while data is being initialized
+    if (!token || !summary) {
         return (
             <div className="container">
                 <div className="card" style={{ maxWidth: '600px', margin: '4rem auto', textAlign: 'center' }}>
-                    <h2>No Data Available</h2>
-                    <p style={{ color: 'var(--text-muted)', marginBottom: 'var(--space-xl)' }}>
-                        Please upload a file first to see your analysis.
-                    </p>
-                    <button className="btn btn-primary" onClick={() => navigate('/')}>
-                        Upload Data
-                    </button>
+                    <div className="loading-spinner" style={{ width: '60px', height: '60px', margin: '0 auto var(--space-lg)' }}></div>
+                    <p style={{ color: 'var(--text-muted)' }}>Loading analysis...</p>
                 </div>
             </div>
         );
@@ -236,24 +261,20 @@ export default function Analysis({ token, summary, setLoading }) {
             </section>
 
             {/* Dataset Overview */}
-            {summary && (
-                <section className="stats-section scroll-reveal">
-                    <h2 style={{ textAlign: 'center', marginBottom: 'var(--space-2xl)' }}>
-                        Dataset Overview
-                    </h2>
-                    <DatasetOverview summary={summary} />
-                </section>
-            )}
+            <section className="stats-section scroll-reveal">
+                <h2 style={{ textAlign: 'center', marginBottom: 'var(--space-2xl)' }}>
+                    Dataset Overview
+                </h2>
+                <DatasetOverview summary={summary} />
+            </section>
 
             {/* Team Statistics */}
-            {summary && (
-                <section className="stats-section scroll-reveal" style={{ marginTop: 'var(--space-3xl)' }}>
-                    <h2 style={{ textAlign: 'center', marginBottom: 'var(--space-2xl)' }}>
-                        Team Statistics
-                    </h2>
-                    <TeamStatistics summary={summary} />
-                </section>
-            )}
+            <section className="stats-section scroll-reveal" style={{ marginTop: 'var(--space-3xl)' }}>
+                <h2 style={{ textAlign: 'center', marginBottom: 'var(--space-2xl)' }}>
+                    Team Statistics
+                </h2>
+                <TeamStatistics summary={summary} />
+            </section>
 
             {/* Controls Section */}
             <section style={{ textAlign: 'center', margin: 'var(--space-3xl) 0' }}>
@@ -377,7 +398,7 @@ export default function Analysis({ token, summary, setLoading }) {
                 />
             )}
 
-            {/* AI Commentary - ENHANCED WITH MODEL INFO */}
+            {/* AI Commentary */}
             <section className="scroll-reveal" style={{ marginTop: 'var(--space-3xl)' }}>
                 <h2 style={{ textAlign: 'center', marginBottom: 'var(--space-2xl)' }}>
                     AI-Powered Insights
@@ -391,8 +412,8 @@ export default function Analysis({ token, summary, setLoading }) {
                         plots={plots}
                         mode={mode}
                         onGenerateCommentary={handleGenerateCommentary}
-                        modelsUsed={modelsUsed}  // NEW: Pass model info
-                        commentarySummary={commentarySummary}  // NEW: Pass enhanced summary
+                        modelsUsed={modelsUsed}
+                        commentarySummary={commentarySummary}
                         availablePlayers={players}
                     />
                 </div>
