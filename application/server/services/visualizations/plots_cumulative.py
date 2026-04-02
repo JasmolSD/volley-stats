@@ -1,15 +1,16 @@
 from __future__ import annotations
 from typing import List, Optional, Tuple
 import matplotlib
-# Non-GUI backend for servers/workers
-matplotlib.use("Agg", force=True)
-
 import pandas as pd
 import numpy as np
 from matplotlib.figure import Figure
 
+# Non-GUI backend for servers/workers
+matplotlib.use("Agg", force=True)
+
 # ---------- Plotters (OO Matplotlib; return Figure) ----------
 # Cumulative statistics
+
 
 def plot_offensive_performance(
     df_overall: pd.DataFrame,
@@ -27,17 +28,12 @@ def plot_offensive_performance(
     Expects columns:
     'player_name', 'atk_error', 'atk_bad', 'atk_good', 'atk_kill', 'atk_total', 'atk_accuracy'
     """
-    if exclude_players is not None and (
-        not isinstance(exclude_players, list) or not all(isinstance(p, str) for p in exclude_players)
-    ):
-        raise ValueError("exclude_players must be a list of strings or None")
     if not isinstance(player_name, str):
         raise ValueError("player_name must be a string")
 
-    exclude = exclude_players or []
+    # exclude = exclude_players or []
     df = (
-        df_overall
-        .query("player_name not in @exclude")
+        df_overall.query("player_name not in @exclude")
         .sort_values("atk_accuracy", ascending=False)
         .reset_index(drop=True)
     )
@@ -50,7 +46,10 @@ def plot_offensive_performance(
         series_info.append(("Bad Attacks", "atk_bad", "purple"))
     if show_good:
         series_info.append(("Good Attacks", "atk_good", "lightgreen"))
-    series_info += [("Kills", "atk_kill", "green"), ("Total Attacks", "atk_total", "royalblue")]
+    series_info += [
+        ("Kills", "atk_kill", "green"),
+        ("Total Attacks", "atk_total", "royalblue"),
+    ]
 
     n = len(series_info)
     group_w = 0.8
@@ -63,7 +62,9 @@ def plot_offensive_performance(
 
     # Bars
     for (label, col, color), off in zip(series_info, offsets):
-        bars = ax1.bar(x + off, df[col].to_numpy(), bar_w, color=color, label=f"Avg {label}")
+        bars = ax1.bar(
+            x + off, df[col].to_numpy(), bar_w, color=color, label=f"Avg {label}"
+        )
         # annotate each bar
         for bar in bars:
             h = float(bar.get_height())
@@ -74,7 +75,9 @@ def plot_offensive_performance(
                     f"{h:.1f}",
                     ha="center",
                     va="center",
-                    bbox=dict(facecolor="white", edgecolor="black", boxstyle="round,pad=0.3"),
+                    bbox=dict(
+                        facecolor="white", edgecolor="black", boxstyle="round,pad=0.3"
+                    ),
                 )
 
     ax1.set_ylabel("Attacks", fontsize=12)
@@ -93,9 +96,11 @@ def plot_offensive_performance(
     ax2.set_ylabel("Hitting Percentage (HP)", fontsize=12)
     ax2.axhline(0, color="gray", linestyle="--", linewidth=1)
 
-    for val, clr, lbl in [(0.4, "blue", "Excellent HP"),
-                          (0.3, "green", "Great HP"),
-                          (0.2, "orange", "Good HP")]:
+    for val, clr, lbl in [
+        (0.4, "blue", "Excellent HP"),
+        (0.3, "green", "Great HP"),
+        (0.2, "orange", "Good HP"),
+    ]:
         ax2.axhline(y=val, color=clr, linestyle="--", linewidth=1, label=lbl)
 
     ax1.set_xticks(x)
@@ -111,7 +116,9 @@ def plot_offensive_performance(
             ha="center",
             va="bottom",
             color="black",
-            bbox=dict(facecolor="lavenderblush", edgecolor="black", boxstyle="round,pad=0.3"),
+            bbox=dict(
+                facecolor="lavenderblush", edgecolor="black", boxstyle="round,pad=0.3"
+            ),
         )
 
     # Legend - PROPERLY SPACED TO AVOID SECONDARY AXIS
@@ -119,9 +126,13 @@ def plot_offensive_performance(
     h2, l2 = ax2.get_legend_handles_labels()
     fig.subplots_adjust(right=0.65)  # More space for legend
     ax1.legend(
-        h1 + h2, l1 + l2,
-        loc="upper left", bbox_to_anchor=(1.05, 1),  # Further right to avoid secondary axis
-        borderaxespad=0.5, fontsize=9, frameon=True
+        h1 + h2,
+        l1 + l2,
+        loc="upper left",
+        bbox_to_anchor=(1.05, 1),  # Further right to avoid secondary axis
+        borderaxespad=0.5,
+        fontsize=9,
+        frameon=True,
     )
 
     fig.tight_layout(rect=(0, 0, 0.92, 0.95))  # Adjusted for legend space
@@ -139,18 +150,14 @@ def plot_receive_performance(
     Expects columns:
     'player_name', 'rcv_error', 'rcv_bad', 'rcv_good', 'rcv_perfect', 'rcv_total', 'rcv_accuracy'
     """
-    if exclude_players is not None and (
-        not isinstance(exclude_players, list) or not all(isinstance(p, str) for p in exclude_players)
-    ):
-        raise ValueError("exclude_players must be a list of strings or None")
     if not isinstance(player_name, str):
         raise ValueError("player_name must be a string")
 
-    exclude = exclude_players or []
+    # exclude = exclude_players or []
     df = (
         df.sort_values("rcv_accuracy", ascending=False)
-          .query("player_name not in @exclude")
-          .reset_index(drop=True)
+        .query("player_name not in @exclude")
+        .reset_index(drop=True)
     )
 
     players = list(map(str, df["player_name"].astype(str).tolist()))
@@ -165,7 +172,13 @@ def plot_receive_performance(
     # Primary bars
     cols = ["rcv_error", "rcv_bad", "rcv_good", "rcv_perfect", "rcv_total"]
     colors = ["red", "purple", "lightgreen", "green", "royalblue"]
-    labels = ["Receive Errors", "Bad Passes", "Good Passes", "Perfect Passes", "Total Receives"]
+    labels = [
+        "Receive Errors",
+        "Bad Passes",
+        "Good Passes",
+        "Perfect Passes",
+        "Total Receives",
+    ]
 
     for off, col, color, label in zip(offsets, cols, colors, labels):
         bars = ax1.bar(x + off, df[col].to_numpy(), bar_w, color=color, label=label)
@@ -178,14 +191,24 @@ def plot_receive_performance(
                     str(int(h)),
                     ha="center",
                     va="center",
-                    bbox=dict(facecolor="white", edgecolor="black", boxstyle="round,pad=0.3"),
+                    bbox=dict(
+                        facecolor="white", edgecolor="black", boxstyle="round,pad=0.3"
+                    ),
                 )
 
     ax1.set_ylabel("Passes", fontsize=12)
 
     # Accuracy line
     acc_pct = (df["rcv_accuracy"].to_numpy() * 100.0).astype(float)
-    ax2.plot(x, acc_pct, marker="o", color="orange", linestyle="-", linewidth=3, label="Receive Accuracy (%)")
+    ax2.plot(
+        x,
+        acc_pct,
+        marker="o",
+        color="orange",
+        linestyle="-",
+        linewidth=3,
+        label="Receive Accuracy (%)",
+    )
     ax2.set_ylim(0, 100)
     ax2.set_ylabel("Receive Accuracy (%)", fontsize=12)
 
@@ -196,9 +219,15 @@ def plot_receive_performance(
     # Annotate accuracy points
     for xi, acc in zip(x, acc_pct):
         ax2.text(
-            float(xi), float(acc), f"{acc:.1f}%",
-            ha="center", va="bottom", color="black",
-            bbox=dict(facecolor="peachpuff", edgecolor="black", boxstyle="round,pad=0.3"),
+            float(xi),
+            float(acc),
+            f"{acc:.1f}%",
+            ha="center",
+            va="bottom",
+            color="black",
+            bbox=dict(
+                facecolor="peachpuff", edgecolor="black", boxstyle="round,pad=0.3"
+            ),
         )
 
     # Legend - PROPERLY SPACED TO AVOID SECONDARY AXIS
@@ -206,21 +235,22 @@ def plot_receive_performance(
     h2, l2 = ax2.get_legend_handles_labels()
     fig.subplots_adjust(right=0.65)  # More space for legend
     ax1.legend(
-        h1 + h2, l1 + l2,
-        loc="upper left", bbox_to_anchor=(1.05, 1),  # Further right to avoid secondary axis
-        fontsize=9, frameon=True
+        h1 + h2,
+        l1 + l2,
+        loc="upper left",
+        bbox_to_anchor=(1.05, 1),  # Further right to avoid secondary axis
+        fontsize=9,
+        frameon=True,
     )
 
     fig.tight_layout(rect=(0, 0, 0.92, 0.95))  # Adjusted for legend space
     return fig
 
 
-def plot_service_metrics(
-        df: pd.DataFrame,
-        player_name: str
-    ) -> Figure:
+def plot_service_metrics(df: pd.DataFrame, player_name: str) -> Figure:
     """
-    Plot service metrics per player: errors, aces, total serves as bars, and serve accuracy (%) as a line.
+    Plot service metrics per player: errors, aces, total serves as bars,
+    and serve accuracy (%) as a line.
 
     Expects columns:
     'player_name', 'srv_error', 'srv_ace', 'srv_total', 'srv_accuracy'
@@ -242,9 +272,27 @@ def plot_service_metrics(
     ax2 = ax1.twinx()
 
     # Bars
-    bars_err = ax1.bar(x + offsets[0], df_sort["srv_error"].to_numpy(), bar_w, color="red",       label="Service Errors")
-    bars_ace = ax1.bar(x + offsets[1], df_sort["srv_ace"].to_numpy(),   bar_w, color="green",     label="Service Aces")
-    bars_tot = ax1.bar(x + offsets[2], df_sort["srv_total"].to_numpy(), bar_w, color="royalblue", label="Total Serves")
+    bars_err = ax1.bar(
+        x + offsets[0],
+        df_sort["srv_error"].to_numpy(),
+        bar_w,
+        color="red",
+        label="Service Errors",
+    )
+    bars_ace = ax1.bar(
+        x + offsets[1],
+        df_sort["srv_ace"].to_numpy(),
+        bar_w,
+        color="green",
+        label="Service Aces",
+    )
+    bars_tot = ax1.bar(
+        x + offsets[2],
+        df_sort["srv_total"].to_numpy(),
+        bar_w,
+        color="royalblue",
+        label="Total Serves",
+    )
 
     ax1.set_ylabel("Serves", fontsize=12)
     ax1.set_xticks(x)
@@ -252,7 +300,15 @@ def plot_service_metrics(
 
     # Accuracy line
     acc_pct = (df_sort["srv_accuracy"].to_numpy() * 100.0).astype(float)
-    ax2.plot(x, acc_pct, marker="o", linestyle="-", linewidth=3, color="orange", label="Serve Accuracy (%)")
+    ax2.plot(
+        x,
+        acc_pct,
+        marker="o",
+        linestyle="-",
+        linewidth=3,
+        color="orange",
+        label="Serve Accuracy (%)",
+    )
     ax2.set_ylim(0, 110)
     ax2.set_ylabel("Serve Accuracy (%)", fontsize=12)
 
@@ -269,15 +325,23 @@ def plot_service_metrics(
                     str(int(h)),
                     ha="center",
                     va="center",
-                    bbox=dict(facecolor="white", edgecolor="black", boxstyle="round,pad=0.3"),
+                    bbox=dict(
+                        facecolor="white", edgecolor="black", boxstyle="round,pad=0.3"
+                    ),
                 )
 
     # Annotate accuracy points
     for xi, acc in zip(x, acc_pct):
         ax2.text(
-            float(xi), float(acc), f"{acc:.1f}%",
-            ha="center", va="bottom", color="black",
-            bbox=dict(facecolor="peachpuff", edgecolor="black", boxstyle="round,pad=0.3"),
+            float(xi),
+            float(acc),
+            f"{acc:.1f}%",
+            ha="center",
+            va="bottom",
+            color="black",
+            bbox=dict(
+                facecolor="peachpuff", edgecolor="black", boxstyle="round,pad=0.3"
+            ),
         )
 
     # Legend - PROPERLY SPACED TO AVOID SECONDARY AXIS
@@ -285,11 +349,13 @@ def plot_service_metrics(
     h2, l2 = ax2.get_legend_handles_labels()
     fig.subplots_adjust(right=0.65)  # More space for legend
     ax1.legend(
-        h1 + h2, l1 + l2,
-        loc="upper left", bbox_to_anchor=(1.05, 1),  # Further right to avoid secondary axis
-        fontsize=9, frameon=True
+        h1 + h2,
+        l1 + l2,
+        loc="upper left",
+        bbox_to_anchor=(1.05, 1),  # Further right to avoid secondary axis
+        fontsize=9,
+        frameon=True,
     )
 
     fig.tight_layout(rect=(0, 0, 0.92, 0.95))  # Adjusted for legend space
     return fig
-

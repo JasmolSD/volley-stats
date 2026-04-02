@@ -5,6 +5,7 @@ import os
 import pandas as pd
 from types_common import Meta
 
+
 def load_dataframe(path: str) -> Tuple[pd.DataFrame, Meta]:
     print("Loading Dataframe...")
     _, ext = os.path.splitext(path.lower())

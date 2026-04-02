@@ -1,5 +1,5 @@
 // components/PlotModal.jsx
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
 import "./PlotModal.css";
 
 export default function PlotModal({ title, src, onClose }) {
@@ -69,115 +69,16 @@ export default function PlotModal({ title, src, onClose }) {
         return () => window.removeEventListener('resize', updateBaseScale);
     }, [isFullscreen]);
 
-    // Keyboard shortcuts
-    useEffect(() => {
-        const handleKeydown = (e) => {
-            switch (e.key.toLowerCase()) {
-                case 'escape': onClose(); break;
-                case '+':
-                case '=': zoomIn(); break;
-                case '-':
-                case '_': zoomOut(); break;
-                case 'r': resetView(); break;
-                case 'f': toggleFullscreen(); break;
-                case 'c': copyImage(); break;
-                case 'd': download(); break;
-            }
-        };
-
-        window.addEventListener("keydown", handleKeydown);
-        return () => window.removeEventListener("keydown", handleKeydown);
-    }, [scale, baseScale]);
-
     // Zoom functions
-    const zoomIn = () => setScale(s => Math.min(s * 1.2, 5));
-    const zoomOut = () => setScale(s => Math.max(s * 0.8, baseScale));
+    const zoomIn = useCallback(
+        () => setScale(s => Math.min(s * 1.2, 5)),
+        []
+    );
 
-    const resetView = () => {
-        const img = imgRef.current;
-        const frame = frameRef.current;
-        if (!img || !frame) return;
-
-        const fw = frame.clientWidth;
-        const fh = frame.clientHeight;
-        const iw = img.naturalWidth;
-        const ih = img.naturalHeight;
-        const fitScale = Math.min(fw / iw, fh / ih) * 0.9;
-
-        setScale(fitScale);
-        setBaseScale(fitScale);
-        setPosition({ x: 0, y: 0 });
-    };
-
-    // Fullscreen toggle
-    const toggleFullscreen = () => {
-        const container = document.querySelector('.pm-container');
-
-        if (!document.fullscreenElement) {
-            container.requestFullscreen?.() ||
-                container.webkitRequestFullscreen?.() ||
-                container.mozRequestFullScreen?.() ||
-                container.msRequestFullscreen?.();
-        } else {
-            document.exitFullscreen?.() ||
-                document.webkitExitFullscreen?.() ||
-                document.mozCancelFullScreen?.() ||
-                document.msExitFullscreen?.();
-        }
-    };
-
-    // Listen for fullscreen changes
-    useEffect(() => {
-        const handleFullscreenChange = () => {
-            setIsFullscreen(!!document.fullscreenElement);
-        };
-
-        const events = ['fullscreenchange', 'webkitfullscreenchange', 'mozfullscreenchange'];
-        events.forEach(e => document.addEventListener(e, handleFullscreenChange));
-
-        return () => {
-            events.forEach(e => document.removeEventListener(e, handleFullscreenChange));
-        };
-    }, []);
-
-    // Download image
-    const download = () => {
-        const a = document.createElement("a");
-        a.href = src;
-        a.download = `${(title || "plot").replace(/\s+/g, "_")}.png`;
-        a.click();
-    };
-
-    // Copy image to clipboard
-    const copyImage = async () => {
-        try {
-            let blob;
-
-            if (src.startsWith('data:image')) {
-                const base64Data = src.replace(/^data:image\/\w+;base64,/, '');
-                const byteCharacters = atob(base64Data);
-                const byteArray = new Uint8Array(byteCharacters.length);
-
-                for (let i = 0; i < byteCharacters.length; i++) {
-                    byteArray[i] = byteCharacters.charCodeAt(i);
-                }
-
-                blob = new Blob([byteArray], { type: 'image/png' });
-            } else {
-                const response = await fetch(src);
-                blob = await response.blob();
-            }
-
-            await navigator.clipboard.write([
-                new window.ClipboardItem({ [blob.type]: blob })
-            ]);
-
-            showNotification('✓ Image copied to clipboard!');
-        } catch (error) {
-            console.error('Failed to copy:', error);
-            alert('Failed to copy image. Please try downloading instead.');
-        }
-    };
+    const zoomOut = useCallback(
+        () => setScale(s => Math.max(s * 0.8, baseScale)),
+        [baseScale]
+    );
 
     // Show notification
     const showNotification = (message) => {
@@ -202,6 +103,108 @@ export default function PlotModal({ title, src, onClose }) {
         document.body.appendChild(notification);
         setTimeout(() => notification.remove(), 2500);
     };
+
+    // Download Image
+    const download = useCallback(() => {
+        const a = document.createElement("a");
+        a.href = src;
+        a.download = `${(title || "plot").replace(/\s+/g, "_")}.png`;
+        a.click();
+    }, [src, title]);
+
+    // Copy Image to clipboard
+    const copyImage = useCallback(async () => {
+        try {
+            let blob;
+            if (src.startsWith('data:image')) {
+                const base64Data = src.replace(/^data:image\/\w+;base64,/, '');
+                const byteCharacters = atob(base64Data);
+                const byteArray = new Uint8Array(byteCharacters.length);
+                for (let i = 0; i < byteCharacters.length; i++) {
+                    byteArray[i] = byteCharacters.charCodeAt(i);
+                }
+                blob = new Blob([byteArray], { type: 'image/png' });
+            } else {
+                const response = await fetch(src);
+                blob = await response.blob();
+            }
+            await navigator.clipboard.write([
+                new window.ClipboardItem({ [blob.type]: blob })
+            ]);
+            showNotification('✓ Image copied to clipboard!');
+        } catch (error) {
+            console.error('Failed to copy:', error);
+            alert('Failed to copy image. Please try downloading instead.');
+        }
+    }, [src]);
+
+    // reset the view
+    const resetView = useCallback(() => {
+        const img = imgRef.current;
+        const frame = frameRef.current;
+        if (!img || !frame) return;
+
+        const fw = frame.clientWidth;
+        const fh = frame.clientHeight;
+        const iw = img.naturalWidth;
+        const ih = img.naturalHeight;
+        const fitScale = Math.min(fw / iw, fh / ih) * 0.9;
+
+        setScale(fitScale);
+        setBaseScale(fitScale);
+        setPosition({ x: 0, y: 0 });
+    }, []);
+
+    // Fullscreen toggle
+    const toggleFullscreen = useCallback(() => {
+        const container = document.querySelector('.pm-container');
+
+        if (!document.fullscreenElement) {
+            container.requestFullscreen?.() ||
+                container.webkitRequestFullscreen?.() ||
+                container.mozRequestFullScreen?.() ||
+                container.msRequestFullscreen?.();
+        } else {
+            document.exitFullscreen?.() ||
+                document.webkitExitFullscreen?.() ||
+                document.mozCancelFullScreen?.() ||
+                document.msExitFullscreen?.();
+        }
+    }, []);
+
+    // Listen for fullscreen changes
+    useEffect(() => {
+        const handleFullscreenChange = () => {
+            setIsFullscreen(!!document.fullscreenElement);
+        };
+
+        const events = ['fullscreenchange', 'webkitfullscreenchange', 'mozfullscreenchange'];
+        events.forEach(e => document.addEventListener(e, handleFullscreenChange));
+
+        return () => {
+            events.forEach(e => document.removeEventListener(e, handleFullscreenChange));
+        };
+    }, []);
+
+    // Keyboard shortcuts
+    useEffect(() => {
+        const handleKeydown = (e) => {
+            switch (e.key.toLowerCase()) {
+                case 'escape': onClose(); break;
+                case '+':
+                case '=': zoomIn(); break;
+                case '-':
+                case '_': zoomOut(); break;
+                case 'r': resetView(); break;
+                case 'f': toggleFullscreen(); break;
+                case 'c': copyImage(); break;
+                case 'd': download(); break;
+            }
+        };
+
+        window.addEventListener("keydown", handleKeydown);
+        return () => window.removeEventListener("keydown", handleKeydown);
+    }, [zoomIn, zoomOut, resetView, toggleFullscreen, copyImage, download, onClose]);
 
     // MOUSE EVENTS
     const handleWheel = (e) => {

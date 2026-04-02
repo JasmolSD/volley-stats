@@ -7,6 +7,7 @@ import stat
 import time
 from typing import Iterable, Optional
 
+
 def _force_writable(path: Path) -> None:
     """Make a file/dir writable so it can be deleted on Windows."""
     try:

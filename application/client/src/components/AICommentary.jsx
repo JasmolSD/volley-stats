@@ -28,17 +28,23 @@ export default function AICommentary({
     ];
 
     // Rotate loading text every 40 seconds
+    // Rotate loading text every 40 seconds
     useEffect(() => {
-        if (loadingCommentary) {
-            const interval = setInterval(() => {
-                setLoadingTextIndex((prev) => (prev + 1) % loadingTexts.length);
-            }, 40000);
-            return () => clearInterval(interval);
-        } else {
-            // Reset index when not loading
+        if (!loadingCommentary) return;
+
+        const interval = setInterval(() => {
+            setLoadingTextIndex((prev) => (prev + 1) % loadingTexts.length);
+        }, 40000);
+
+        return () => clearInterval(interval);
+    }, [loadingCommentary, loadingTexts.length]);
+
+    // Reset index when loading stops
+    useEffect(() => {
+        if (!loadingCommentary) {
             setLoadingTextIndex(0);
         }
-    }, [loadingCommentary, loadingTexts.length]);
+    }, [loadingCommentary]);
 
     // Format model names for display
     const formatModelName = (modelId) => {

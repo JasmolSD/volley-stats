@@ -1,35 +1,34 @@
 from __future__ import annotations
-from typing import Any, Dict, List, Optional, Literal
-from types_common import PlotKind
-import os, io, base64
-
-import matplotlib
-# Non-GUI backend for servers/workers
-matplotlib.use("Agg", force=True)
-
-import pandas as pd
-from matplotlib.figure import Figure
-from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
-
-# import functions from other files
 from ..analysis import prepare_dfs
 from .plots_temporal import (
     plot_service_temporal,
-    plot_assists_per_attack,    # to add
+    # plot_assists_per_attack,    # to add
     plot_attack_accuracy,
     plot_avg_errors,
     plot_offensive_temporal,
     plot_player_errors,
-    plot_receive_temporal
+    plot_receive_temporal,
 )
 from .plots_cumulative import (
     plot_offensive_performance,
     plot_receive_performance,
-    plot_service_metrics
+    plot_service_metrics,
 )
-from types_common import PlotMode
+from types_common import PlotMode, PlotKind
+from typing import Any, Dict, List, Optional
+import os
+import io
+import base64
+import pandas as pd
+from matplotlib.figure import Figure
+from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
+import matplotlib
+
+# Non-GUI backend for servers/workers
+matplotlib.use("Agg", force=True)
 
 # ---------- Tiny utils ----------
+
 
 def _ensure_dir(path: str) -> None:
     os.makedirs(path, exist_ok=True)
@@ -98,11 +97,11 @@ def render_plot(
 
         return fig_to_base64_png(fig)
 
-    # ---- TEMPORAL PATH ---- 
+    # ---- TEMPORAL PATH ----
     elif mode == "temporal":
         team_overall = dfs["team_overall"]
         df_player_np = dfs.get("df_player_date_no_pos", None)
-        df_player = dfs.get("df_player_date", None)
+        # df_player = dfs.get("df_player_date", None)
 
         # DEBUG: Add logging to see which plot is being called
         print(f"DEBUG: Temporal plot - kind={kind}, player={player_name}")
@@ -110,32 +109,42 @@ def render_plot(
         # FIXED: Ensure each kind maps to the correct plot function
         if kind == "offense":
             print("DEBUG: Calling plot_offensive_temporal")
-            fig = plot_offensive_temporal(team_overall, player_name=title_player, **kwargs)
-            
+            fig = plot_offensive_temporal(
+                team_overall, player_name=title_player, **kwargs
+            )
+
         elif kind == "service":
-            print("DEBUG: Calling plot_service_temporal") 
-            fig = plot_service_temporal(team_overall, player_name=title_player, **kwargs)
-            
+            print("DEBUG: Calling plot_service_temporal")
+            fig = plot_service_temporal(
+                team_overall, player_name=title_player, **kwargs
+            )
+
         elif kind == "receive":
             print("DEBUG: Calling plot_receive_temporal")
-            fig = plot_receive_temporal(team_overall, player_name=title_player, **kwargs)
-            
+            fig = plot_receive_temporal(
+                team_overall, player_name=title_player, **kwargs
+            )
+
         elif kind == "errors":
             print("DEBUG: Calling plot_avg_errors")
             fig = plot_avg_errors(team_overall, player_name=title_player, **kwargs)
-            
+
         elif kind == "atk_acc_over_time":
             print("DEBUG: Calling plot_attack_accuracy")
             if df_player_np is None:
-                raise ValueError("df_player_date_no_pos required for attack accuracy plot")
+                raise ValueError(
+                    "df_player_date_no_pos required for attack accuracy plot"
+                )
             fig = plot_attack_accuracy(df_player_np, player_name=title_player, **kwargs)
-            
+
         elif kind == "avg_errors_over_time":
             print("DEBUG: Calling plot_player_errors")
             if df_player_np is None:
-                raise ValueError("df_player_date_no_pos required for player errors plot")
+                raise ValueError(
+                    "df_player_date_no_pos required for player errors plot"
+                )
             fig = plot_player_errors(df_player_np, player_name=title_player, **kwargs)
-            
+
         else:
             print(f"DEBUG: Unknown temporal plot kind: {kind}")
             raise ValueError(f"Unknown plot kind (temporal): {kind}")
@@ -204,4 +213,3 @@ def generate_plots(
         images.append({"name": filename, "url": f"/static/{run_id}/{filename}"})
 
     return images
-
