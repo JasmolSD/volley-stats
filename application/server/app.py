@@ -407,8 +407,6 @@ def commentary():
         meta=meta,
         images=images,
         all_plots=all_plots,
-        text_model_id=text_model_id,
-        vision_model_id=vision_model_id,
         hf_token=hf_token,
         mode=mode,
         used_player=used_player
