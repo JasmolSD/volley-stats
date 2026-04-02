@@ -1,16 +1,10 @@
-Objectives
-1. Make the statistics and plots into a fully functional react-powered web app
-2. Make a data collection UI that simplifies tracking of statistics
-
-Requirements
-- React frontend
-- Flask backend
-- LLM api calls for constructive reccomendations
-- Make a coding backend for all the python functions
-
 To Fix:
 - Analyst Commentary is adding the prompt stuff (erase)
-- Allow for data exports and download everything as a report
-- Add a little table at the end that you can interact with
+
+Features:
+- Add rag call to application for feedback on improvement
+- RAG metadata functionality
+- Video analysis
+- D3.js visualization
+- Add an interactive statistics table in frontend at bottom of analysis page
 - Add a way to filter through data (season, format)
-- Deploy it as a website

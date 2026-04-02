@@ -46,6 +46,6 @@ dist/
 
 # Misc files
 delete_me.py
-project_1.py
-project_2.py
-project_3.py
+project*
+onnx/
+rag.py
