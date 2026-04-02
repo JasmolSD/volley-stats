@@ -905,7 +905,7 @@ def generate_commentary_with_api(
         if isinstance(plot_data, list):
             for plot in plot_data:
                 plot_type = plot.get('kind', 'unknown')
-                mode = plot.get('mode', 'cumulative')
+                # mode = plot.get('mode', 'cumulative')
                 player = plot.get('used_player', 'Team')
                 
                 # Describe what the plot shows based on your data

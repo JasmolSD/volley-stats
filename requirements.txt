@@ -51,3 +51,9 @@ python-dotenv>=1.0
 
 # --- API Calls ---
 requests
+
+# --- ONNX ---
+onnx
+onnxscript
+onnxruntime
+netron
