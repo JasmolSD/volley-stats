@@ -5,6 +5,7 @@ Features:
 - Add rag call to application for feedback on improvement
 - RAG metadata functionality
 - Video analysis
+- Add better caching
 - D3.js visualization
 - Add an interactive statistics table in frontend at bottom of analysis page
 - Add a way to filter through data (season, format)
